@@ -8,57 +8,60 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
-            /* Bleus Tripline */
-            --primary-blue: #0A66C2;
-            --light-blue: #E7F3FF;
-            --dark-blue: #064789;
-            --accent-blue: #3B82F6;
+            /* Palette minimaliste Apple - Light */
+            --primary-blue: #007AFF;
+            --light-blue: #E5F1FF;
+            --dark-blue: #0051D5;
+            --accent-blue: #5AC8FA;
             
             /* Neutres */
             --white: #FFFFFF;
-            --off-white: #F8FAFC;
-            --light-gray: #E2E8F0;
-            --gray: #64748B;
-            --dark: #1E293B;
+            --off-white: #F5F5F7;
+            --light-gray: #E5E5EA;
+            --gray: #8E8E93;
+            --dark: #1D1D1F;
             
             /* Accents */
-            --success: #10B981;
-            --warning: #F59E0B;
-            --error: #EF4444;
+            --success: #34C759;
+            --warning: #FF9500;
+            --error: #FF3B30;
             
-            /* Mapping pour compatibilité */
+            /* Mapping */
             --bg-primary: var(--white);
             --bg-secondary: var(--off-white);
             --bg-tertiary: var(--light-gray);
             --text-primary: var(--dark);
             --text-secondary: var(--gray);
-            --border-color: var(--light-gray);
+            --border-color: rgba(0, 0, 0, 0.06);
             --accent: var(--primary-blue);
-            --shadow: rgba(10, 102, 194, 0.1);
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-lg: rgba(0, 0, 0, 0.12);
             --restaurant-color: var(--primary-blue);
             --activity-color: var(--accent-blue);
         }
 
         [data-theme="dark"] {
-            --primary-blue: #3B82F6;
-            --light-blue: #1E3A5F;
-            --dark-blue: #93C5FD;
-            --accent-blue: #60A5FA;
+            /* Palette minimaliste Apple - Dark */
+            --primary-blue: #0A84FF;
+            --light-blue: #1C2938;
+            --dark-blue: #409CFF;
+            --accent-blue: #64D2FF;
             
-            --white: #0F172A;
-            --off-white: #1E293B;
-            --light-gray: #334155;
-            --gray: #94A3B8;
-            --dark: #F1F5F9;
+            --white: #000000;
+            --off-white: #1C1C1E;
+            --light-gray: #2C2C2E;
+            --gray: #98989D;
+            --dark: #F5F5F7;
             
-            --bg-primary: #0F172A;
-            --bg-secondary: #1E293B;
-            --bg-tertiary: #334155;
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --border-color: #334155;
+            --bg-primary: #000000;
+            --bg-secondary: #1C1C1E;
+            --bg-tertiary: #2C2C2E;
+            --text-primary: #F5F5F7;
+            --text-secondary: #98989D;
+            --border-color: rgba(255, 255, 255, 0.08);
             --accent: var(--primary-blue);
-            --shadow: rgba(59, 130, 246, 0.15);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-lg: rgba(0, 0, 0, 0.5);
             --restaurant-color: var(--primary-blue);
             --activity-color: var(--accent-blue);
         }
@@ -71,11 +74,13 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
@@ -85,11 +90,13 @@
 
         header {
             background: var(--bg-primary);
-            padding: 20px 16px;
-            border-bottom: 2px solid var(--primary-blue);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .header-content {
@@ -103,20 +110,20 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-decoration: none;
             color: var(--text-primary);
         }
 
         .logo-icon {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
         }
 
         h1 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: var(--primary-blue);
+            font-size: 1.375rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
 
         .header-actions {
@@ -127,21 +134,23 @@
 
         .theme-toggle {
             background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
+            border: none;
             color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.2s;
+            font-size: 1.25rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 44px;
+            height: 44px;
         }
 
         .theme-toggle:hover {
-            background: var(--light-blue);
-            border-color: var(--primary-blue);
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
         }
 
         .theme-toggle:active {
@@ -152,45 +161,45 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            padding: 20px 16px;
-            background: var(--off-white);
-            border-bottom: 2px solid var(--border-color);
+            padding: 20px;
+            background: var(--bg-primary);
         }
 
         .stat-card {
-            background: var(--white);
+            background: var(--bg-secondary);
             padding: 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            transition: all 0.2s;
+            border: none;
+            border-radius: 16px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .stat-card:hover {
-            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px var(--shadow);
         }
 
         .stat-card h3 {
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.6875rem;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--gray);
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
             margin-bottom: 8px;
         }
 
         .stat-card .number {
             font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: var(--primary-blue);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
         }
 
         .tabs {
             display: flex;
             overflow-x: auto;
             gap: 8px;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
+            padding: 12px 20px;
+            background: var(--bg-primary);
             border-bottom: 1px solid var(--border-color);
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
@@ -201,29 +210,27 @@
         }
 
         .tab {
-            background: var(--bg-primary);
-            border: 2px solid var(--border-color);
+            background: transparent;
+            border: none;
             color: var(--text-secondary);
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: 0.9375rem;
+            font-weight: 500;
             white-space: nowrap;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
         }
 
         .tab:hover {
-            background: var(--light-blue);
-            color: var(--primary-blue);
-            border-color: var(--primary-blue);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .tab.active {
-            background: var(--primary-blue);
-            color: var(--white);
-            border-color: var(--primary-blue);
+            background: var(--bg-secondary);
+            color: var(--primary-blue);
         }
 
         .content-section {
@@ -245,23 +252,22 @@
 
         .btn {
             padding: 12px 20px;
-            border: 2px solid var(--border-color);
-            background: var(--bg-primary);
+            border: none;
+            background: var(--bg-secondary);
             color: var(--text-primary);
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.2s;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
             flex: 1;
             min-width: 120px;
         }
 
         .btn:hover {
-            background: var(--light-blue);
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
+            background: var(--bg-tertiary);
+            transform: translateY(-1px);
         }
 
         .btn:active {
@@ -270,13 +276,11 @@
 
         .btn-primary {
             background: var(--primary-blue);
-            color: var(--white);
-            border-color: var(--primary-blue);
+            color: white;
         }
 
         .btn-primary:hover {
             background: var(--dark-blue);
-            border-color: var(--dark-blue);
         }
 
         .filter-section {
@@ -285,16 +289,23 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        select, input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea {
+        select, input[type="text"], input[type="number"], input[type="date"], textarea {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-primary);
+            padding: 12px 16px;
+            border: none;
+            background: var(--bg-secondary);
             color: var(--text-primary);
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
             font-family: inherit;
             margin-bottom: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
         .items-list {
@@ -302,13 +313,13 @@
         }
 
         .item-card {
-            background: var(--bg-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -316,8 +327,8 @@
         }
 
         .item-card:hover {
-            border-color: var(--primary-blue);
-            background: var(--light-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px var(--shadow-lg);
         }
 
         .item-card:active {
@@ -363,6 +374,59 @@
             opacity: 0.5;
         }
 
+        /* Items done */
+        .item-card.done {
+            opacity: 0.5;
+            background: var(--bg-tertiary);
+            order: 999;
+        }
+
+        .item-card.done:hover {
+            opacity: 0.6;
+        }
+
+        .item-card.done .item-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .done-btn {
+            padding: 10px 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+            text-align: center;
+        }
+
+        .done-btn:hover {
+            background: #2FB74E;
+            transform: scale(1.02);
+        }
+
+        .done-btn:active {
+            transform: scale(0.98);
+        }
+
+        .done-btn.undone {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .done-btn.undone:hover {
+            background: var(--light-gray);
+        }
+
+        [data-theme="dark"] .done-btn.undone {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
         .item-card-top {
             display: flex;
             gap: 12px;
@@ -379,7 +443,7 @@
             width: 100px;
             height: 100px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 12px;
             flex-shrink: 0;
         }
 
@@ -426,11 +490,12 @@
         }
 
         .item-title {
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.0625rem;
+            font-weight: 600;
             letter-spacing: -0.01em;
             margin-bottom: 4px;
-            color: var(--dark);
+            color: var(--text-primary);
+            line-height: 1.3;
         }
 
         .item-city {
@@ -442,19 +507,23 @@
         .badge {
             font-size: 0.75rem;
             padding: 6px 10px;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-weight: 500;
             white-space: nowrap;
         }
 
         .badge-reserved {
-            background: var(--success);
-            color: var(--white);
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--success);
         }
 
         .badge-not-reserved {
-            background: var(--light-gray);
-            color: var(--gray);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .badge-reserved {
+            background: rgba(52, 199, 89, 0.2);
         }
 
         .item-details {
@@ -497,38 +566,37 @@
 
         .maps-btn, .booking-btn {
             display: inline-block;
-            padding: 8px 12px;
-            background: var(--light-gray);
-            color: var(--dark);
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
+            padding: 10px 16px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 10px;
             font-size: 0.875rem;
             text-decoration: none;
-            transition: all 0.2s;
-            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
             flex: 1;
             text-align: center;
         }
 
         .maps-btn:hover {
             background: var(--primary-blue);
-            color: var(--white);
-            border-color: var(--primary-blue);
+            color: white;
+            transform: scale(1.02);
         }
 
         .maps-btn:active, .booking-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
 
         .booking-btn {
-            background: var(--success);
-            color: white;
-            border-color: var(--success);
+            background: rgba(52, 199, 89, 0.15);
+            color: var(--success);
         }
 
         .booking-btn:hover {
-            background: #059669;
-            border-color: #059669;
+            background: var(--success);
+            color: white;
         }
 
         [data-theme="dark"] .maps-btn {
@@ -537,8 +605,8 @@
         }
 
         [data-theme="dark"] .booking-btn {
-            background: var(--success);
-            border-color: var(--success);
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--success);
         }
 
         .address-link {
@@ -556,26 +624,25 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            width: 64px;
-            height: 64px;
+            width: 60px;
+            height: 60px;
             background: var(--primary-blue);
-            color: var(--white);
+            color: white;
             border: none;
             border-radius: 50%;
-            font-size: 32px;
+            font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
             z-index: 999;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-            background: var(--dark-blue);
-            box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 12px 32px rgba(0, 122, 255, 0.4);
         }
 
         .fab:active {
@@ -598,23 +665,25 @@
         }
 
         .fab-option {
-            background: var(--white);
-            color: var(--dark);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             padding: 12px 20px;
-            border: 2px solid var(--primary-blue);
-            border-radius: 24px;
+            border: none;
+            border-radius: 16px;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px var(--shadow-lg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .fab-option:hover {
             background: var(--primary-blue);
-            color: var(--white);
-            transform: translateX(-4px);
+            color: white;
+            transform: translateX(-4px) scale(1.02);
         }
 
         /* Recherche globale */
@@ -691,9 +760,11 @@
             left: 0;
             right: 0;
             background: var(--bg-primary);
-            border-top: 2px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
             z-index: 100;
-            padding: 8px 0;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         @media (max-width: 768px) {
@@ -712,11 +783,11 @@
             padding: 8px 12px;
             background: none;
             border: none;
-            color: var(--gray);
-            font-size: 0.75rem;
-            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.6875rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             flex: 1;
             max-width: 80px;
         }
@@ -727,14 +798,16 @@
 
         .bottom-nav-item .icon {
             font-size: 1.5rem;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bottom-nav-item.active .icon {
+            transform: scale(1.1);
         }
 
         .bottom-nav-item:active {
             transform: scale(0.95);
         }
-
-        /* Swipe Actions - DISABLED */
-        /* Pull to Refresh - DISABLED */
 
         .modal {
             display: none;
@@ -743,7 +816,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 1000;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -764,32 +839,46 @@
         .modal-header {
             position: sticky;
             top: 0;
-            background: var(--bg-secondary);
-            padding: 16px;
+            background: var(--bg-primary);
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .modal-title {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 600;
+            letter-spacing: -0.01em;
         }
 
         .close-btn {
-            background: none;
+            background: var(--bg-secondary);
             border: none;
             color: var(--text-primary);
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             cursor: pointer;
             padding: 0;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .close-btn:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
+        }
+
+        .close-btn:active {
+            transform: scale(0.95);
         }
 
         .modal-body {
@@ -802,23 +891,32 @@
 
         .form-group label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             font-weight: 500;
             margin-bottom: 8px;
-            color: var(--text-primary);
+            color: var(--text-secondary);
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border: none;
             background: var(--bg-secondary);
             color: var(--text-primary);
-            border-radius: 6px;
-            font-size: 0.875rem;
+            border-radius: 12px;
+            font-size: 1rem;
             font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
         .form-group textarea {
@@ -834,11 +932,13 @@
         .form-actions {
             position: sticky;
             bottom: 0;
-            background: var(--bg-secondary);
-            padding: 16px;
+            background: var(--bg-primary);
+            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
             border-top: 1px solid var(--border-color);
             display: flex;
-            gap: 8px;
+            gap: 12px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .detail-modal .modal-content {
@@ -1023,15 +1123,9 @@
             <button class="tab" onclick="switchTab('activities')">Activités</button>
             <button class="tab" onclick="switchTab('calendar')">📅 Calendrier</button>
             <button class="tab" onclick="switchTab('by-city')">Par Ville</button>
+            <button class="tab" onclick="switchTab('settings')">⚙️ Réglages</button>
         </div>
 
-        <div class="action-bar">
-            <button class="btn btn-primary" onclick="openModal('restaurant')">+ Restaurant</button>
-            <button class="btn btn-primary" onclick="openModal('activity')">+ Activité</button>
-            <button class="btn" onclick="exportData()">💾 Export</button>
-            <button class="btn" onclick="importData()">📥 Import</button>
-            <button class="btn" onclick="clearAllData()">🗑️ Vider</button>
-        </div>
 
         <div class="filter-section">
             <select id="cityFilter" onchange="filterItems()">
@@ -1095,6 +1189,53 @@
 
         <div id="byCityContent" class="content-section">
             <div class="items-list" id="cityView"></div>
+        </div>
+
+        <div id="settingsContent" class="content-section">
+            <div style="padding: 24px; max-width: 600px; margin: 0 auto;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: var(--primary-blue);">⚙️ Réglages</h2>
+                
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">📊 Gestion des données</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 20px;">
+                        Exportez vos données pour les sauvegarder ou les partager, importez un fichier de sauvegarde, ou réinitialisez complètement l'application.
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button class="btn" onclick="exportData()" style="width: 100%;">
+                            💾 Exporter les données
+                        </button>
+                        <button class="btn" onclick="importData()" style="width: 100%;">
+                            📥 Importer les données
+                        </button>
+                        <button class="btn" onclick="clearAllData()" style="width: 100%; background: var(--error); color: white; border-color: var(--error);">
+                            🗑️ Supprimer toutes les données
+                        </button>
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">📈 Statistiques</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Restaurants</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-blue);" id="statsRestaurants">0</div>
+                        </div>
+                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Activités</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-blue);" id="statsActivities">0</div>
+                        </div>
+                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Terminés</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="statsDone">0</div>
+                        </div>
+                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Réservés</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="statsReserved">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1168,12 +1309,7 @@
 
                         <div class="form-group">
                             <label for="activityDate">Date</label>
-                            <input type="date" id="activityDate">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="activityTime">Heure</label>
-                            <input type="time" id="activityTime">
+                            <input type="datetime-local" id="activityDate">
                         </div>
 
                         <div class="form-group">
@@ -1232,7 +1368,7 @@
 
                     <div class="form-group" id="reservationDateGroup" style="display: none;">
                         <label for="reservationDate">Date de réservation</label>
-                        <input type="date" id="reservationDate">
+                        <input type="datetime-local" id="reservationDate">
                     </div>
                 </form>
             </div>
@@ -1261,7 +1397,7 @@
     <script>
         // Classes
         class Restaurant {
-            constructor(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isReserved, reservationDate, priority, bookingUrl, id = null) {
+            constructor(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isReserved, reservationDate, priority, bookingUrl, isDone = false, id = null) {
                 this.id = id || this.generateId();
                 this.name = name;
                 this.city = city;
@@ -1273,8 +1409,9 @@
                 this.notes = notes;
                 this.isReserved = isReserved;
                 this.reservationDate = reservationDate;
-                this.priority = priority || 'normal'; // 'must-do', 'high', 'normal', 'low', 'optional'
+                this.priority = priority || 'normal';
                 this.bookingUrl = bookingUrl;
+                this.isDone = isDone;
                 this.type = 'restaurant';
             }
 
@@ -1284,13 +1421,12 @@
         }
 
         class Activity {
-            constructor(name, city, category, date, time, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, id = null) {
+            constructor(name, city, category, date, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, isDone = false, id = null) {
                 this.id = id || this.generateId();
                 this.name = name;
                 this.city = city;
                 this.category = category;
                 this.date = date;
-                this.time = time;
                 this.duration = duration;
                 this.cost = cost;
                 this.googleMapsUrl = googleMapsUrl;
@@ -1301,6 +1437,7 @@
                 this.reservationDate = reservationDate;
                 this.priority = priority || 'normal';
                 this.bookingUrl = bookingUrl;
+                this.isDone = isDone;
                 this.type = 'activity';
             }
 
@@ -1354,6 +1491,27 @@
             document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
         }
 
+        // Toggle Done
+        function toggleDone(id, type, event) {
+            event.stopPropagation();
+            
+            if (type === 'restaurant') {
+                const item = restaurants.find(r => r.id === id);
+                if (item) {
+                    item.isDone = !item.isDone;
+                }
+            } else {
+                const item = activities.find(a => a.id === id);
+                if (item) {
+                    item.isDone = !item.isDone;
+                }
+            }
+            
+            saveData();
+            filterItems();
+            renderCalendar(); // Mettre à jour le calendrier
+        }
+
         // Modal Management
         function openModal(type, item = null) {
             const modal = document.getElementById('formModal');
@@ -1401,7 +1559,6 @@
                 } else {
                     document.getElementById('category').value = item.category || '';
                     document.getElementById('activityDate').value = item.date || '';
-                    document.getElementById('activityTime').value = item.time || '';
                     document.getElementById('duration').value = item.duration || '';
                     document.getElementById('cost').value = item.cost || '';
                     document.getElementById('isBooked').checked = item.isBooked;
@@ -1439,22 +1596,23 @@
 
                 if (currentEditId) {
                     const index = restaurants.findIndex(r => r.id === currentEditId);
-                    restaurants[index] = new Restaurant(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, currentEditId);
+                    const existingIsDone = restaurants[index].isDone || false;
+                    restaurants[index] = new Restaurant(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, existingIsDone, currentEditId);
                 } else {
-                    restaurants.push(new Restaurant(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl));
+                    restaurants.push(new Restaurant(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, false));
                 }
             } else {
                 const category = document.getElementById('category').value;
                 const date = document.getElementById('activityDate').value;
-                const time = document.getElementById('activityTime').value;
                 const duration = parseFloat(document.getElementById('duration').value) || 0;
                 const cost = parseInt(document.getElementById('cost').value) || 0;
 
                 if (currentEditId) {
                     const index = activities.findIndex(a => a.id === currentEditId);
-                    activities[index] = new Activity(name, city, category, date, time, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, currentEditId);
+                    const existingIsDone = activities[index].isDone || false;
+                    activities[index] = new Activity(name, city, category, date, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, existingIsDone, currentEditId);
                 } else {
-                    activities.push(new Activity(name, city, category, date, time, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl));
+                    activities.push(new Activity(name, city, category, date, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, false));
                 }
             }
 
@@ -1465,7 +1623,7 @@
         }
 
         function showDetail(item) {
-            currentDetailItem = item; // Sauvegarder pour les boutons Modifier/Supprimer
+            currentDetailItem = item;
             const modal = document.getElementById('detailModal');
             const title = document.getElementById('detailTitle');
             const body = document.getElementById('detailBody');
@@ -1513,14 +1671,6 @@
                         <div class="detail-section">
                             <label>Date</label>
                             <div class="value">${new Date(item.date).toLocaleDateString('fr-FR')}</div>
-                        </div>
-                    `;
-                }
-                if (item.time) {
-                    html += `
-                        <div class="detail-section">
-                            <label>Heure</label>
-                            <div class="value">${item.time}</div>
                         </div>
                     `;
                 }
@@ -1598,7 +1748,6 @@
                             </blockquote>
                         </div>
                     `;
-                    // Charger le script TikTok après coup
                     setTimeout(() => {
                         if (!document.querySelector('script[src*="tiktok.com/embed.js"]')) {
                             const script = document.createElement('script');
@@ -1638,7 +1787,7 @@
                 : activities.find(a => a.id === id);
             
             if (item) {
-                currentDetailItem = item; // Sauvegarder l'item pour les actions Modifier/Supprimer
+                currentDetailItem = item;
                 showDetail(item);
             }
         }
@@ -1649,9 +1798,8 @@
         }
 
         function editFromDetail() {
-            const itemToEdit = currentDetailItem; // Sauvegarder avant de fermer
+            const itemToEdit = currentDetailItem;
             closeModal('detailModal');
-            // Petit délai pour que la fermeture se fasse bien
             setTimeout(() => {
                 openModal(itemToEdit.type, itemToEdit);
             }, 100);
@@ -1704,23 +1852,30 @@
 
         function renderCalendar() {
             const calendarView = document.getElementById('calendarView');
-            const allItems = [...restaurants, ...activities];
-            
-            // Grouper par date de réservation
+            // Filtrer uniquement les items non terminés
+            const allItems = [...restaurants, ...activities].filter(item => !item.isDone);
+
             const itemsByDate = {};
-            
+
             allItems.forEach(item => {
-                const date = item.reservationDate || (item.type === 'activity' ? item.date : null);
-                if (date) {
-                    if (!itemsByDate[date]) {
-                        itemsByDate[date] = [];
-                    }
-                    itemsByDate[date].push(item);
+                const rawDate = item.reservationDate || (item.type === 'activity' ? item.date : null);
+                if (!rawDate) return;
+
+                const [datePart, timePart] = rawDate.split('T');
+                const time = timePart ? timePart.slice(0, 5) : null;
+
+                if (!itemsByDate[datePart]) {
+                    itemsByDate[datePart] = [];
                 }
+
+                itemsByDate[datePart].push({
+                    ...item,
+                    time
+                });
             });
-            
+
             const dates = Object.keys(itemsByDate).sort();
-            
+
             if (dates.length === 0) {
                 calendarView.innerHTML = `
                     <div class="calendar-empty">
@@ -1730,15 +1885,21 @@
                 `;
                 return;
             }
-            
+
             let html = '<div style="padding: 16px;">';
-            
+
             dates.forEach(date => {
                 const items = itemsByDate[date];
+                items.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
                 const dateObj = new Date(date + 'T00:00:00');
                 const dayName = dateObj.toLocaleDateString('fr-FR', { weekday: 'long' });
-                const dayDate = dateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-                
+                const dayDate = dateObj.toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
                 html += `
                     <div class="calendar-day">
                         <div class="calendar-day-header">
@@ -1747,43 +1908,70 @@
                         </div>
                         <div class="calendar-items">
                 `;
-                
+
                 items.forEach(item => {
                     const isRestaurant = item.type === 'restaurant';
                     const isBooked = isRestaurant ? item.isReserved : item.isBooked;
                     const price = isRestaurant ? item.priceRange : item.cost;
-                    
+
                     html += `
-                        <div class="item-card ${item.type} ${item.priority && item.priority !== 'normal' ? 'priority-' + item.priority : ''}" data-item-id="${item.id}" onclick="showDetailById('${item.id}', '${item.type}')" style="margin-bottom: 0;">
-                            <div class="item-content">
-                                <div class="item-header">
-                                    <div>
-                                        <div class="item-title">
-                                            ${item.name}
-                                            ${getPriorityBadge(item.priority)}
+                        <div class="item-card ${item.type} ${item.priority && item.priority !== 'normal' ? 'priority-' + item.priority : ''} ${item.isDone ? 'done' : ''}"
+                             onclick="showDetailById('${item.id}', '${item.type}')">
+                            <div class="item-card-top">
+                                <div class="item-content">
+                                    <div class="item-header">
+                                        <div>
+                                            <div class="item-title">
+                                                ${item.name}
+                                                ${getPriorityBadge(item.priority)}
+                                            </div>
+                                            <div class="item-city">${item.city}</div>
                                         </div>
-                                        <div class="item-city">${item.city}</div>
+                                        <span class="badge ${isBooked ? 'badge-reserved' : 'badge-not-reserved'}">
+                                            ${isBooked ? '✓' : '○'}
+                                        </span>
                                     </div>
-                                    <span class="badge ${isBooked ? 'badge-reserved' : 'badge-not-reserved'}">
-                                        ${isBooked ? '✓' : '○'}
-                                    </span>
+                                    <div class="item-details">
+                                        ${item.time ? `<div class="item-detail">🕒 ${item.time}</div>` : ''}
+                                        ${price ? `<div class="item-detail"><strong>${price.toLocaleString()}¥</strong></div>` : ''}
+                                        ${isRestaurant && item.cuisine ? `<div class="item-detail">${item.cuisine}</div>` : ''}
+                                        ${!isRestaurant && item.category ? `<div class="item-detail">${item.category}</div>` : ''}
+                                    </div>
+                                    ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
                                 </div>
-                                <div class="item-details">
-                                    ${price ? `<div class="item-detail"><strong>${price.toLocaleString()}¥</strong></div>` : ''}
-                                    ${item.time ? `<div class="item-detail">⏰ ${item.time}</div>` : ''}
-                                </div>
+                                ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" onerror="this.style.display='none'">` : ''}
                             </div>
-                            ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" onerror="this.style.display='none'">` : ''}
+                            <div class="card-actions">
+                                <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
+                                    ${item.isDone ? '↩️ Pas fait' : '✅ Fait'}
+                                </button>
+                                ${item.googleMapsUrl ? `
+                                    <a href="${item.googleMapsUrl}" 
+                                       target="_blank" 
+                                       class="maps-btn"
+                                       onclick="event.stopPropagation()">
+                                        📍 Maps
+                                    </a>
+                                ` : ''}
+                                ${item.bookingUrl ? `
+                                    <a href="${item.bookingUrl}" 
+                                       target="_blank" 
+                                       class="booking-btn"
+                                       onclick="event.stopPropagation()">
+                                        🍽️ Réserver
+                                    </a>
+                                ` : ''}
+                            </div>
                         </div>
                     `;
                 });
-                
+
                 html += `
                         </div>
                     </div>
                 `;
             });
-            
+
             html += '</div>';
             calendarView.innerHTML = html;
         }
@@ -1820,7 +2008,7 @@
                 const price = isRestaurant ? item.priceRange : item.cost;
 
                 return `
-                    <div class="item-card ${item.type} ${item.priority && item.priority !== 'normal' ? 'priority-' + item.priority : ''}" data-item-id="${item.id}" onclick="showDetailById('${item.id}', '${item.type}')">
+                    <div class="item-card ${item.type} ${item.priority && item.priority !== 'normal' ? 'priority-' + item.priority : ''} ${item.isDone ? 'done' : ''}" data-item-id="${item.id}" onclick="showDetailById('${item.id}', '${item.type}')">
                         <div class="item-card-top">
                             <div class="item-content">
                                 <div class="item-header">
@@ -1846,12 +2034,15 @@
                             ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" onerror="this.style.display='none'">` : ''}
                         </div>
                         <div class="card-actions">
+                            <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
+                                ${item.isDone ? '↩️ Pas fait' : '✅ Fait'}
+                            </button>
                             ${item.googleMapsUrl ? `
                                 <a href="${item.googleMapsUrl}" 
                                    target="_blank" 
                                    class="maps-btn"
                                    onclick="event.stopPropagation()">
-                                    📍 Google Maps
+                                    📍 Maps
                                 </a>
                             ` : ''}
                             ${item.bookingUrl ? `
@@ -1979,6 +2170,10 @@
                 case 'by-city':
                     document.getElementById('byCityContent').classList.add('active');
                     break;
+                case 'settings':
+                    document.getElementById('settingsContent').classList.add('active');
+                    updateSettingsStats();
+                    break;
             }
         }
 
@@ -1990,15 +2185,12 @@
             let filteredActivities = activities;
 
             if (cityFilter) {
-                // Vérifier si c'est une ville principale (sans " - ")
                 const isMainCity = !cityFilter.includes(' - ');
                 
                 filteredRestaurants = filteredRestaurants.filter(r => {
                     if (isMainCity) {
-                        // Si on filtre par ville principale, montrer tout ce qui commence par cette ville
                         return r.city.startsWith(cityFilter);
                     } else {
-                        // Sinon, filtrer exactement par le quartier
                         return r.city === cityFilter;
                     }
                 });
@@ -2042,31 +2234,42 @@
         function applySorting(items) {
             const sorted = [...items];
             
+            // Séparer les items done et not done
+            const notDone = sorted.filter(item => !item.isDone);
+            const done = sorted.filter(item => item.isDone);
+            
+            // Appliquer le tri sur les items not done
+            let sortedNotDone = notDone;
             switch(currentSort) {
                 case 'priority':
                     const priorityOrder = { 'must-do': 1, 'high': 2, 'normal': 3, 'low': 4, 'optional': 5 };
-                    return sorted.sort((a, b) => {
+                    sortedNotDone = notDone.sort((a, b) => {
                         const priorityA = priorityOrder[a.priority || 'normal'];
                         const priorityB = priorityOrder[b.priority || 'normal'];
                         return priorityA - priorityB;
                     });
+                    break;
                 case 'price-asc':
-                    return sorted.sort((a, b) => {
+                    sortedNotDone = notDone.sort((a, b) => {
                         const priceA = a.type === 'restaurant' ? (a.priceRange || 0) : (a.cost || 0);
                         const priceB = b.type === 'restaurant' ? (b.priceRange || 0) : (b.cost || 0);
                         return priceA - priceB;
                     });
+                    break;
                 case 'price-desc':
-                    return sorted.sort((a, b) => {
+                    sortedNotDone = notDone.sort((a, b) => {
                         const priceA = a.type === 'restaurant' ? (a.priceRange || 0) : (a.cost || 0);
                         const priceB = b.type === 'restaurant' ? (b.priceRange || 0) : (b.cost || 0);
                         return priceB - priceA;
                     });
+                    break;
                 case 'name':
-                    return sorted.sort((a, b) => a.name.localeCompare(b.name));
-                default:
-                    return sorted;
+                    sortedNotDone = notDone.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
             }
+            
+            // Retourner les not done en premier, puis les done
+            return [...sortedNotDone, ...done];
         }
 
         function updateDashboard() {
@@ -2082,6 +2285,19 @@
             document.getElementById('totalReservations').textContent = totalReservations;
         }
 
+        function updateSettingsStats() {
+            document.getElementById('statsRestaurants').textContent = restaurants.length;
+            document.getElementById('statsActivities').textContent = activities.length;
+            
+            const totalDone = restaurants.filter(r => r.isDone).length + 
+                             activities.filter(a => a.isDone).length;
+            document.getElementById('statsDone').textContent = totalDone;
+            
+            const totalReserved = restaurants.filter(r => r.isReserved).length +
+                                 activities.filter(a => a.isBooked).length;
+            document.getElementById('statsReserved').textContent = totalReserved;
+        }
+
         function saveData() {
             localStorage.setItem('japanTripRestaurants', JSON.stringify(restaurants));
             localStorage.setItem('japanTripActivities', JSON.stringify(activities));
@@ -2092,54 +2308,34 @@
             const savedActivities = localStorage.getItem('japanTripActivities');
 
             if (savedRestaurants && savedActivities) {
-                // Charger depuis localStorage
                 const parsedRestaurants = JSON.parse(savedRestaurants);
                 const parsedActivities = JSON.parse(savedActivities);
                 
-                restaurants = parsedRestaurants.map(r => new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id));
-                activities = parsedActivities.map(a => new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id));
+                restaurants = parsedRestaurants.map(r => new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone || false, r.id));
+                activities = parsedActivities.map(a => new Activity(a.name, a.city, a.category, a.date, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone || false, a.id));
             } else {
-                // Charger les données par défaut intégrées
                 fetch('data.json')
                     .then(response => response.json())
                     .then(data => {
-                
-                if (data.restaurants) {
-                    restaurants = data.restaurants.map(r => 
-                        new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id)
-                    );
-                }
-                
-                if (data.activities) {
-                    activities = data.activities.map(a => 
-                        new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id)
-                    );
-                }
-                
-                // Sauvegarder les données dans localStorage
-                saveData();
-                console.log('✅ Données chargées depuis data.json:', data.restaurants.length, 'restaurants,', data.activities.length, 'activités');
-                })
-                .catch(error => {
-                    console.error('❌ Erreur chargement data.json:', error);
-                    alert('Erreur: Impossible de charger data.json. Vérifiez que le fichier est dans le même dossier que index.html');
-                });
-                
-                if (data.restaurants) {
-                    restaurants = data.restaurants.map(r => 
-                        new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id)
-                    );
-                }
-                
-                if (data.activities) {
-                    activities = data.activities.map(a => 
-                        new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id)
-                    );
-                }
-                
-                // Sauvegarder les données par défaut dans localStorage
-                saveData();
-                console.log('Données par défaut chargées (17 restaurants, 24 activités)');
+                        if (data.restaurants) {
+                            restaurants = data.restaurants.map(r => 
+                                new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone || false, r.id)
+                            );
+                        }
+                        
+                        if (data.activities) {
+                            activities = data.activities.map(a => 
+                                new Activity(a.name, a.city, a.category, a.date, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone || false, a.id)
+                            );
+                        }
+                        
+                        saveData();
+                        console.log('✅ Données chargées depuis data.json:', data.restaurants.length, 'restaurants,', data.activities.length, 'activités');
+                    })
+                    .catch(error => {
+                        console.error('❌ Erreur chargement data.json:', error);
+                        alert('Erreur: Impossible de charger data.json. Vérifiez que le fichier est dans le même dossier que index.html');
+                    });
             }
         }
 
@@ -2174,13 +2370,13 @@
                         
                         if (data.restaurants) {
                             restaurants = data.restaurants.map(r => 
-                                new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id)
+                                new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone || false, r.id)
                             );
                         }
                         
                         if (data.activities) {
                             activities = data.activities.map(a => 
-                                new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id)
+                                new Activity(a.name, a.city, a.category, a.date, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone || false, a.id)
                             );
                         }
                         
@@ -2219,7 +2415,6 @@
             alert('✓ Toutes les données ont été supprimées');
         }
 
-        // FAB Menu
         function toggleFabMenu() {
             const menu = document.getElementById('fabMenu');
             menu.classList.toggle('active');
@@ -2230,7 +2425,6 @@
             menu.classList.remove('active');
         }
 
-        // Fermer le FAB menu si on clique ailleurs
         document.addEventListener('click', (e) => {
             const fab = document.getElementById('fab');
             const fabMenu = document.getElementById('fabMenu');
@@ -2240,24 +2434,18 @@
             }
         });
 
-        // Bottom Navigation
         function bottomNavSwitch(view) {
-            // Update active state
             document.querySelectorAll('.bottom-nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             document.querySelector(`[data-nav="${view}"]`).classList.add('active');
 
-            // Switch tab
             switchTab(view);
             
-            // Scroll to top (sauf pour calendrier)
-            if (view !== 'calendar') {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            }
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     </script>
 
@@ -2278,6 +2466,10 @@
         <button class="bottom-nav-item" onclick="bottomNavSwitch('calendar')" data-nav="calendar">
             <span class="icon">📅</span>
             <span>Calendrier</span>
+        </button>
+        <button class="bottom-nav-item" onclick="bottomNavSwitch('settings')" data-nav="settings">
+            <span class="icon">⚙️</span>
+            <span>Réglages</span>
         </button>
     </nav>
 

@@ -14,7 +14,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.tablecheck.com/fr/sushi-tokami?availability_days_limit=7&date_min=2025-12-26&date_max=2026-02-24&geo_distance=5km&service_mode=dining&sort_by=distance&geo_longitude=139.74541383382513&geo_latitude=35.65860374437126&availability_format=date",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_od62la45q",
@@ -30,7 +31,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.tablecheck.com/fr/sushitokyo-ten-shibuya?availability_days_limit=7&date_min=2025-12-26&date_max=2026-02-24&geo_distance=5km&service_mode=dining&sort_by=distance&geo_longitude=139.74541383382513&geo_latitude=35.65860374437126&availability_format=date",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_ve26rz9nc",
@@ -46,7 +48,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.tablecheck.com/fr/ginza-hachigou?availability_days_limit=7&date_min=2025-12-26&date_max=2026-02-24&geo_distance=5km&service_mode=dining&sort_by=distance&geo_longitude=139.74541383382513&geo_latitude=35.65860374437126&availability_format=date",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_7z6hmgnlu",
@@ -62,7 +65,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_20wrk2lwa",
@@ -78,7 +82,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://www.google.com/maps/reserve/v/dine/c/eLuuYOdOZoE?source=pa&opi=89978449&hl=fr-FR&gei=--VNaf2nFdTYkdUP_abPqAs&sourceurl=https://www.google.com/search?q%3Dteppanyaki%2Bhakushu%2Bshibuya%26oq%3DTeppanyaki%2BHakushu%26gs_lcrp%3DEgRlZGdlKgoIARBFGBYYHhg7Mg4IABBFGDkYQxiABBiKBTIKCAEQRRgWGB4YOzIICAIQABgWGB4yCAgDEAAYFhgeMggIBBAAGBYYHjIICAUQABgWGB4yCAgGEAAYFhgeMggIBxAAGBYYHjIICAgQ6QcY_FXSAQgxMTc1ajBqNKgCALACAQ%26sourceid%3Dchrome%26ie%3DUTF-8",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_83pb2dyjm",
@@ -94,7 +99,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://tabelog.com/en/tokyo/A1304/A130401/13206563/",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_aic6nocbi",
@@ -110,7 +116,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://jpneazy.com/restaurants/13?rwg_token=ACgRB3c9_eJ0P2VhWsJ7bONgX1wF8mTUrvxl5jVTMhu_jU3aeTzYvYrNGbVn4iV_TdbmO6FlTy1k7rsxPIeYzobNsKpTKKnKcTGaqnExF0_LmrB9USKtLL0%3D",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_82zh9tvb4",
@@ -126,7 +133,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_gmhf5tx65",
@@ -142,7 +150,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://tabelog.com/en/hokkaido/A0101/A010102/1082842/",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_72u2ejpeb",
@@ -158,7 +167,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://tabelog.com/en/hokkaido/A0101/A010101/1000299/",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_6m0o9ky3f",
@@ -174,7 +184,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_5inabdxev",
@@ -190,7 +201,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_ftry5hqlv",
@@ -206,7 +218,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://www.catchtable.net/fr-FR/shop/mdkj?ct-referrer=google-maps",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_lqhh53bvu",
@@ -222,7 +235,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "http://www.mapletreehouse.co.kr/eng/html/contact02.asp",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_81zg8r11v",
@@ -238,7 +252,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     }
   ],
   "activities": [
@@ -248,7 +263,6 @@
       "city": "Tokyo - Odaiba",
       "category": "Musée digital",
       "date": "",
-      "time": "",
       "duration": 2.5,
       "cost": 3200,
       "googleMapsUrl": "https://maps.app.goo.gl/jaxJQPLduXvzJoMK6",
@@ -259,7 +273,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://borderless-azabudai.ticket.teamlab.art/?_gl=1*1splpn1*_gcl_au*MTMwODM5NDcxMi4xNzY2NzE4OTIx*_ga*MjA4OTMyMjUxOC4xNzY2NzE4OTIx*_ga_E4JDR7KSJ2*czE3NjY3MTg5MjIkbzEkZzAkdDE3NjY3MTg5MjUkajU3JGwwJGgw#/",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ejlsew3th",
@@ -267,7 +282,6 @@
       "city": "Tokyo - Shibuya",
       "category": "Quartier",
       "date": "",
-      "time": "",
       "duration": 1,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/Yb5forBExW2U4nMNA",
@@ -278,7 +292,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ysluu2kfy",
@@ -286,7 +301,6 @@
       "city": "Tokyo",
       "category": "Observation",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 2100,
       "googleMapsUrl": "https://maps.app.goo.gl/3YJFHo8Yf4HdpGEi9",
@@ -297,7 +311,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.getyourguide.com/fr-fr/tokyo-skytree-l4086/tokyo-skytree-billet-d-entree-t215997/?ranking_uuid=78b89bc5-43dd-41dd-9aa0-53945f787d2b",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_mywwd377e",
@@ -305,7 +320,6 @@
       "city": "Tokyo - Asakusa",
       "category": "Temple",
       "date": "",
-      "time": "",
       "duration": 1.5,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/XZsHZvAu5Fcwz4zy9",
@@ -316,7 +330,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_337eej8i0",
@@ -324,7 +339,6 @@
       "city": "Tokyo - Akihabara",
       "category": "Quartier",
       "date": "",
-      "time": "",
       "duration": 3,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/M26Bb5ojY3HsiVTJ6",
@@ -335,7 +349,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_zhb5awwfb",
@@ -343,7 +358,6 @@
       "city": "Tokyo - Shibuya",
       "category": "Sanctuaire",
       "date": "",
-      "time": "",
       "duration": 1,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/DEw3eG1g9EQZuaUm9",
@@ -354,7 +368,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.meijijingu.or.jp/en/visit/",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_wqfgbho6b",
@@ -362,7 +377,6 @@
       "city": "Tokyo",
       "category": "Marché",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 2000,
       "googleMapsUrl": "https://maps.app.goo.gl/LcdudSUBaDZVj8nY8",
@@ -373,7 +387,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_5k91625fk",
@@ -381,7 +396,6 @@
       "city": "Sapporo - Odori",
       "category": "Parc",
       "date": "",
-      "time": "",
       "duration": 1,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/Fwrbe5eQQ6JoCztz6",
@@ -392,7 +406,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_zcoijj9l5",
@@ -400,7 +415,6 @@
       "city": "Sapporo",
       "category": "Observation",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 2100,
       "googleMapsUrl": "https://maps.app.goo.gl/UL6yS1da1ThQRbP39",
@@ -411,7 +425,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://fr.trip.com/travel-guide/attraction/sapporo/mt-moiwa-78887?locale=fr-FR&allianceid=1076145&sid=4330723&s-productIdTop=96066435&source=maps&curr=EUR&funnel=nav&adsource=&s-googlever=MjUxMjI2LjA4MDAwMC4xMC4yMC40Ny4yNDMuODEuNjkzNjQzNzFfNg==",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_dhqxi5fok",
@@ -419,7 +434,6 @@
       "city": "Sapporo",
       "category": "Onsen",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 1000,
       "googleMapsUrl": "https://maps.app.goo.gl/GTaFmCFPL3V8RDTf7",
@@ -430,7 +444,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://hoheikyo.co.jp/onsen/",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_usagsn0p9",
@@ -438,7 +453,6 @@
       "city": "Seoul",
       "category": "Palais",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 360,
       "googleMapsUrl": "https://maps.app.goo.gl/xRXDnJQ4hbcvq8zp6",
@@ -449,7 +463,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://royal.cha.go.kr/ENG/contents/E702000000.do",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ear1eayws",
@@ -457,7 +472,6 @@
       "city": "Seoul",
       "category": "Observation",
       "date": "",
-      "time": "",
       "duration": 1.5,
       "cost": 1920,
       "googleMapsUrl": "https://maps.app.goo.gl/BkqddhZ8FQXGLz7U7",
@@ -468,7 +482,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://fr.trip.com/things-to-do/detail/101829973?locale=fr-FR&allianceid=1076145&sid=4330723&source=search&curr=EUR&funnel=nav&adsource=&s-googlever=MjUxMjI2LjA4MDAwMC4xMC4yMC40Ny4yNDMuODEuNjkzNjQzNzFfNg==",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_aksz0vd7t",
@@ -476,7 +491,6 @@
       "city": "Seoul",
       "category": "Quartier traditionnel",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/ybfwLUP8VtXJegm29",
@@ -487,7 +501,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ttm14hsmf",
@@ -495,7 +510,6 @@
       "city": "Seoul - Myeongdong",
       "category": "Shopping",
       "date": "",
-      "time": "",
       "duration": 3,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/Dzo5GhyMCkgDtQZd9",
@@ -506,7 +520,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_as6nl3l1d",
@@ -514,7 +529,6 @@
       "city": "Seoul - Gangnam",
       "category": "Quartier moderne",
       "date": "",
-      "time": "",
       "duration": 2.5,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/y7sxrdbgHfvqD3Ux6",
@@ -525,7 +539,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ioxe0v01r",
@@ -533,7 +548,6 @@
       "city": "Seoul - Hongdae",
       "category": "Quartier artistique",
       "date": "",
-      "time": "",
       "duration": 3,
       "cost": 0,
       "googleMapsUrl": "",
@@ -544,7 +558,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_hh2zdwxb8",
@@ -552,7 +567,6 @@
       "city": "Seoul",
       "category": "Activité nocturne",
       "date": "",
-      "time": "",
       "duration": 2,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/Eo3f1UTTUEnfzqGu5",
@@ -563,7 +577,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_7evsesoz9",
@@ -571,7 +586,6 @@
       "city": "Seoul",
       "category": "Marché nocturne",
       "date": "",
-      "time": "",
       "duration": 2.5,
       "cost": 0,
       "googleMapsUrl": "https://maps.app.goo.gl/wP7FvYYZuLjzzvm26",
@@ -582,7 +596,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     }
   ],
   "exportDate": "2025-12-26T03:58:23.046Z"
