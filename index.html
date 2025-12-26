@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tripline - Your trips, on a timeline</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -285,14 +285,14 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        select, input[type="text"] {
+        select, input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--border-color);
             background: var(--bg-primary);
             color: var(--text-primary);
             border-radius: 6px;
-            font-size: 0.875rem;
+            font-size: 16px;
             font-family: inherit;
             margin-bottom: 8px;
         }
