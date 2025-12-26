@@ -656,6 +656,164 @@
                 bottom: 150px;
                 right: 16px;
             }
+
+            /* Cacher les tabs desktop sur mobile */
+            .tabs {
+                display: none;
+            }
+
+            /* Cacher l'action bar sur mobile */
+            .action-bar {
+                display: none;
+            }
+
+            /* Ajouter padding bottom pour la bottom nav */
+            .items-list {
+                padding-bottom: 100px;
+            }
+
+            /* Padding pour le calendrier aussi */
+            .calendar-view {
+                padding-bottom: 100px;
+            }
+
+            /* Et pour les autres vues */
+            .content-section {
+                padding-bottom: 100px;
+            }
+        }
+
+        /* Bottom Navigation Mobile */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-top: 2px solid var(--border-color);
+            z-index: 100;
+            padding: 8px 0;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        .bottom-nav-item .icon {
+            font-size: 1.5rem;
+        }
+
+        .bottom-nav-item:active {
+            transform: scale(0.95);
+        }
+
+        /* Pull to Refresh */
+        .pull-to-refresh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--light-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+            z-index: 98;
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .pull-to-refresh.visible {
+            transform: translateY(0);
+        }
+
+        .pull-to-refresh.refreshing {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .pull-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Swipe Actions */
+        .item-card {
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .item-card.swiping {
+            transition: none;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            display: flex;
+            align-items: stretch;
+            pointer-events: none;
+        }
+
+        .swipe-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            pointer-events: all;
+            min-width: 80px;
+        }
+
+        .swipe-action.delete {
+            background: var(--error);
+        }
+
+        .swipe-action.reserve {
+            background: var(--success);
         }
 
         .modal {
@@ -2161,7 +2319,219 @@
                 closeFabMenu();
             }
         });
+
+        // Bottom Navigation
+        function bottomNavSwitch(view) {
+            // Update active state
+            document.querySelectorAll('.bottom-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-nav="${view}"]`).classList.add('active');
+
+            // Switch tab
+            switchTab(view);
+            
+            // Scroll to top (sauf pour calendrier)
+            if (view !== 'calendar') {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Pull to Refresh
+        let startY = 0;
+        let currentY = 0;
+        let isPulling = false;
+        let isRefreshing = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                isPulling = true;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isPulling || isRefreshing) return;
+
+            currentY = e.touches[0].pageY;
+            const pullDistance = currentY - startY;
+
+            if (pullDistance > 0 && window.scrollY === 0) {
+                const pullRefresh = document.getElementById('pullToRefresh');
+                const pullText = document.getElementById('pullText');
+
+                if (pullDistance > 80) {
+                    pullRefresh.classList.add('visible');
+                    pullText.textContent = '↻ Relâcher pour rafraîchir';
+                } else if (pullDistance > 40) {
+                    pullRefresh.classList.add('visible');
+                    pullText.textContent = '⬇ Tirer pour rafraîchir';
+                }
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            if (!isPulling) return;
+
+            const pullDistance = currentY - startY;
+            const pullRefresh = document.getElementById('pullToRefresh');
+            const pullText = document.getElementById('pullText');
+
+            if (pullDistance > 80 && !isRefreshing) {
+                isRefreshing = true;
+                pullRefresh.classList.add('refreshing');
+                pullText.innerHTML = '<span class="pull-spinner"></span>Rafraîchissement...';
+
+                // Simulate refresh (reload data)
+                setTimeout(() => {
+                    loadData();
+                    renderAll();
+                    updateDashboard();
+
+                    pullRefresh.classList.remove('visible', 'refreshing');
+                    pullText.textContent = '⬇ Tirer pour rafraîchir';
+                    isRefreshing = false;
+                }, 1000);
+            } else {
+                pullRefresh.classList.remove('visible');
+            }
+
+            isPulling = false;
+            startY = 0;
+            currentY = 0;
+        });
+
+        // Swipe Actions
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let swipingCard = null;
+
+        document.addEventListener('touchstart', (e) => {
+            const card = e.target.closest('.item-card');
+            if (card && window.innerWidth <= 768) {
+                touchStartX = e.touches[0].clientX;
+                swipingCard = card;
+                card.classList.add('swiping');
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!swipingCard) return;
+
+            touchEndX = e.touches[0].clientX;
+            const diff = touchStartX - touchEndX;
+
+            // Swipe left only
+            if (diff > 0) {
+                const maxSwipe = 160; // 2 buttons de 80px
+                const swipeAmount = Math.min(diff, maxSwipe);
+                swipingCard.style.transform = `translateX(-${swipeAmount}px)`;
+
+                // Show swipe actions
+                if (!swipingCard.querySelector('.swipe-actions')) {
+                    const itemId = swipingCard.dataset.itemId;
+                    const itemType = swipingCard.classList.contains('restaurant') ? 'restaurant' : 'activity';
+                    const item = itemType === 'restaurant' 
+                        ? restaurants.find(r => r.id === itemId)
+                        : activities.find(a => a.id === itemId);
+                    
+                    const isReserved = itemType === 'restaurant' ? item.isReserved : item.isBooked;
+
+                    const actionsHtml = `
+                        <div class="swipe-actions">
+                            <div class="swipe-action reserve" onclick="toggleReservation('${itemId}', '${itemType}'); resetSwipe();">
+                                ${isReserved ? '✕' : '✓'}
+                            </div>
+                            <div class="swipe-action delete" onclick="if(confirm('Supprimer?')) { deleteItem('${itemId}', '${itemType}'); resetSwipe(); }">
+                                🗑️
+                            </div>
+                        </div>
+                    `;
+                    swipingCard.insertAdjacentHTML('beforeend', actionsHtml);
+                }
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            if (!swipingCard) return;
+
+            const diff = touchStartX - touchEndX;
+
+            if (diff < 80) {
+                // Reset swipe
+                resetSwipe();
+            }
+
+            swipingCard.classList.remove('swiping');
+            swipingCard = null;
+        });
+
+        function resetSwipe() {
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.style.transform = '';
+                const actions = card.querySelector('.swipe-actions');
+                if (actions) actions.remove();
+            });
+        }
+
+        function toggleReservation(itemId, itemType) {
+            if (itemType === 'restaurant') {
+                const item = restaurants.find(r => r.id === itemId);
+                if (item) {
+                    item.isReserved = !item.isReserved;
+                    if (!item.isReserved) item.reservationDate = '';
+                }
+            } else {
+                const item = activities.find(a => a.id === itemId);
+                if (item) {
+                    item.isBooked = !item.isBooked;
+                    if (!item.isBooked) item.reservationDate = '';
+                }
+            }
+            saveData();
+            renderAll();
+            updateDashboard();
+        }
+
+        function deleteItem(itemId, itemType) {
+            if (itemType === 'restaurant') {
+                restaurants = restaurants.filter(r => r.id !== itemId);
+            } else {
+                activities = activities.filter(a => a.id !== itemId);
+            }
+            saveData();
+            renderAll();
+            updateDashboard();
+        }
     </script>
+
+    <!-- Pull to Refresh -->
+    <div class="pull-to-refresh" id="pullToRefresh">
+        <span id="pullText">⬇ Tirer pour rafraîchir</span>
+    </div>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <button class="bottom-nav-item active" onclick="bottomNavSwitch('all')" data-nav="all">
+            <span class="icon">📋</span>
+            <span>Tout</span>
+        </button>
+        <button class="bottom-nav-item" onclick="bottomNavSwitch('restaurants')" data-nav="restaurants">
+            <span class="icon">🍽️</span>
+            <span>Restos</span>
+        </button>
+        <button class="bottom-nav-item" onclick="bottomNavSwitch('activities')" data-nav="activities">
+            <span class="icon">🎯</span>
+            <span>Activités</span>
+        </button>
+        <button class="bottom-nav-item" onclick="bottomNavSwitch('calendar')" data-nav="calendar">
+            <span class="icon">📅</span>
+            <span>Calendrier</span>
+        </button>
+    </nav>
 
     <!-- FAB Button -->
     <button class="fab" id="fab" onclick="toggleFabMenu()">+</button>
