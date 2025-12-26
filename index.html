@@ -394,77 +394,57 @@
 
         .items-list {
             padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
         }
 
-        .item-card {
-            background: var(--bg-secondary);
-            border: none;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .item-card:active {
-            transform: scale(0.98);
-        }
-
-        .item-card.restaurant {
-            border-left: 4px solid var(--primary-blue);
-        }
-
-        .item-card.activity {
-            border-left: 4px solid var(--accent-blue);
+        @media (max-width: 768px) {
+            .items-list {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Priority card backgrounds */
-        .item-card.priority-must-do {
+        .timeline-card.priority-must-do {
             background: rgba(239, 68, 68, 0.08);
             border-color: var(--error);
         }
 
-        [data-theme="dark"] .item-card.priority-must-do {
+        [data-theme="dark"] .timeline-card.priority-must-do {
             background: rgba(239, 68, 68, 0.15);
             border-color: var(--error);
         }
 
-        .item-card.priority-high {
+        .timeline-card.priority-high {
             background: rgba(245, 158, 11, 0.08);
             border-color: var(--warning);
         }
 
-        [data-theme="dark"] .item-card.priority-high {
+        [data-theme="dark"] .timeline-card.priority-high {
             background: rgba(245, 158, 11, 0.15);
             border-color: var(--warning);
         }
 
-        .item-card.priority-low {
-            background: var(--bg-secondary);
+        .timeline-card.priority-low {
             opacity: 0.7;
         }
 
-        .item-card.priority-optional {
-            background: var(--bg-secondary);
+        .timeline-card.priority-optional {
             opacity: 0.5;
         }
 
-        /* Items done */
-        .item-card.done {
+        .timeline-card.done {
             opacity: 0.5;
             background: var(--bg-tertiary);
             order: 999;
         }
 
-        .item-card.done:hover {
+        .timeline-card.done:hover {
             opacity: 0.6;
         }
 
-        .item-card.done .item-title {
+        .timeline-card.done .timeline-card-title {
             text-decoration: line-through;
             color: var(--text-secondary);
         }
@@ -495,26 +475,6 @@
         [data-theme="dark"] .done-btn.undone {
             background: var(--bg-tertiary);
             color: var(--text-primary);
-        }
-
-        .item-card-top {
-            display: flex;
-            gap: 12px;
-            flex: 1;
-            margin-bottom: 12px;
-        }
-
-        .item-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .item-photo {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 12px;
-            flex-shrink: 0;
         }
 
         .priority-badge {
@@ -552,28 +512,6 @@
             color: var(--gray);
         }
 
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
-        }
-
-        .item-title {
-            font-size: 1.0625rem;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-            line-height: 1.3;
-        }
-
-        .item-city {
-            font-size: 0.75rem;
-            color: var(--gray);
-            font-weight: 500;
-        }
-
         .badge {
             font-size: 0.75rem;
             padding: 6px 10px;
@@ -594,44 +532,6 @@
 
         [data-theme="dark"] .badge-reserved {
             background: rgba(52, 199, 89, 0.2);
-        }
-
-        .item-details {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .item-detail {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .item-detail strong {
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .item-notes {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-            line-height: 1.4;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: auto;
-            padding-top: 12px;
         }
 
         .maps-btn, .booking-btn {
@@ -1158,14 +1058,6 @@
             transform: scale(0.98);
         }
 
-        .timeline-card.restaurant {
-            border-left: 4px solid var(--primary-blue);
-        }
-
-        .timeline-card.activity {
-            border-left: 4px solid var(--accent-blue);
-        }
-
         .timeline-card-photo {
             width: 100%;
             height: 140px;
@@ -1195,6 +1087,18 @@
             font-size: 0.8125rem;
             color: var(--text-secondary);
             margin-bottom: 8px;
+        }
+
+        .timeline-card-notes {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin: 6px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.4;
         }
 
         .timeline-card-price {
@@ -2157,6 +2061,7 @@
                                 ${getPriorityBadge(item.priority)}
                                 <div class="timeline-card-title">${item.name}</div>
                                 <div class="timeline-card-city">${item.city}</div>
+                                ${item.notes ? `<div class="timeline-card-notes">${item.notes}</div>` : ''}
                                 ${price ? `<div class="timeline-card-price">${price.toLocaleString()}¥</div>` : ''}
                             </div>
                             <div class="timeline-card-actions">
@@ -2231,42 +2136,35 @@
                 const price = isRestaurant ? item.priceRange : item.cost;
 
                 return `
-                    <div class="item-card ${item.type} ${item.priority && item.priority !== 'normal' ? 'priority-' + item.priority : ''} ${item.isDone ? 'done' : ''}" data-item-id="${item.id}" onclick="showDetailById('${item.id}', '${item.type}')">
-                        <div class="item-card-top">
-                            <div class="item-content">
-                                <div class="item-header">
-                                    <div style="flex: 1; min-width: 0;">
-                                        ${getPriorityBadge(item.priority)}
-                                        <div class="item-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            ${item.name}
-                                        </div>
-                                        <div class="item-city">${item.city}</div>
-                                        ${price ? `<div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-top: 4px;">${price.toLocaleString()}¥</div>` : ''}
-                                    </div>
-                                    ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" style="width: 80px; height: 80px; margin-left: 12px;" onerror="this.style.display='none'">` : ''}
-                                </div>
-                            </div>
+                    <div class="timeline-card ${item.type} ${item.priority && item.priority !== 'normal' ? 'priority-' + item.priority : ''} ${item.isDone ? 'done' : ''}" data-item-id="${item.id}" onclick="showDetailById('${item.id}', '${item.type}')">
+                        ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="timeline-card-photo" onerror="this.style.display='none'">` : ''}
+                        <div class="timeline-card-content">
+                            ${getPriorityBadge(item.priority)}
+                            <div class="timeline-card-title">${item.name}</div>
+                            <div class="timeline-card-city">${item.city}</div>
+                            ${item.notes ? `<div class="timeline-card-notes">${item.notes}</div>` : ''}
+                            ${price ? `<div class="timeline-card-price">${price.toLocaleString()}¥</div>` : ''}
                         </div>
-                        <div class="card-actions">
-                            <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)" title="${item.isDone ? 'Marquer comme pas fait' : 'Marquer comme fait'}">
-                                <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 18px; height: 18px;"></i>
+                        <div class="timeline-card-actions">
+                            <button class="timeline-btn done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)" title="${item.isDone ? 'Marquer comme pas fait' : 'Marquer comme fait'}">
+                                <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px;"></i>
                             </button>
                             ${item.googleMapsUrl ? `
                                 <a href="${item.googleMapsUrl}" 
                                    target="_blank" 
-                                   class="maps-btn"
+                                   class="timeline-btn maps-btn"
                                    title="Ouvrir dans Google Maps"
                                    onclick="event.stopPropagation()">
-                                    <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                                    <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
                                 </a>
                             ` : ''}
                             ${item.bookingUrl ? `
                                 <a href="${item.bookingUrl}" 
                                    target="_blank" 
-                                   class="booking-btn"
+                                   class="timeline-btn booking-btn"
                                    title="Réserver"
                                    onclick="event.stopPropagation()">
-                                    <i data-lucide="calendar-check" style="width: 18px; height: 18px;"></i>
+                                    <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
                                 </a>
                             ` : ''}
                         </div>
