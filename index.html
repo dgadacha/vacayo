@@ -485,7 +485,7 @@
             padding: 3px 8px;
             border-radius: 4px;
             font-weight: 600;
-            margin-left: 8px;
+            margin-bottom: 4px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -866,6 +866,17 @@
             min-height: 100vh;
             position: relative;
             overflow-y: auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                max-width: 600px;
+                margin: 40px auto;
+                min-height: auto;
+                border-radius: 12px;
+                overflow: hidden;
+            }
         }
 
         .modal-header {
@@ -1105,14 +1116,6 @@
             .item-card {
                 margin-bottom: 0;
             }
-
-            .modal-content {
-                max-width: 600px;
-                margin: 40px auto;
-                min-height: auto;
-                border-radius: 12px;
-                overflow: hidden;
-            }
         }
     </style>
 </head>
@@ -1125,7 +1128,10 @@
                     <h1>Tripline</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+                    <button class="theme-toggle" onclick="openSettings()" title="Réglages">
+                        <i data-lucide="settings"></i>
+                    </button>
+                    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Thème">
                         <i data-lucide="moon" id="themeIcon"></i>
                     </button>
                 </div>
@@ -1171,10 +1177,6 @@
             <button class="tab" onclick="switchTab('by-city')">
                 <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 6px;"></i>
                 Par Ville
-            </button>
-            <button class="tab" onclick="switchTab('settings')">
-                <i data-lucide="settings" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                Réglages
             </button>
         </div>
 
@@ -1242,14 +1244,19 @@
         <div id="byCityContent" class="content-section">
             <div class="items-list" id="cityView"></div>
         </div>
+    </div>
 
-        <div id="settingsContent" class="content-section">
-            <div style="padding: 24px; max-width: 600px; margin: 0 auto;">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: var(--primary-blue); display: flex; align-items: center; gap: 12px;">
-                    <i data-lucide="settings" style="width: 28px; height: 28px;"></i>
+    <!-- Modal Réglages -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" style="display: flex; align-items: center; gap: 12px;">
+                    <i data-lucide="settings" style="width: 24px; height: 24px;"></i>
                     Réglages
                 </h2>
-                
+                <button class="close-btn" onclick="closeModal('settingsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                     <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
                         <i data-lucide="database" style="width: 20px; height: 20px;"></i>
@@ -1272,31 +1279,6 @@
                             <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
                             Supprimer toutes les données
                         </button>
-                    </div>
-                </div>
-
-                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px;">
-                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-                        <i data-lucide="bar-chart-3" style="width: 20px; height: 20px;"></i>
-                        Statistiques
-                    </h3>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Restaurants</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-blue);" id="statsRestaurants">0</div>
-                        </div>
-                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Activités</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-blue);" id="statsActivities">0</div>
-                        </div>
-                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Terminés</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="statsDone">0</div>
-                        </div>
-                        <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Réservés</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="statsReserved">0</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1565,6 +1547,13 @@
             if (themeIcon) {
                 themeIcon.setAttribute('data-lucide', savedTheme === 'dark' ? 'sun' : 'moon');
             }
+        }
+
+        // Open Settings Modal
+        function openSettings() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.add('active');
+            lucide.createIcons();
         }
 
         // Toggle Done
@@ -1999,48 +1988,39 @@
                             <div class="item-card-top">
                                 <div class="item-content">
                                     <div class="item-header">
-                                        <div>
-                                            <div class="item-title">
+                                        <div style="flex: 1; min-width: 0;">
+                                            ${item.time ? `<div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500; margin-bottom: 4px;">${item.time}</div>` : ''}
+                                            ${getPriorityBadge(item.priority)}
+                                            <div class="item-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                                 ${item.name}
-                                                ${getPriorityBadge(item.priority)}
                                             </div>
                                             <div class="item-city">${item.city}</div>
+                                            ${price ? `<div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-top: 4px;">${price.toLocaleString()}¥</div>` : ''}
                                         </div>
-                                        <span class="badge ${isBooked ? 'badge-reserved' : 'badge-not-reserved'}">
-                                            ${isBooked ? '✓' : '○'}
-                                        </span>
+                                        ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" style="width: 80px; height: 80px; margin-left: 12px;" onerror="this.style.display='none'">` : ''}
                                     </div>
-                                    <div class="item-details">
-                                        ${item.time ? `<div class="item-detail" style="display: flex; align-items: center; gap: 6px;"><i data-lucide="clock" style="width: 14px; height: 14px;"></i>${item.time}</div>` : ''}
-                                        ${price ? `<div class="item-detail"><strong>${price.toLocaleString()}¥</strong></div>` : ''}
-                                        ${isRestaurant && item.cuisine ? `<div class="item-detail">${item.cuisine}</div>` : ''}
-                                        ${!isRestaurant && item.category ? `<div class="item-detail">${item.category}</div>` : ''}
-                                    </div>
-                                    ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
                                 </div>
-                                ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" onerror="this.style.display='none'">` : ''}
                             </div>
                             <div class="card-actions">
-                                <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
-                                    <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                                    ${item.isDone ? 'Pas fait' : 'Fait'}
+                                <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)" title="${item.isDone ? 'Marquer comme pas fait' : 'Marquer comme fait'}">
+                                    <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 18px; height: 18px;"></i>
                                 </button>
                                 ${item.googleMapsUrl ? `
                                     <a href="${item.googleMapsUrl}" 
                                        target="_blank" 
                                        class="maps-btn"
+                                       title="Ouvrir dans Google Maps"
                                        onclick="event.stopPropagation()">
-                                        <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                                        Maps
+                                        <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
                                     </a>
                                 ` : ''}
                                 ${item.bookingUrl ? `
                                     <a href="${item.bookingUrl}" 
                                        target="_blank" 
                                        class="booking-btn"
+                                       title="Réserver"
                                        onclick="event.stopPropagation()">
-                                        <i data-lucide="calendar-check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                                        Réserver
+                                        <i data-lucide="calendar-check" style="width: 18px; height: 18px;"></i>
                                     </a>
                                 ` : ''}
                             </div>
@@ -2097,26 +2077,17 @@
                         <div class="item-card-top">
                             <div class="item-content">
                                 <div class="item-header">
-                                    <div>
-                                        <div class="item-title">
+                                    <div style="flex: 1; min-width: 0;">
+                                        ${getPriorityBadge(item.priority)}
+                                        <div class="item-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${item.name}
-                                            ${getPriorityBadge(item.priority)}
                                         </div>
                                         <div class="item-city">${item.city}</div>
+                                        ${price ? `<div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-top: 4px;">${price.toLocaleString()}¥</div>` : ''}
                                     </div>
-                                    <span class="badge ${isBooked ? 'badge-reserved' : 'badge-not-reserved'}">
-                                        ${isBooked ? '✓' : '○'}
-                                    </span>
+                                    ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" style="width: 80px; height: 80px; margin-left: 12px;" onerror="this.style.display='none'">` : ''}
                                 </div>
-                                <div class="item-details">
-                                    ${price ? `<div class="item-detail"><strong>${price.toLocaleString()}¥</strong></div>` : ''}
-                                    ${isRestaurant && item.cuisine ? `<div class="item-detail">${item.cuisine}</div>` : ''}
-                                    ${!isRestaurant && item.category ? `<div class="item-detail">${item.category}</div>` : ''}
-                                    ${item.reservationDate ? `<div class="item-detail">📅 ${new Date(item.reservationDate).toLocaleDateString('fr-FR')}</div>` : ''}
-                                </div>
-                                ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
                             </div>
-                            ${item.photoUrl ? `<img src="${item.photoUrl}" alt="${item.name}" class="item-photo" onerror="this.style.display='none'">` : ''}
                         </div>
                         <div class="card-actions">
                             <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
@@ -2258,10 +2229,6 @@
                 case 'by-city':
                     document.getElementById('byCityContent').classList.add('active');
                     break;
-                case 'settings':
-                    document.getElementById('settingsContent').classList.add('active');
-                    updateSettingsStats();
-                    break;
             }
             
             // Re-initialize Lucide icons
@@ -2377,19 +2344,6 @@
             const totalReservations = restaurants.filter(r => r.isReserved).length +
                                      activities.filter(a => a.isBooked).length;
             document.getElementById('totalReservations').textContent = totalReservations;
-        }
-
-        function updateSettingsStats() {
-            document.getElementById('statsRestaurants').textContent = restaurants.length;
-            document.getElementById('statsActivities').textContent = activities.length;
-            
-            const totalDone = restaurants.filter(r => r.isDone).length + 
-                             activities.filter(a => a.isDone).length;
-            document.getElementById('statsDone').textContent = totalDone;
-            
-            const totalReserved = restaurants.filter(r => r.isReserved).length +
-                                 activities.filter(a => a.isBooked).length;
-            document.getElementById('statsReserved').textContent = totalReserved;
         }
 
         function saveData() {
@@ -2563,10 +2517,6 @@
         <button class="bottom-nav-item" onclick="bottomNavSwitch('calendar')" data-nav="calendar">
             <i data-lucide="calendar" class="icon"></i>
             <span>Calendrier</span>
-        </button>
-        <button class="bottom-nav-item" onclick="bottomNavSwitch('settings')" data-nav="settings">
-            <i data-lucide="settings" class="icon"></i>
-            <span>Réglages</span>
         </button>
     </nav>
 
