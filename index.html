@@ -2065,27 +2065,33 @@
                                 ${price ? `<div class="timeline-card-price">${price.toLocaleString()}¥</div>` : ''}
                             </div>
                             <div class="timeline-card-actions">
-                                <button class="timeline-btn done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)" title="${item.isDone ? 'Marquer comme pas fait' : 'Marquer comme fait'}">
-                                    <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px;"></i>
-                                </button>
-                                ${item.googleMapsUrl ? `
-                                    <a href="${item.googleMapsUrl}" 
-                                       target="_blank" 
-                                       class="timeline-btn maps-btn"
-                                       title="Ouvrir dans Google Maps"
-                                       onclick="event.stopPropagation()">
-                                        <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
-                                    </a>
-                                ` : ''}
-                                ${item.bookingUrl ? `
-                                    <a href="${item.bookingUrl}" 
-                                       target="_blank" 
-                                       class="timeline-btn booking-btn"
-                                       title="Réserver"
-                                       onclick="event.stopPropagation()">
-                                        <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
-                                    </a>
-                                ` : ''}
+                                ${item.isDone ? `
+                                    <button class="timeline-btn done-btn undone" onclick="toggleDone('${item.id}', '${item.type}', event)" title="Marquer comme pas fait" style="width: 100%;">
+                                        <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                ` : `
+                                    <button class="timeline-btn done-btn" onclick="toggleDone('${item.id}', '${item.type}', event)" title="Marquer comme fait">
+                                        <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                    ${item.googleMapsUrl ? `
+                                        <a href="${item.googleMapsUrl}" 
+                                           target="_blank" 
+                                           class="timeline-btn maps-btn"
+                                           title="Ouvrir dans Google Maps"
+                                           onclick="event.stopPropagation()">
+                                            <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
+                                        </a>
+                                    ` : ''}
+                                    ${item.bookingUrl ? `
+                                        <a href="${item.bookingUrl}" 
+                                           target="_blank" 
+                                           class="timeline-btn booking-btn"
+                                           title="Réserver"
+                                           onclick="event.stopPropagation()">
+                                            <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
+                                        </a>
+                                    ` : ''}
+                                `}
                             </div>
                         </div>
                     `;
@@ -2146,27 +2152,33 @@
                             ${price ? `<div class="timeline-card-price">${price.toLocaleString()}¥</div>` : ''}
                         </div>
                         <div class="timeline-card-actions">
-                            <button class="timeline-btn done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)" title="${item.isDone ? 'Marquer comme pas fait' : 'Marquer comme fait'}">
-                                <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px;"></i>
-                            </button>
-                            ${item.googleMapsUrl ? `
-                                <a href="${item.googleMapsUrl}" 
-                                   target="_blank" 
-                                   class="timeline-btn maps-btn"
-                                   title="Ouvrir dans Google Maps"
-                                   onclick="event.stopPropagation()">
-                                    <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
-                                </a>
-                            ` : ''}
-                            ${item.bookingUrl ? `
-                                <a href="${item.bookingUrl}" 
-                                   target="_blank" 
-                                   class="timeline-btn booking-btn"
-                                   title="Réserver"
-                                   onclick="event.stopPropagation()">
-                                    <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
-                                </a>
-                            ` : ''}
+                            ${item.isDone ? `
+                                <button class="timeline-btn done-btn undone" onclick="toggleDone('${item.id}', '${item.type}', event)" title="Marquer comme pas fait" style="width: 100%;">
+                                    <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            ` : `
+                                <button class="timeline-btn done-btn" onclick="toggleDone('${item.id}', '${item.type}', event)" title="Marquer comme fait">
+                                    <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                                </button>
+                                ${item.googleMapsUrl ? `
+                                    <a href="${item.googleMapsUrl}" 
+                                       target="_blank" 
+                                       class="timeline-btn maps-btn"
+                                       title="Ouvrir dans Google Maps"
+                                       onclick="event.stopPropagation()">
+                                        <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i>
+                                    </a>
+                                ` : ''}
+                                ${item.bookingUrl ? `
+                                    <a href="${item.bookingUrl}" 
+                                       target="_blank" 
+                                       class="timeline-btn booking-btn"
+                                       title="Réserver"
+                                       onclick="event.stopPropagation()">
+                                        <i data-lucide="calendar-check" style="width: 16px; height: 16px;"></i>
+                                    </a>
+                                ` : ''}
+                            `}
                         </div>
                     </div>
                 `;
