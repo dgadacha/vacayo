@@ -551,6 +551,113 @@
             opacity: 0.7;
         }
 
+        /* FAB - Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 64px;
+            height: 64px;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
+            z-index: 999;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--dark-blue);
+            box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* FAB Menu */
+        .fab-menu {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            z-index: 998;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .fab-menu.active {
+            display: flex;
+        }
+
+        .fab-option {
+            background: var(--white);
+            color: var(--dark);
+            padding: 12px 20px;
+            border: 2px solid var(--primary-blue);
+            border-radius: 24px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .fab-option:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+            transform: translateX(-4px);
+        }
+
+        /* Recherche globale */
+        .global-search {
+            display: none;
+        }
+
+        .search-container {
+            display: none;
+        }
+
+        .search-input {
+            display: none;
+        }
+
+        .search-icon {
+            display: none;
+        }
+
+        .search-clear {
+            display: none;
+        }
+
+        .search-results-info {
+            display: none;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .fab {
+                bottom: 80px;
+                right: 16px;
+                width: 56px;
+                height: 56px;
+                font-size: 28px;
+            }
+
+            .fab-menu {
+                bottom: 150px;
+                right: 16px;
+            }
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -2033,6 +2140,37 @@
             
             alert('✓ Toutes les données ont été supprimées');
         }
+
+        // FAB Menu
+        function toggleFabMenu() {
+            const menu = document.getElementById('fabMenu');
+            menu.classList.toggle('active');
+        }
+
+        function closeFabMenu() {
+            const menu = document.getElementById('fabMenu');
+            menu.classList.remove('active');
+        }
+
+        // Fermer le FAB menu si on clique ailleurs
+        document.addEventListener('click', (e) => {
+            const fab = document.getElementById('fab');
+            const fabMenu = document.getElementById('fabMenu');
+            
+            if (!fab.contains(e.target) && !fabMenu.contains(e.target)) {
+                closeFabMenu();
+            }
+        });
     </script>
+
+    <!-- FAB Button -->
+    <button class="fab" id="fab" onclick="toggleFabMenu()">+</button>
+    
+    <!-- FAB Menu -->
+    <div class="fab-menu" id="fabMenu">
+        <button class="fab-option" onclick="openModal('restaurant'); closeFabMenu();">🍽️ Restaurant</button>
+        <button class="fab-option" onclick="openModal('activity'); closeFabMenu();">🎯 Activité</button>
+    </div>
+
 </body>
 </html>
