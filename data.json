@@ -14,7 +14,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.tablecheck.com/fr/sushi-tokami?availability_days_limit=7&date_min=2025-12-26&date_max=2026-02-24&geo_distance=5km&service_mode=dining&sort_by=distance&geo_longitude=139.74541383382513&geo_latitude=35.65860374437126&availability_format=date",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_od62la45q",
@@ -30,7 +31,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.tablecheck.com/fr/sushitokyo-ten-shibuya?availability_days_limit=7&date_min=2025-12-26&date_max=2026-02-24&geo_distance=5km&service_mode=dining&sort_by=distance&geo_longitude=139.74541383382513&geo_latitude=35.65860374437126&availability_format=date",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_ve26rz9nc",
@@ -46,7 +48,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.tablecheck.com/fr/ginza-hachigou?availability_days_limit=7&date_min=2025-12-26&date_max=2026-02-24&geo_distance=5km&service_mode=dining&sort_by=distance&geo_longitude=139.74541383382513&geo_latitude=35.65860374437126&availability_format=date",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_7z6hmgnlu",
@@ -62,7 +65,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_20wrk2lwa",
@@ -78,7 +82,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://www.google.com/maps/reserve/v/dine/c/eLuuYOdOZoE?source=pa&opi=89978449&hl=fr-FR&gei=--VNaf2nFdTYkdUP_abPqAs&sourceurl=https://www.google.com/search?q%3Dteppanyaki%2Bhakushu%2Bshibuya%26oq%3DTeppanyaki%2BHakushu%26gs_lcrp%3DEgRlZGdlKgoIARBFGBYYHhg7Mg4IABBFGDkYQxiABBiKBTIKCAEQRRgWGB4YOzIICAIQABgWGB4yCAgDEAAYFhgeMggIBBAAGBYYHjIICAUQABgWGB4yCAgGEAAYFhgeMggIBxAAGBYYHjIICAgQ6QcY_FXSAQgxMTc1ajBqNKgCALACAQ%26sourceid%3Dchrome%26ie%3DUTF-8",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_83pb2dyjm",
@@ -94,7 +99,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://tabelog.com/en/tokyo/A1304/A130401/13206563/",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_aic6nocbi",
@@ -110,7 +116,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://jpneazy.com/restaurants/13?rwg_token=ACgRB3c9_eJ0P2VhWsJ7bONgX1wF8mTUrvxl5jVTMhu_jU3aeTzYvYrNGbVn4iV_TdbmO6FlTy1k7rsxPIeYzobNsKpTKKnKcTGaqnExF0_LmrB9USKtLL0%3D",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_82zh9tvb4",
@@ -126,7 +133,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_gmhf5tx65",
@@ -142,7 +150,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://tabelog.com/en/hokkaido/A0101/A010102/1082842/",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_72u2ejpeb",
@@ -158,7 +167,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://tabelog.com/en/hokkaido/A0101/A010101/1000299/",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_6m0o9ky3f",
@@ -174,7 +184,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_5inabdxev",
@@ -190,7 +201,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_ftry5hqlv",
@@ -206,7 +218,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://www.catchtable.net/fr-FR/shop/mdkj?ct-referrer=google-maps",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_lqhh53bvu",
@@ -222,7 +235,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "http://www.mapletreehouse.co.kr/eng/html/contact02.asp",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     },
     {
       "id": "resto_1766711627220_81zg8r11v",
@@ -238,7 +252,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "restaurant"
+      "type": "restaurant",
+      "isDone": false
     }
   ],
   "activities": [
@@ -259,7 +274,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://borderless-azabudai.ticket.teamlab.art/?_gl=1*1splpn1*_gcl_au*MTMwODM5NDcxMi4xNzY2NzE4OTIx*_ga*MjA4OTMyMjUxOC4xNzY2NzE4OTIx*_ga_E4JDR7KSJ2*czE3NjY3MTg5MjIkbzEkZzAkdDE3NjY3MTg5MjUkajU3JGwwJGgw#/",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ejlsew3th",
@@ -278,7 +294,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ysluu2kfy",
@@ -297,7 +314,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.getyourguide.com/fr-fr/tokyo-skytree-l4086/tokyo-skytree-billet-d-entree-t215997/?ranking_uuid=78b89bc5-43dd-41dd-9aa0-53945f787d2b",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_mywwd377e",
@@ -316,7 +334,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_337eej8i0",
@@ -335,7 +354,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_zhb5awwfb",
@@ -354,7 +374,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "https://www.meijijingu.or.jp/en/visit/",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_wqfgbho6b",
@@ -373,7 +394,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_5k91625fk",
@@ -392,7 +414,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_zcoijj9l5",
@@ -411,7 +434,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://fr.trip.com/travel-guide/attraction/sapporo/mt-moiwa-78887?locale=fr-FR&allianceid=1076145&sid=4330723&s-productIdTop=96066435&source=maps&curr=EUR&funnel=nav&adsource=&s-googlever=MjUxMjI2LjA4MDAwMC4xMC4yMC40Ny4yNDMuODEuNjkzNjQzNzFfNg==",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_dhqxi5fok",
@@ -430,7 +454,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://hoheikyo.co.jp/onsen/",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_usagsn0p9",
@@ -449,7 +474,8 @@
       "reservationDate": "",
       "priority": "must-do",
       "bookingUrl": "https://royal.cha.go.kr/ENG/contents/E702000000.do",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ear1eayws",
@@ -468,7 +494,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "https://fr.trip.com/things-to-do/detail/101829973?locale=fr-FR&allianceid=1076145&sid=4330723&source=search&curr=EUR&funnel=nav&adsource=&s-googlever=MjUxMjI2LjA4MDAwMC4xMC4yMC40Ny4yNDMuODEuNjkzNjQzNzFfNg==",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_aksz0vd7t",
@@ -487,7 +514,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ttm14hsmf",
@@ -506,7 +534,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_as6nl3l1d",
@@ -525,7 +554,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_ioxe0v01r",
@@ -544,7 +574,8 @@
       "reservationDate": "",
       "priority": "high",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_hh2zdwxb8",
@@ -563,7 +594,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     },
     {
       "id": "activity_1766711627220_7evsesoz9",
@@ -582,7 +614,8 @@
       "reservationDate": "",
       "priority": "normal",
       "bookingUrl": "",
-      "type": "activity"
+      "type": "activity",
+      "isDone": false
     }
   ],
   "exportDate": "2025-12-26T03:58:23.046Z"
