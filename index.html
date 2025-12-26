@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tripline - Your trips, on a timeline</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -73,6 +74,21 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Force Apple emoji font on all systems */
+        body, input, textarea, select, button {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+        }
+
+        /* Apple Color Emoji for all emoji characters */
+        .logo-icon, .icon, .emoji,
+        .stat-card .number::before,
+        .tab, .bottom-nav-item,
+        .priority-badge, .badge,
+        .done-btn, .maps-btn, .booking-btn,
+        .fab, .fab-option {
+            font-family: 'Apple Color Emoji', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
             background: var(--bg-primary);
@@ -117,6 +133,22 @@
 
         .logo-icon {
             font-size: 1.75rem;
+            width: 24px;
+            height: 24px;
+            stroke-width: 2;
+        }
+
+        /* Lucide icons alignment */
+        .tab, .fab-option, .done-btn, .maps-btn, .booking-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bottom-nav-item .icon {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2;
         }
 
         h1 {
@@ -1089,11 +1121,13 @@
         <header>
             <div class="header-content">
                 <div class="logo">
-                    <span class="logo-icon">✈️</span>
+                    <i data-lucide="plane" class="logo-icon"></i>
                     <h1>Tripline</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+                    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+                        <i data-lucide="moon" id="themeIcon"></i>
+                    </button>
                 </div>
             </div>
         </header>
@@ -1118,12 +1152,30 @@
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('all')">Tout</button>
-            <button class="tab" onclick="switchTab('restaurants')">Restaurants</button>
-            <button class="tab" onclick="switchTab('activities')">Activités</button>
-            <button class="tab" onclick="switchTab('calendar')">📅 Calendrier</button>
-            <button class="tab" onclick="switchTab('by-city')">Par Ville</button>
-            <button class="tab" onclick="switchTab('settings')">⚙️ Réglages</button>
+            <button class="tab active" onclick="switchTab('all')">
+                <i data-lucide="layout-grid" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Tout
+            </button>
+            <button class="tab" onclick="switchTab('restaurants')">
+                <i data-lucide="utensils" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Restaurants
+            </button>
+            <button class="tab" onclick="switchTab('activities')">
+                <i data-lucide="compass" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Activités
+            </button>
+            <button class="tab" onclick="switchTab('calendar')">
+                <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Calendrier
+            </button>
+            <button class="tab" onclick="switchTab('by-city')">
+                <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Par Ville
+            </button>
+            <button class="tab" onclick="switchTab('settings')">
+                <i data-lucide="settings" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Réglages
+            </button>
         </div>
 
 
@@ -1193,29 +1245,41 @@
 
         <div id="settingsContent" class="content-section">
             <div style="padding: 24px; max-width: 600px; margin: 0 auto;">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: var(--primary-blue);">⚙️ Réglages</h2>
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: var(--primary-blue); display: flex; align-items: center; gap: 12px;">
+                    <i data-lucide="settings" style="width: 28px; height: 28px;"></i>
+                    Réglages
+                </h2>
                 
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">📊 Gestion des données</h3>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="database" style="width: 20px; height: 20px;"></i>
+                        Gestion des données
+                    </h3>
                     <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 20px;">
                         Exportez vos données pour les sauvegarder ou les partager, importez un fichier de sauvegarde, ou réinitialisez complètement l'application.
                     </p>
                     
                     <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <button class="btn" onclick="exportData()" style="width: 100%;">
-                            💾 Exporter les données
+                        <button class="btn" onclick="exportData()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i data-lucide="download" style="width: 18px; height: 18px;"></i>
+                            Exporter les données
                         </button>
-                        <button class="btn" onclick="importData()" style="width: 100%;">
-                            📥 Importer les données
+                        <button class="btn" onclick="importData()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i data-lucide="upload" style="width: 18px; height: 18px;"></i>
+                            Importer les données
                         </button>
-                        <button class="btn" onclick="clearAllData()" style="width: 100%; background: var(--error); color: white; border-color: var(--error);">
-                            🗑️ Supprimer toutes les données
+                        <button class="btn" onclick="clearAllData()" style="width: 100%; background: var(--error); color: white; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                            Supprimer toutes les données
                         </button>
                     </div>
                 </div>
 
                 <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px;">
-                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">📈 Statistiques</h3>
+                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="bar-chart-3" style="width: 20px; height: 20px;"></i>
+                        Statistiques
+                    </h3>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
                         <div style="background: var(--bg-primary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
                             <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px;">Restaurants</div>
@@ -1346,11 +1410,11 @@
                     <div class="form-group">
                         <label for="priority">Priorité</label>
                         <select id="priority">
-                            <option value="must-do">🔴 Must-Do (Incontournable)</option>
-                            <option value="high">🟠 Haute</option>
-                            <option value="normal" selected>⚪ Normale</option>
-                            <option value="low">⚫ Basse</option>
-                            <option value="optional">⚪ Optionnel</option>
+                            <option value="must-do">Must-Do (Incontournable)</option>
+                            <option value="high">Haute</option>
+                            <option value="normal" selected>Normale</option>
+                            <option value="low">Basse</option>
+                            <option value="optional">Optionnel</option>
                         </select>
                     </div>
 
@@ -1468,6 +1532,9 @@
             renderAll();
             updateDashboard();
             
+            // Initialize Lucide icons
+            lucide.createIcons();
+            
             // Toggle reservation date field
             document.getElementById('isBooked').addEventListener('change', function() {
                 const dateGroup = document.getElementById('reservationDateGroup');
@@ -1482,13 +1549,22 @@
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // Update icon
+            const themeIcon = document.getElementById('themeIcon');
+            themeIcon.setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+            lucide.createIcons();
         }
 
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            
+            // Set initial icon
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.setAttribute('data-lucide', savedTheme === 'dark' ? 'sun' : 'moon');
+            }
         }
 
         // Toggle Done
@@ -1725,10 +1801,10 @@
             
             if (item.priority && item.priority !== 'normal') {
                 const priorityLabels = {
-                    'must-do': '🔴 Must-Do',
-                    'high': '🟠 Haute',
-                    'low': '⚫ Basse',
-                    'optional': '⚪ Optionnel'
+                    'must-do': 'Must-Do',
+                    'high': 'Haute',
+                    'low': 'Basse',
+                    'optional': 'Optionnel'
                 };
                 html += `
                     <div class="detail-section">
@@ -1838,16 +1914,16 @@
             if (!priority || priority === 'normal') return '';
             
             const badges = {
-                'must-do': { emoji: '🔴', label: 'Must-Do' },
-                'high': { emoji: '🟠', label: 'Haute' },
-                'low': { emoji: '⚫', label: 'Basse' },
-                'optional': { emoji: '⚪', label: 'Optionnel' }
+                'must-do': { label: 'Must-Do' },
+                'high': { label: 'Haute' },
+                'low': { label: 'Basse' },
+                'optional': { label: 'Optionnel' }
             };
             
             const badge = badges[priority];
             if (!badge) return '';
             
-            return `<span class="priority-badge priority-${priority}-badge">${badge.emoji} ${badge.label}</span>`;
+            return `<span class="priority-badge priority-${priority}-badge">${badge.label}</span>`;
         }
 
         function renderCalendar() {
@@ -1943,14 +2019,16 @@
                             </div>
                             <div class="card-actions">
                                 <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
-                                    ${item.isDone ? '↩️ Pas fait' : '✅ Fait'}
+                                    <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                    ${item.isDone ? 'Pas fait' : 'Fait'}
                                 </button>
                                 ${item.googleMapsUrl ? `
                                     <a href="${item.googleMapsUrl}" 
                                        target="_blank" 
                                        class="maps-btn"
                                        onclick="event.stopPropagation()">
-                                        📍 Maps
+                                        <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                        Maps
                                     </a>
                                 ` : ''}
                                 ${item.bookingUrl ? `
@@ -1958,7 +2036,8 @@
                                        target="_blank" 
                                        class="booking-btn"
                                        onclick="event.stopPropagation()">
-                                        🍽️ Réserver
+                                        <i data-lucide="calendar-check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                        Réserver
                                     </a>
                                 ` : ''}
                             </div>
@@ -1987,6 +2066,9 @@
             renderItems('activityItems', sortedActivities);
             renderByCity();
             renderCalendar();
+            
+            // Re-initialize Lucide icons after render
+            lucide.createIcons();
         }
 
         function renderItems(containerId, items) {
@@ -2035,14 +2117,16 @@
                         </div>
                         <div class="card-actions">
                             <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
-                                ${item.isDone ? '↩️ Pas fait' : '✅ Fait'}
+                                <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                ${item.isDone ? 'Pas fait' : 'Fait'}
                             </button>
                             ${item.googleMapsUrl ? `
                                 <a href="${item.googleMapsUrl}" 
                                    target="_blank" 
                                    class="maps-btn"
                                    onclick="event.stopPropagation()">
-                                    📍 Maps
+                                    <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                    Maps
                                 </a>
                             ` : ''}
                             ${item.bookingUrl ? `
@@ -2050,7 +2134,8 @@
                                    target="_blank" 
                                    class="booking-btn"
                                    onclick="event.stopPropagation()">
-                                    🍽️ Réserver
+                                    <i data-lucide="calendar-check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                                    Réserver
                                 </a>
                             ` : ''}
                         </div>
@@ -2452,34 +2537,42 @@
     <!-- Bottom Navigation (Mobile) -->
     <nav class="bottom-nav">
         <button class="bottom-nav-item active" onclick="bottomNavSwitch('all')" data-nav="all">
-            <span class="icon">📋</span>
+            <i data-lucide="layout-grid" class="icon"></i>
             <span>Tout</span>
         </button>
         <button class="bottom-nav-item" onclick="bottomNavSwitch('restaurants')" data-nav="restaurants">
-            <span class="icon">🍽️</span>
+            <i data-lucide="utensils" class="icon"></i>
             <span>Restos</span>
         </button>
         <button class="bottom-nav-item" onclick="bottomNavSwitch('activities')" data-nav="activities">
-            <span class="icon">🎯</span>
+            <i data-lucide="compass" class="icon"></i>
             <span>Activités</span>
         </button>
         <button class="bottom-nav-item" onclick="bottomNavSwitch('calendar')" data-nav="calendar">
-            <span class="icon">📅</span>
+            <i data-lucide="calendar" class="icon"></i>
             <span>Calendrier</span>
         </button>
         <button class="bottom-nav-item" onclick="bottomNavSwitch('settings')" data-nav="settings">
-            <span class="icon">⚙️</span>
+            <i data-lucide="settings" class="icon"></i>
             <span>Réglages</span>
         </button>
     </nav>
 
     <!-- FAB Button -->
-    <button class="fab" id="fab" onclick="toggleFabMenu()">+</button>
+    <button class="fab" id="fab" onclick="toggleFabMenu()">
+        <i data-lucide="plus" style="width: 24px; height: 24px;"></i>
+    </button>
     
     <!-- FAB Menu -->
     <div class="fab-menu" id="fabMenu">
-        <button class="fab-option" onclick="openModal('restaurant'); closeFabMenu();">🍽️ Restaurant</button>
-        <button class="fab-option" onclick="openModal('activity'); closeFabMenu();">🎯 Activité</button>
+        <button class="fab-option" onclick="openModal('restaurant'); closeFabMenu();">
+            <i data-lucide="utensils" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+            Restaurant
+        </button>
+        <button class="fab-option" onclick="openModal('activity'); closeFabMenu();">
+            <i data-lucide="compass" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+            Activité
+        </button>
     </div>
 
 </body>
