@@ -182,7 +182,6 @@
 
         .theme-toggle:hover {
             background: var(--bg-tertiary);
-            transform: scale(1.05);
         }
 
         .theme-toggle:active {
@@ -205,11 +204,6 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px var(--shadow);
-        }
-
         .stat-card h3 {
             font-size: 0.6875rem;
             font-weight: 500;
@@ -224,6 +218,84 @@
             font-weight: 600;
             letter-spacing: -0.02em;
             color: var(--text-primary);
+        }
+
+        /* Search & Filters */
+        .search-bar {
+            padding: 12px 20px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #searchInput:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .filters-bar {
+            padding: 12px 20px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .search-bar {
+                padding: 12px 16px;
+            }
+
+            .filters-bar {
+                padding: 12px 16px;
+                flex-direction: column;
+            }
         }
 
         .tabs {
@@ -253,11 +325,6 @@
             white-space: nowrap;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
-        }
-
-        .tab:hover {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
         }
 
         .tab.active {
@@ -297,11 +364,6 @@
             min-width: 120px;
         }
 
-        .btn:hover {
-            background: var(--bg-tertiary);
-            transform: translateY(-1px);
-        }
-
         .btn:active {
             transform: scale(0.98);
         }
@@ -309,16 +371,6 @@
         .btn-primary {
             background: var(--primary-blue);
             color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--dark-blue);
-        }
-
-        .filter-section {
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
         }
 
         select, input[type="text"], input[type="number"], input[type="date"], textarea {
@@ -356,11 +408,6 @@
             display: flex;
             flex-direction: column;
             position: relative;
-        }
-
-        .item-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px var(--shadow-lg);
         }
 
         .item-card:active {
@@ -436,11 +483,6 @@
             text-align: center;
         }
 
-        .done-btn:hover {
-            background: #2FB74E;
-            transform: scale(1.02);
-        }
-
         .done-btn:active {
             transform: scale(0.98);
         }
@@ -448,10 +490,6 @@
         .done-btn.undone {
             background: var(--bg-tertiary);
             color: var(--text-primary);
-        }
-
-        .done-btn.undone:hover {
-            background: var(--light-gray);
         }
 
         [data-theme="dark"] .done-btn.undone {
@@ -614,7 +652,6 @@
         .maps-btn:hover {
             background: var(--primary-blue);
             color: white;
-            transform: scale(1.02);
         }
 
         .maps-btn:active, .booking-btn:active {
@@ -715,7 +752,6 @@
         .fab-option:hover {
             background: var(--primary-blue);
             color: white;
-            transform: translateX(-4px) scale(1.02);
         }
 
         /* Recherche globale */
@@ -1072,21 +1108,6 @@
             color: var(--text-secondary);
         }
 
-        .sort-controls {
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .sort-controls label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-
         @media (min-width: 768px) {
             .container {
                 max-width: 1200px;
@@ -1181,8 +1202,17 @@
         </div>
 
 
-        <div class="filter-section">
-            <select id="cityFilter" onchange="filterItems()">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher..." oninput="filterItems()">
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <select id="cityFilter" onchange="filterItems()" class="filter-select">
                 <option value="">Toutes les villes</option>
                 <optgroup label="Tokyo">
                     <option value="Tokyo">Tokyo (toute la ville)</option>
@@ -1211,16 +1241,11 @@
                     <option value="Seoul - Insadong">Seoul - Insadong</option>
                 </optgroup>
             </select>
-            <input type="text" id="searchInput" placeholder="Rechercher..." oninput="filterItems()">
-        </div>
-
-        <div class="sort-controls">
-            <label>Trier par:</label>
-            <select id="sortBy" onchange="sortItems()">
-                <option value="none">Défaut</option>
-                <option value="priority">Priorité (Must-Do → Optionnel)</option>
-                <option value="price-asc">Prix croissant</option>
-                <option value="price-desc">Prix décroissant</option>
+            <select id="sortBy" onchange="sortItems()" class="filter-select">
+                <option value="none">Tri par défaut</option>
+                <option value="priority">Priorité</option>
+                <option value="price-asc">Prix ↑</option>
+                <option value="price-desc">Prix ↓</option>
                 <option value="name">Nom A-Z</option>
             </select>
         </div>
@@ -2090,26 +2115,25 @@
                             </div>
                         </div>
                         <div class="card-actions">
-                            <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)">
-                                <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                                ${item.isDone ? 'Pas fait' : 'Fait'}
+                            <button class="done-btn ${item.isDone ? 'undone' : ''}" onclick="toggleDone('${item.id}', '${item.type}', event)" title="${item.isDone ? 'Marquer comme pas fait' : 'Marquer comme fait'}">
+                                <i data-lucide="${item.isDone ? 'rotate-ccw' : 'check'}" style="width: 18px; height: 18px;"></i>
                             </button>
                             ${item.googleMapsUrl ? `
                                 <a href="${item.googleMapsUrl}" 
                                    target="_blank" 
                                    class="maps-btn"
+                                   title="Ouvrir dans Google Maps"
                                    onclick="event.stopPropagation()">
-                                    <i data-lucide="map-pin" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                                    Maps
+                                    <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
                                 </a>
                             ` : ''}
                             ${item.bookingUrl ? `
                                 <a href="${item.bookingUrl}" 
                                    target="_blank" 
                                    class="booking-btn"
+                                   title="Réserver"
                                    onclick="event.stopPropagation()">
-                                    <i data-lucide="calendar-check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
-                                    Réserver
+                                    <i data-lucide="calendar-check" style="width: 18px; height: 18px;"></i>
                                 </a>
                             ` : ''}
                         </div>
