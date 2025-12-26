@@ -150,17 +150,11 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             padding: 20px 16px;
             background: var(--off-white);
             border-bottom: 2px solid var(--border-color);
-        }
-
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: repeat(2, 1fr);
-            }
         }
 
         .stat-card {
@@ -535,31 +529,6 @@
         .booking-btn:hover {
             background: #059669;
             border-color: #059669;
-        }
-
-        .done-btn {
-            display: inline-block;
-            padding: 8px 12px;
-            background: var(--gray);
-            color: var(--white);
-            border: 2px solid var(--gray);
-            border-radius: 6px;
-            font-size: 0.875rem;
-            text-decoration: none;
-            transition: all 0.2s;
-            font-weight: 600;
-            flex: 1;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .done-btn:hover {
-            background: var(--primary-blue);
-            border-color: var(--primary-blue);
-        }
-
-        .done-btn:active {
-            transform: scale(0.95);
         }
 
         [data-theme="dark"] .maps-btn {
@@ -1046,20 +1015,14 @@
                 <h3>Réservés</h3>
                 <div class="number" id="totalReservations">0</div>
             </div>
-            <div class="stat-card">
-                <h3>Faits</h3>
-                <div class="number" id="totalDone">0</div>
-            </div>
         </div>
 
         <div class="tabs">
             <button class="tab active" onclick="switchTab('all')">Tout</button>
             <button class="tab" onclick="switchTab('restaurants')">Restaurants</button>
             <button class="tab" onclick="switchTab('activities')">Activités</button>
-            <button class="tab" onclick="switchTab('done')">✓ Passées</button>
             <button class="tab" onclick="switchTab('calendar')">📅 Calendrier</button>
             <button class="tab" onclick="switchTab('by-city')">Par Ville</button>
-            <button class="tab" onclick="switchTab('settings')">⚙️ Paramètres</button>
         </div>
 
         <div class="action-bar">
@@ -1128,42 +1091,6 @@
 
         <div id="calendarContent" class="content-section">
             <div id="calendarView"></div>
-        </div>
-
-        <div id="doneContent" class="content-section">
-            <h2 style="padding: 16px; color: var(--text-primary); font-size: 1.25rem;">✓ Restaurants & Activités passés</h2>
-            <div class="items-list" id="doneActivitiesList"></div>
-        </div>
-
-        <div id="settingsContent" class="content-section">
-            <div style="padding: 20px; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: var(--text-primary); font-size: 1.5rem; margin-bottom: 24px;">⚙️ Paramètres</h2>
-                
-                <!-- Import/Export Section -->
-                <div style="background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <h3 style="color: var(--text-primary); font-size: 1.125rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                        💾 Données
-                    </h3>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <button class="btn btn-primary" onclick="exportData()" style="width: 100%;">
-                            📥 Exporter mes données (JSON)
-                        </button>
-                        <button class="btn" onclick="importData()" style="width: 100%;">
-                            📤 Importer des données (JSON)
-                        </button>
-                        <button class="btn" onclick="clearAllData()" style="width: 100%; background: var(--error); color: white; border-color: var(--error);">
-                            🗑️ Supprimer toutes les données
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Version -->
-                <div style="text-align: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-                    <p style="font-size: 0.875rem; color: var(--gray);">
-                        <strong>Tripline</strong> v1.1<br>
-                    </p>
-                </div>
-            </div>
         </div>
 
         <div id="byCityContent" class="content-section">
@@ -1334,7 +1261,7 @@
     <script>
         // Classes
         class Restaurant {
-            constructor(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isReserved, reservationDate, priority, bookingUrl, isDone = false, id = null) {
+            constructor(name, city, cuisine, priceRange, googleMapsUrl, photoUrl, tiktokLink, notes, isReserved, reservationDate, priority, bookingUrl, id = null) {
                 this.id = id || this.generateId();
                 this.name = name;
                 this.city = city;
@@ -1348,7 +1275,6 @@
                 this.reservationDate = reservationDate;
                 this.priority = priority || 'normal'; // 'must-do', 'high', 'normal', 'low', 'optional'
                 this.bookingUrl = bookingUrl;
-                this.isDone = isDone === true; // Force boolean
                 this.type = 'restaurant';
             }
 
@@ -1358,7 +1284,7 @@
         }
 
         class Activity {
-            constructor(name, city, category, date, time, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, isDone = false, id = null) {
+            constructor(name, city, category, date, time, duration, cost, googleMapsUrl, photoUrl, tiktokLink, notes, isBooked, reservationDate, priority, bookingUrl, id = null) {
                 this.id = id || this.generateId();
                 this.name = name;
                 this.city = city;
@@ -1375,7 +1301,6 @@
                 this.reservationDate = reservationDate;
                 this.priority = priority || 'normal';
                 this.bookingUrl = bookingUrl;
-                this.isDone = isDone === true; // Force boolean
                 this.type = 'activity';
             }
 
@@ -1421,9 +1346,6 @@
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // Update settings button text if it exists
-            updateThemeButtonText();
         }
 
         function loadTheme() {
@@ -1868,12 +1790,9 @@
 
         // Render functions
         function renderAll() {
-            // Filtrer les items non-done pour les vues principales
-            const activeRestaurants = restaurants.filter(r => !r.isDone);
-            const activeActivities = activities.filter(a => !a.isDone);
-            const allItems = applySorting([...activeRestaurants, ...activeActivities]);
-            const sortedRestaurants = applySorting(activeRestaurants);
-            const sortedActivities = applySorting(activeActivities);
+            const allItems = applySorting([...restaurants, ...activities]);
+            const sortedRestaurants = applySorting(restaurants);
+            const sortedActivities = applySorting(activities);
             
             renderItems('allItems', allItems);
             renderItems('restaurantItems', sortedRestaurants);
@@ -1942,13 +1861,6 @@
                                    onclick="event.stopPropagation()">
                                     🍽️ Réserver
                                 </a>
-                            ` : ''}
-                            ${!item.isDone ? `
-                                <button 
-                                   class="done-btn"
-                                   onclick="event.stopPropagation(); markItemDone('${item.id}', '${item.type}');">
-                                    ✓ Fait${isRestaurant ? '' : 'e'}
-                                </button>
                             ` : ''}
                         </div>
                     </div>
@@ -2061,20 +1973,11 @@
                 case 'activities':
                     document.getElementById('activitiesContent').classList.add('active');
                     break;
-                case 'done':
-                    document.getElementById('doneContent').classList.add('active');
-                    renderDoneActivities();
-                    break;
                 case 'calendar':
                     document.getElementById('calendarContent').classList.add('active');
                     break;
                 case 'by-city':
                     document.getElementById('byCityContent').classList.add('active');
-                    break;
-                case 'settings':
-                    document.getElementById('settingsContent').classList.add('active');
-                    updateSettingsStats();
-                    updateThemeButtonText();
                     break;
             }
         }
@@ -2167,12 +2070,8 @@
         }
 
         function updateDashboard() {
-            const activeActivities = activities.filter(a => !a.isDone);
-            const activeRestaurants = restaurants.filter(r => !r.isDone);
-            const doneItems = [...restaurants.filter(r => r.isDone), ...activities.filter(a => a.isDone)];
-            
-            document.getElementById('totalRestaurants').textContent = activeRestaurants.length;
-            document.getElementById('totalActivities').textContent = activeActivities.length;
+            document.getElementById('totalRestaurants').textContent = restaurants.length;
+            document.getElementById('totalActivities').textContent = activities.length;
 
             const totalBudget = restaurants.reduce((sum, r) => sum + (r.priceRange || 0), 0) +
                                activities.reduce((sum, a) => sum + (a.cost || 0), 0);
@@ -2181,8 +2080,6 @@
             const totalReservations = restaurants.filter(r => r.isReserved).length +
                                      activities.filter(a => a.isBooked).length;
             document.getElementById('totalReservations').textContent = totalReservations;
-
-            document.getElementById('totalDone').textContent = doneItems.length;
         }
 
         function saveData() {
@@ -2199,8 +2096,8 @@
                 const parsedRestaurants = JSON.parse(savedRestaurants);
                 const parsedActivities = JSON.parse(savedActivities);
                 
-                restaurants = parsedRestaurants.map(r => new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone, r.id));
-                activities = parsedActivities.map(a => new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone, a.id));
+                restaurants = parsedRestaurants.map(r => new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id));
+                activities = parsedActivities.map(a => new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id));
             } else {
                 // Charger les données par défaut intégrées
                 fetch('data.json')
@@ -2209,13 +2106,13 @@
                 
                 if (data.restaurants) {
                     restaurants = data.restaurants.map(r => 
-                        new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone, r.id)
+                        new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id)
                     );
                 }
                 
                 if (data.activities) {
                     activities = data.activities.map(a => 
-                        new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone, a.id)
+                        new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id)
                     );
                 }
                 
@@ -2230,13 +2127,13 @@
                 
                 if (data.restaurants) {
                     restaurants = data.restaurants.map(r => 
-                        new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone, r.id)
+                        new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id)
                     );
                 }
                 
                 if (data.activities) {
                     activities = data.activities.map(a => 
-                        new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone, a.id)
+                        new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id)
                     );
                 }
                 
@@ -2277,13 +2174,13 @@
                         
                         if (data.restaurants) {
                             restaurants = data.restaurants.map(r => 
-                                new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.isDone, r.id)
+                                new Restaurant(r.name, r.city, r.cuisine, r.priceRange, r.googleMapsUrl || r.address, r.photoUrl, r.tiktokLink, r.notes, r.isReserved, r.reservationDate, r.priority, r.bookingUrl, r.id)
                             );
                         }
                         
                         if (data.activities) {
                             activities = data.activities.map(a => 
-                                new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.isDone, a.id)
+                                new Activity(a.name, a.city, a.category, a.date, a.time, a.duration, a.cost, a.googleMapsUrl || a.address, a.photoUrl, a.tiktokLink, a.notes, a.isBooked, a.reservationDate, a.priority, a.bookingUrl, a.id)
                             );
                         }
                         
@@ -2354,64 +2251,12 @@
             // Switch tab
             switchTab(view);
             
-            // Scroll to top TOUJOURS
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        // Mark item as done (restaurant or activity)
-        function markItemDone(itemId, itemType) {
-            if (itemType === 'restaurant') {
-                const restaurant = restaurants.find(r => r.id === itemId);
-                if (restaurant) {
-                    restaurant.isDone = true;
-                }
-            } else {
-                const activity = activities.find(a => a.id === itemId);
-                if (activity) {
-                    activity.isDone = true;
-                }
-            }
-            saveData();
-            renderAll();
-            updateDashboard();
-        }
-
-        // Render done items (restaurants + activities)
-        function renderDoneActivities() {
-            const doneItems = [
-                ...restaurants.filter(r => r.isDone),
-                ...activities.filter(a => a.isDone)
-            ];
-            renderItems('doneActivitiesList', doneItems);
-        }
-
-        // Update settings stats
-        function updateSettingsStats() {
-            const doneItems = [...restaurants.filter(r => r.isDone), ...activities.filter(a => a.isDone)].length;
-            const activeRestaurants = restaurants.filter(r => !r.isDone).length;
-            const activeActivities = activities.filter(a => !a.isDone).length;
-            const totalBudget = [...restaurants, ...activities].reduce((sum, item) => {
-                const price = item.type === 'restaurant' ? item.priceRange : item.cost;
-                return sum + (price || 0);
-            }, 0);
-
-            document.getElementById('statsRestaurants').textContent = activeRestaurants;
-            document.getElementById('statsActivities').textContent = activeActivities;
-            document.getElementById('statsDone').textContent = doneItems;
-            document.getElementById('statsBudget').textContent = totalBudget.toLocaleString() + '¥';
-        }
-
-        // Update theme button text
-        function updateThemeButtonText() {
-            const theme = document.documentElement.getAttribute('data-theme');
-            const buttonText = document.getElementById('themeButtonText');
-            if (theme === 'dark') {
-                buttonText.textContent = '☀️ Mode clair';
-            } else {
-                buttonText.textContent = '🌙 Mode sombre';
+            // Scroll to top (sauf pour calendrier)
+            if (view !== 'calendar') {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             }
         }
     </script>
@@ -2430,13 +2275,9 @@
             <span class="icon">🎯</span>
             <span>Activités</span>
         </button>
-        <button class="bottom-nav-item" onclick="bottomNavSwitch('done')" data-nav="done">
-            <span class="icon">✓</span>
-            <span>Passées</span>
-        </button>
-        <button class="bottom-nav-item" onclick="bottomNavSwitch('settings')" data-nav="settings">
-            <span class="icon">⚙️</span>
-            <span>Réglages</span>
+        <button class="bottom-nav-item" onclick="bottomNavSwitch('calendar')" data-nav="calendar">
+            <span class="icon">📅</span>
+            <span>Calendrier</span>
         </button>
     </nav>
 

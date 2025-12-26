@@ -145,12 +145,6 @@ class Activity {
   - Click → Menu avec 2 options (Restaurant/Activité)
   - Animation rotation 90° au hover
   - Auto-close si click ailleurs
-- ✅ **Bottom Navigation (Mobile)** - Navigation fixe en bas
-  - 4 onglets : Tout / Restos / Activités / Calendrier
-  - Active en bleu, inactive en gris
-  - Scroll to top automatique (sauf calendrier)
-  - Visible uniquement sur mobile (<768px)
-  - Tabs desktop et action bar cachés sur mobile
 
 ### 7. Détails des cards
 - Photo (avec fallback si erreur)
@@ -163,61 +157,6 @@ class Activity {
 - **Boutons en bas (toujours alignés) :**
   - 📍 Google Maps
   - 🍽️ Réserver (si bookingUrl existe)
-
----
-
-## 📱 **Mobile-First Design**
-
-### **Optimisations mobiles implémentées :**
-
-#### **1. Bottom Navigation (Mobile uniquement)**
-- Barre de navigation fixe en bas de l'écran
-- 4 onglets : 📋 Tout / 🍽️ Restos / 🎯 Activités / 📅 Calendrier
-- Active en bleu `#0A66C2`, inactive en gris
-- Touch feedback avec scale(0.95)
-- Scroll to top automatique (sauf pour calendrier)
-- Visible uniquement sur mobile (<768px)
-
-#### **2. FAB adapté mobile**
-- Taille : 56px sur mobile (vs 64px desktop)
-- Position : bottom 80px (au-dessus de la bottom nav)
-- Menu options aligné au-dessus du FAB
-
-#### **3. UI cachée sur mobile**
-- Tabs horizontaux → cachés
-- Action bar → cachée
-- Tout accessible via bottom nav + FAB
-
-#### **4. Fix zoom mobile**
-- Viewport : `user-scalable=no, maximum-scale=1.0`
-- Inputs : `font-size: 16px` minimum (évite le zoom auto iOS)
-- Pas de zoom involontaire sur focus
-
-#### **5. Scroll optimisé**
-- Padding-bottom : 100px sur toutes les vues
-- Permet de scroller jusqu'au dernier item
-- Pas de contenu caché par la bottom nav
-
-### **Desktop vs Mobile :**
-
-| Feature | Desktop (>768px) | Mobile (≤768px) |
-|---------|------------------|-----------------|
-| Navigation | Tabs horizontaux | Bottom nav (4 onglets) |
-| Action bar | Visible | Cachée |
-| FAB | 64px, bottom 24px | 56px, bottom 80px |
-| Inputs | 14px | 16px (anti-zoom) |
-| Zoom | Autorisé | Bloqué |
-
----
-
-## 🗑️ **Features retirées**
-
-Ces features ont été implémentées puis retirées sur demande utilisateur :
-
-- ❌ **Recherche globale sticky** - Trop envahissant, filtres suffisent
-- ❌ **Swipe actions** - Trop complexe, click suffit
-- ❌ **Pull to refresh** - Pas nécessaire pour données locales
-- ❌ **Menu "Plus"** - Bottom nav à 4 items plus simple
 
 ---
 
@@ -309,16 +248,11 @@ Ces features ont été implémentées puis retirées sur demande utilisateur :
 
 ### 📊 TOP 5 Quick Wins (2-3h total)
 
-#### 1. ✅ FAB (TERMINÉ)
+#### 1. ✅ FAB (FAIT)
 - Bouton + fixe en bas à droite
 - Menu avec Restaurant/Activité
 
-#### 2. ✅ Bottom Nav Mobile (TERMINÉ)
-- 4 onglets fixes en bas
-- Scroll to top automatique
-- Responsive <768px
-
-#### 3. Quick filters Pills (1h)
+#### 2. Quick filters Pills (1h)
 ```
 [Tous] [Must-do 🔴] [Réservé ✓] [Tokyo] [<10k¥]
 ```
@@ -326,7 +260,7 @@ Ces features ont été implémentées puis retirées sur demande utilisateur :
 - Multi-sélection
 - Filtrage instantané
 
-#### 4. Budget Progress Bar (1h)
+#### 3. Budget Progress Bar (1h)
 ```
 Budget utilisé : 125,000¥ / 500,000¥
 [████████░░░░░░░░] 25%
@@ -335,7 +269,7 @@ Budget utilisé : 125,000¥ / 500,000¥
 - Alerte si dépassement
 - Par catégorie
 
-#### 5. Toast Notifications (30min)
+#### 4. Toast Notifications (30min)
 ```
 ✅ Restaurant ajouté !
 ❌ Erreur de sauvegarde
@@ -344,7 +278,7 @@ Budget utilisé : 125,000¥ / 500,000¥
 - Couleurs selon type
 - Position top ou bottom
 
-#### 6. Empty States illustrés (1h)
+#### 5. Empty States illustrés (1h)
 - SVG illustrations
 - Call-to-action clair
 - Plus engageant
@@ -497,8 +431,8 @@ Pour version payante :
 
 **Créateur :** Dylan  
 **Date de création :** Décembre 2025  
-**Dernière mise à jour :** 26 décembre 2025 - 21h00  
-**Version actuelle :** v1.1 (MVP avec Bottom Nav mobile)
+**Dernière mise à jour :** 26 décembre 2025  
+**Version actuelle :** v1.0 (Prototype MVP)
 
 ---
 
@@ -529,9 +463,6 @@ Pour version payante :
 - [x] Export/Import JSON
 - [x] Design Tripline flat
 - [x] FAB button
-- [x] Bottom navigation mobile
-- [x] Responsive mobile-first
-- [x] Fix zoom mobile (viewport + font-size 16px)
 - [ ] Multi-voyages
 - [ ] Landing page
 - [ ] Documentation utilisateur
