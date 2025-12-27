@@ -60,20 +60,30 @@ class Trip {
         return Object.keys(this.members).length;
     }
 
-    // Vérifier si l'utilisateur est owner
-    isOwner(userId) {
+    // Vérifier si l'utilisateur actuel est owner
+    isOwner() {
+        return this.myRole === 'owner';
+    }
+
+    // Vérifier si l'utilisateur actuel peut éditer
+    canEdit() {
+        return this.myRole === 'owner' || this.myRole === 'editor';
+    }
+
+    // Vérifier si l'utilisateur actuel peut gérer (inviter, etc.)
+    canManage() {
+        return this.myRole === 'owner';
+    }
+
+    // LEGACY: Vérifier si un userId spécifique est owner (pour compatibilité)
+    isOwnerById(userId) {
         return this.members[userId] === 'owner';
     }
 
-    // Vérifier si l'utilisateur peut éditer
-    canEdit(userId) {
+    // LEGACY: Vérifier si un userId spécifique peut éditer
+    canEditById(userId) {
         const role = this.members[userId];
         return role === 'owner' || role === 'editor';
-    }
-
-    // Vérifier si l'utilisateur peut gérer
-    canManage(userId) {
-        return this.members[userId] === 'owner';
     }
 
     // Obtenir le badge de rôle

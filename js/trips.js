@@ -1,4 +1,5 @@
 let trips = [];
+let pendingInvitations = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     await FirebaseService.initialize();
@@ -15,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Charger les voyages
         await loadTrips();
+        
+        // Charger les invitations en attente
+        await loadPendingInvitations();
     });
     
     // Initialiser le thème
@@ -158,6 +162,127 @@ async function createTrip(e) {
         alert('Erreur lors de la création du voyage: ' + result.error);
     }
 }
+
+// ===== GESTION DES INVITATIONS =====
+
+async function loadPendingInvitations() {
+    const userId = FirebaseService.auth.currentUser.uid;
+    const userEmail = FirebaseService.auth.currentUser.email;
+
+    try {
+        const snapshot = await FirebaseService.db.collection('invitations')
+            .where('email', '==', userEmail)
+            .where('status', '==', 'pending')
+            .get();
+
+        pendingInvitations = [];
+        snapshot.forEach(doc => {
+            pendingInvitations.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        // Afficher le badge si invitations
+        if (pendingInvitations.length > 0) {
+            document.getElementById('invitationsBtn').style.display = 'flex';
+            const badge = document.getElementById('invitationsBadge');
+            badge.textContent = pendingInvitations.length;
+            badge.style.display = 'flex';
+        } else {
+            document.getElementById('invitationsBtn').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Erreur chargement invitations:', error);
+    }
+}
+
+function openInvitationsModal() {
+    document.getElementById('invitationsModal').classList.add('active');
+    renderInvitations();
+    lucide.createIcons();
+}
+
+function closeInvitationsModal() {
+    document.getElementById('invitationsModal').classList.remove('active');
+}
+
+function renderInvitations() {
+    const container = document.getElementById('invitationsContent');
+
+    if (pendingInvitations.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                <i data-lucide="mail" style="width: 64px; height: 64px; margin: 0 auto 16px; opacity: 0.3;"></i>
+                <p>Aucune invitation en attente</p>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    container.innerHTML = pendingInvitations.map(invite => `
+        <div style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+            <h3 style="font-size: 1.125rem; margin-bottom: 8px; color: var(--text-primary);">
+                ${invite.tripName}
+            </h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 0.875rem; color: var(--text-secondary);">
+                    Rôle : <strong>${invite.role === 'editor' ? 'Éditeur' : 'Lecteur'}</strong>
+                </span>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">
+                    Expire le ${new Date(invite.expiresAt.toDate()).toLocaleDateString('fr-FR')}
+                </span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary" onclick="acceptInvitation('${invite.id}')" style="flex: 1;">
+                    Accepter
+                </button>
+                <button class="btn" onclick="declineInvitation('${invite.id}')" style="flex: 1;">
+                    Refuser
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    lucide.createIcons();
+}
+
+async function acceptInvitation(invitationId) {
+    const invite = pendingInvitations.find(i => i.id === invitationId);
+    if (!invite) return;
+
+    const result = await FirebaseService.acceptInvitation(invite.token);
+
+    if (result.success) {
+        // Recharger les trips et invitations
+        await loadTrips();
+        await loadPendingInvitations();
+        closeInvitationsModal();
+        alert(`Vous avez rejoint le voyage "${invite.tripName}" !`);
+    } else {
+        alert('Erreur: ' + result.error);
+    }
+}
+
+async function declineInvitation(invitationId) {
+    if (!confirm('Voulez-vous vraiment refuser cette invitation ?')) return;
+
+    try {
+        await FirebaseService.db.collection('invitations').doc(invitationId).update({
+            status: 'declined',
+            declinedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Recharger les invitations
+        await loadPendingInvitations();
+        renderInvitations();
+    } catch (error) {
+        alert('Erreur: ' + error.message);
+    }
+}
+
+// ===== AUTRES FONCTIONS =====
 
 async function signOut() {
     if (confirm('Voulez-vous vraiment vous déconnecter ?')) {

@@ -1,104 +1,149 @@
-let isSignupMode = false;
-
 document.addEventListener('DOMContentLoaded', async () => {
     await FirebaseService.initialize();
-
-    // Si déjà connecté, rediriger vers trips
+    
+    // Vérifier si déjà connecté
     FirebaseService.auth.onAuthStateChanged(user => {
         if (user) {
+            // Rediriger vers trips si déjà connecté
             window.location.href = 'trips.html';
         }
     });
-
-    // Gestion du switch signup/login
-    document.getElementById('switchLink').addEventListener('click', (e) => {
-        e.preventDefault();
-        switchMode();
-    });
+    
+    // Initialiser le thème
+    ThemeManager.initialize();
+    
+    // Event listeners pour les formulaires
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    if (registerForm) {
+        registerForm.addEventListener('submit', handleRegister);
+    }
 });
 
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+async function handleLogin(e) {
     e.preventDefault();
     
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const errorMsg = document.getElementById('errorMessage');
-
-    // Validation simple
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const loginBtn = document.getElementById('loginBtn');
+    
     if (!email || !password) {
         showError('Veuillez remplir tous les champs');
         return;
     }
+    
+    // Désactiver le bouton et afficher un spinner
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="spinner"></span>Connexion...';
+    hideError();
+    hideSuccess();
+    
+    const result = await FirebaseService.signIn(email, password);
+    
+    if (result.success) {
+        showSuccess('Connexion réussie ! Redirection...');
+        setTimeout(() => {
+            window.location.href = 'trips.html';
+        }, 500);
+    } else {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Se connecter';
+        
+        // Messages d'erreur en français
+        let errorMessage = result.error;
+        if (result.error.includes('user-not-found')) {
+            errorMessage = 'Aucun compte trouvé avec cet email';
+        } else if (result.error.includes('wrong-password')) {
+            errorMessage = 'Mot de passe incorrect';
+        } else if (result.error.includes('invalid-email')) {
+            errorMessage = 'Email invalide';
+        } else if (result.error.includes('too-many-requests')) {
+            errorMessage = 'Trop de tentatives. Réessayez plus tard';
+        }
+        
+        showError(errorMessage);
+    }
+}
 
+async function handleRegister(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    const registerBtn = document.getElementById('registerBtn');
+    
+    if (!email || !password) {
+        showError('Veuillez remplir tous les champs');
+        return;
+    }
+    
     if (password.length < 6) {
         showError('Le mot de passe doit contenir au moins 6 caractères');
         return;
     }
-
-    // Loading state
-    submitBtn.classList.add('loading');
-    btnText.innerHTML = '<span class="spinner"></span>';
-    errorMsg.style.display = 'none';
-
-    let result;
-    if (isSignupMode) {
-        result = await FirebaseService.signUp(email, password);
-    } else {
-        result = await FirebaseService.signIn(email, password);
-    }
-
+    
+    // Désactiver le bouton et afficher un spinner
+    registerBtn.disabled = true;
+    registerBtn.innerHTML = '<span class="spinner"></span>Création du compte...';
+    hideError();
+    hideSuccess();
+    
+    const result = await FirebaseService.signUp(email, password);
+    
     if (result.success) {
-        // Redirection gérée par onAuthStateChanged
+        showSuccess('Compte créé avec succès ! Redirection...');
+        setTimeout(() => {
+            window.location.href = 'trips.html';
+        }, 500);
     } else {
-        showError(getErrorMessage(result.error));
-        submitBtn.classList.remove('loading');
-        btnText.textContent = isSignupMode ? "S'inscrire" : "Se connecter";
+        registerBtn.disabled = false;
+        registerBtn.textContent = 'Créer mon compte';
+        
+        // Messages d'erreur en français
+        let errorMessage = result.error;
+        if (result.error.includes('email-already-in-use')) {
+            errorMessage = 'Cet email est déjà utilisé';
+        } else if (result.error.includes('invalid-email')) {
+            errorMessage = 'Email invalide';
+        } else if (result.error.includes('weak-password')) {
+            errorMessage = 'Mot de passe trop faible (minimum 6 caractères)';
+        }
+        
+        showError(errorMessage);
     }
-});
-
-function switchMode() {
-    isSignupMode = !isSignupMode;
-    const btnText = document.getElementById('btnText');
-    const switchLink = document.getElementById('switchLink');
-    const switchText = switchLink.parentElement;
-    const errorMsg = document.getElementById('errorMessage');
-    
-    errorMsg.style.display = 'none';
-    
-    if (isSignupMode) {
-        btnText.textContent = "S'inscrire";
-        switchText.innerHTML = 'Déjà un compte ? <a href="#" id="switchLink">Se connecter</a>';
-    } else {
-        btnText.textContent = 'Se connecter';
-        switchText.innerHTML = 'Pas encore de compte ? <a href="#" id="switchLink">S\'inscrire</a>';
-    }
-    
-    // Réattacher l'event listener
-    document.getElementById('switchLink').addEventListener('click', (e) => {
-        e.preventDefault();
-        switchMode();
-    });
 }
 
 function showError(message) {
-    const errorMsg = document.getElementById('errorMessage');
-    errorMsg.textContent = message;
-    errorMsg.style.display = 'block';
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
 }
 
-function getErrorMessage(errorCode) {
-    const messages = {
-        'auth/invalid-email': 'Adresse email invalide',
-        'auth/user-not-found': 'Aucun compte trouvé avec cet email',
-        'auth/wrong-password': 'Mot de passe incorrect',
-        'auth/email-already-in-use': 'Cet email est déjà utilisé',
-        'auth/weak-password': 'Mot de passe trop faible (minimum 6 caractères)',
-        'auth/too-many-requests': 'Trop de tentatives. Réessayez plus tard',
-        'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion',
-        'auth/invalid-credential': 'Email ou mot de passe incorrect'
-    };
-    
-    return messages[errorCode] || 'Une erreur est survenue. Veuillez réessayer.';
+function hideError() {
+    const errorDiv = document.getElementById('errorMessage');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+}
+
+function showSuccess(message) {
+    const successDiv = document.getElementById('successMessage');
+    if (successDiv) {
+        successDiv.textContent = message;
+        successDiv.style.display = 'block';
+    }
+}
+
+function hideSuccess() {
+    const successDiv = document.getElementById('successMessage');
+    if (successDiv) {
+        successDiv.style.display = 'none';
+    }
 }

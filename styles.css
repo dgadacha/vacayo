@@ -1260,34 +1260,6 @@ select:focus, input:focus, textarea:focus {
     transform: scale(0.98);
 }
 
-.timeline-card.priority-must-do {
-    background: rgba(239, 68, 68, 0.08);
-    border-color: var(--error);
-}
-
-[data-theme="dark"] .timeline-card.priority-must-do {
-    background: rgba(239, 68, 68, 0.15);
-    border-color: var(--error);
-}
-
-.timeline-card.priority-high {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: var(--warning);
-}
-
-[data-theme="dark"] .timeline-card.priority-high {
-    background: rgba(245, 158, 11, 0.15);
-    border-color: var(--warning);
-}
-
-.timeline-card.priority-low {
-    opacity: 0.7;
-}
-
-.timeline-card.priority-optional {
-    opacity: 0.5;
-}
-
 .timeline-card.done {
     opacity: 0.5;
     background: var(--bg-tertiary);
@@ -1555,4 +1527,82 @@ select:focus, input:focus, textarea:focus {
     .dashboard {
         grid-template-columns: repeat(2, 1fr);
     }
+}
+
+.priority-badge {
+    display: inline-block !important;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.priority-badge.priority-must-do {
+    background: #ff4444 !important;
+    color: white !important;
+}
+
+.priority-badge.priority-high {
+    background: #ff8844 !important;
+    color: white !important;
+}
+
+.priority-badge.priority-low {
+    background: var(--light-gray) !important;
+    color: var(--gray) !important;
+}
+
+.priority-badge.priority-optional {
+    background: var(--off-white) !important;
+    color: var(--gray) !important;
+}
+
+/* S'assurer que la timeline-card a position: relative */
+.timeline-card {
+    position: relative;
+}
+
+.timeline-btn.booking-btn {
+    background: rgba(52, 199, 89, 0.15);
+    color: var(--success);
+}
+
+.timeline-btn.booking-btn:hover {
+    background: var(--success);
+    color: white;
+}
+
+[data-theme="dark"] .timeline-btn.booking-btn {
+    background: rgba(52, 199, 89, 0.2);
+    color: var(--success);
+}
+.timeline-btn.calendar-btn {
+    background: var(--bg-tertiary);
+}
+
+.timeline-btn.calendar-btn.has-date {
+    background: rgba(0, 122, 255, 0.15);
+    color: var(--primary-blue);
+}
+
+.timeline-btn.calendar-btn:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+[data-theme="dark"] .timeline-btn.calendar-btn {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .timeline-btn.calendar-btn.has-date {
+    background: rgba(0, 122, 255, 0.2);
+    color: var(--primary-blue);
 }

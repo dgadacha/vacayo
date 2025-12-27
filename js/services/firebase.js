@@ -297,29 +297,45 @@ const FirebaseService = {
                 .get();
 
             if (snapshot.empty) {
-                return { success: false, error: 'Invalid or expired invitation' };
+                return { success: false, error: 'Invitation non trouvée ou expirée' };
             }
 
             const invitationDoc = snapshot.docs[0];
             const invitation = invitationDoc.data();
 
             if (invitation.expiresAt.toDate() < new Date()) {
-                return { success: false, error: 'Invitation expired' };
+                return { success: false, error: 'Invitation expirée' };
             }
 
             const userId = this.auth.currentUser.uid;
 
-            // Ajouter l'utilisateur dans members
-            const updateData = {};
-            updateData[`members.${userId}`] = invitation.role;
+            // Utiliser une transaction pour garantir l'atomicité
+            const tripRef = this.db.collection('trips').doc(invitation.tripId);
+            
+            await this.db.runTransaction(async (transaction) => {
+                const tripDoc = await transaction.get(tripRef);
+                
+                if (!tripDoc.exists) {
+                    throw new Error('Voyage non trouvé');
+                }
 
-            await this.db.collection('trips').doc(invitation.tripId).update(updateData);
-
-            // Marquer l'invitation comme acceptée
-            await invitationDoc.ref.update({
-                status: 'accepted',
-                acceptedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                acceptedBy: userId
+                const currentMembers = tripDoc.data().members || {};
+                
+                // Ajouter le nouvel utilisateur
+                currentMembers[userId] = invitation.role;
+                
+                // Mettre à jour le trip
+                transaction.update(tripRef, {
+                    members: currentMembers,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Marquer l'invitation comme acceptée
+                transaction.update(invitationDoc.ref, {
+                    status: 'accepted',
+                    acceptedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    acceptedBy: userId
+                });
             });
 
             return { success: true, tripId: invitation.tripId };

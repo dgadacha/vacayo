@@ -63,6 +63,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
 
         .icon-btn:hover {
@@ -286,6 +287,10 @@
     <header class="trips-header">
         <h1>Mes voyages</h1>
         <div class="header-actions">
+            <button onclick="openInvitationsModal()" class="icon-btn" title="Mes invitations" id="invitationsBtn" style="display: none;">
+                <i data-lucide="mail"></i>
+                <span id="invitationsBadge" style="display: none; position: absolute; top: -4px; right: -4px; background: #FF3B30; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center;"></span>
+            </button>
             <div class="user-info" id="userInfo">
                 <i data-lucide="user" style="width: 16px; height: 16px;"></i>
                 <span id="userEmail"></span>
@@ -314,10 +319,6 @@
             </svg>
             <h2>Aucun voyage pour le moment</h2>
             <p>Créez votre premier voyage et commencez à planifier !</p>
-            <button onclick="openCreateTripModal()" class="btn btn-primary">
-                <i data-lucide="plus" style="width: 20px; height: 20px;"></i>
-                Créer un voyage
-            </button>
         </div>
 
         <!-- Grille de voyages -->
@@ -384,6 +385,22 @@
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary" onclick="createTrip(event)" style="flex: 2;">Créer le voyage</button>
                 <button type="button" class="btn" onclick="closeCreateTripModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Invitations -->
+    <div id="invitationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Mes invitations</h2>
+                <button class="close-btn" onclick="closeInvitationsModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="invitationsContent">
+                <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                    <i data-lucide="loader" style="width: 40px; height: 40px; margin: 0 auto 16px; animation: spin 1s linear infinite;"></i>
+                    <p>Chargement des invitations...</p>
+                </div>
             </div>
         </div>
     </div>
