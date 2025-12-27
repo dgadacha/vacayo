@@ -59,6 +59,12 @@ const ModalManager = {
             this.fillFormWithItem(item);
         }
 
+        const currencySymbol = currentTrip?.currencySymbol || '¥';
+        const priceLabel = document.getElementById('priceLabel');
+        if (priceLabel) {
+            priceLabel.textContent = `Prix (${currencySymbol})`;
+        }
+    
         modal.classList.add('active');
         lucide.createIcons();
     },
