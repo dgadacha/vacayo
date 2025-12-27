@@ -145,7 +145,7 @@ const ModalManager = {
         if (item.category) {
             html += `
                 <div class="detail-section">
-                    <label>${item.type === 'restaurant' ? 'Type de cuisine' : 'Catégorie'}</label>
+                    <label>${item.type === 'restaurant' ? 'Type de cuisine' : item.type === 'hotel' ? 'Nom de l\'hôtel' : 'Catégorie'}</label>
                     <div class="value">${item.category}</div>
                 </div>
             `;
@@ -161,19 +161,48 @@ const ModalManager = {
         }
 
         if (item.date) {
-            html += `
-                <div class="detail-section">
-                    <label>Date</label>
-                    <div class="value">${new Date(item.date).toLocaleString('fr-FR', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    })}</div>
-                </div>
-            `;
+            // Si c'est un hôtel avec date de fin, afficher check-in et check-out
+            if (item.type === 'hotel' && item.endDate) {
+                html += `
+                    <div class="detail-section">
+                        <label>Check-in</label>
+                        <div class="value">${new Date(item.date).toLocaleString('fr-FR', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</div>
+                    </div>
+                    <div class="detail-section">
+                        <label>Check-out</label>
+                        <div class="value">${new Date(item.endDate).toLocaleString('fr-FR', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</div>
+                    </div>
+                `;
+            } else {
+                // Pour les restaurants/activités ou hôtels sans date de fin
+                html += `
+                    <div class="detail-section">
+                        <label>Date</label>
+                        <div class="value">${new Date(item.date).toLocaleString('fr-FR', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</div>
+                    </div>
+                `;
+            }
         }
 
         if (item.googleMapsUrl) {
@@ -228,18 +257,7 @@ const ModalManager = {
             html += `
                 <div class="detail-section">
                     <label>Notes</label>
-                    <div class="value" style="white-space: pre-wrap;">${item.notes}</div>
-                </div>
-            `;
-        }
-
-        if (item.photoUrl) {
-            html += `
-                <div class="detail-section">
-                    <label>Photo</label>
-                    <div class="value">
-                        <img src="${item.photoUrl}" alt="${item.name}" class="detail-photo" style="width: 100%; border-radius: 12px; margin-top: 8px;">
-                    </div>
+                    <div class="value" style="white-space: pre-line;">${item.notes}</div>
                 </div>
             `;
         }
