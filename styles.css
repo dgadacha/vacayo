@@ -1578,5 +1578,5 @@ select:focus, input:focus, textarea:focus {
 .items-list .timeline-card-actions {
     margin-top: auto;
     padding: 12px;
-    border-top: 1px solid var(--border-color);
+    border: none;
 }
