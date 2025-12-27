@@ -144,19 +144,14 @@ const app = {
     },
 
     renderAll() {
-        const sortedHotels = SortManager.applySorting(this.hotels);
-        const sortedRestaurants = SortManager.applySorting(this.restaurants);
-        const sortedActivities = SortManager.applySorting(this.activities);
-        
-        ListView.render('hotelItems', sortedHotels);
-        ListView.render('restaurantItems', sortedRestaurants);
-        ListView.render('activityItems', sortedActivities);
-        CalendarView.render(this.hotels, this.restaurants, this.activities);
-        
         // Mettre à jour le filtre ville
         this.updateCityFilter();
         
-        lucide.createIcons();
+        // Réappliquer les filtres actifs
+        this.filterItems();
+        
+        // Mettre à jour le dashboard
+        Dashboard.update(this.hotels, this.restaurants, this.activities);
     },
 
     updateCityFilter() {
@@ -180,8 +175,8 @@ const app = {
     },
 
     filterItems() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const cityFilter = document.getElementById('cityFilter').value;
+        const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        const cityFilter = document.getElementById('cityFilter')?.value || '';
 
         const filterItem = (item) => {
             const matchesSearch = !searchTerm || 
@@ -201,6 +196,7 @@ const app = {
         ListView.render('hotelItems', SortManager.applySorting(filteredHotels));
         ListView.render('restaurantItems', SortManager.applySorting(filteredRestaurants));
         ListView.render('activityItems', SortManager.applySorting(filteredActivities));
+        CalendarView.render(filteredHotels, filteredRestaurants, filteredActivities);
         
         lucide.createIcons();
     },
