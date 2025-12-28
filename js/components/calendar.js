@@ -1,4 +1,6 @@
 const CalendarView = {
+    currentDayInView: null,
+    
     render(hotels, restaurants, activities) {
         const container = document.getElementById('calendarView');
         const currencySymbol = currentTrip?.currencySymbol || '¥';
@@ -79,7 +81,7 @@ const CalendarView = {
             const monthName = date.toLocaleDateString('fr-FR', { month: 'long' });
             
             html += `
-                <div class="timeline-day" data-date="${dateKey}">
+                <div id="day-${dateKey}" class="timeline-day" data-date="${dateKey}">
                     <div class="timeline-date-header">
                         <div class="timeline-day-name">${dayName}</div>
                         <div class="timeline-day-number">${dayNumber}</div>
@@ -245,6 +247,9 @@ const CalendarView = {
 
         // Scroller vers aujourd'hui si le jour existe
         this.scrollToToday();
+        
+        // NOUVEAU : Setup détection changement de jour
+        this.setupDayChangeDetection();
     },
 
     scrollToToday() {
@@ -265,6 +270,67 @@ const CalendarView = {
             setTimeout(() => {
                 scrollToDay(todayIndex);
             }, 150);
+        }
+    },
+    
+    // NOUVEAU : Détecter changement de jour au scroll
+    setupDayChangeDetection() {
+        const container = document.querySelector('.timeline-container');
+        if (!container) return;
+        
+        let isScrolling;
+        
+        container.addEventListener('scroll', () => {
+            // Clear timeout si on scroll encore
+            clearTimeout(isScrolling);
+            
+            // Attendre que le scroll soit terminé
+            isScrolling = setTimeout(() => {
+                this.detectDayChange(container);
+            }, 150);
+        });
+    },
+    
+    // NOUVEAU : Détecter quel jour est visible
+    detectDayChange(container) {
+        const days = container.querySelectorAll('.timeline-day');
+        if (!days.length) return;
+        
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + (containerRect.width / 2);
+        
+        let closestDay = null;
+        let closestDistance = Infinity;
+        
+        // Trouver le jour le plus proche du centre
+        days.forEach(day => {
+            const dayRect = day.getBoundingClientRect();
+            const dayCenter = dayRect.left + (dayRect.width / 2);
+            const distance = Math.abs(containerCenter - dayCenter);
+            
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestDay = day;
+            }
+        });
+        
+        if (!closestDay) return;
+        
+        const dayDate = closestDay.dataset.date;
+        
+        // Si on a changé de jour, scroller la page vers le header
+        if (this.currentDayInView !== dayDate) {
+            this.currentDayInView = dayDate;
+            
+            // Utiliser window.scrollTo pour scroller la page entière
+            const dayHeader = closestDay.querySelector('.timeline-date-header');
+            if (dayHeader) {
+                const headerTop = dayHeader.getBoundingClientRect().top + window.pageYOffset;
+                window.scrollTo({
+                    top: headerTop - 100,  // -100px pour laisser de l'espace au-dessus
+                    behavior: 'smooth'
+                });
+            }
         }
     }
 };
