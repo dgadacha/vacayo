@@ -123,14 +123,16 @@ const ListView = {
             `;
         }).join('');
         
-        // Forcer le rendu des icônes Lucide après un micro-délai
+        // OPTIMISÉ : Scanner uniquement le container concerné
         setTimeout(() => {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons({ 
-                    attrs: { 
-                        'stroke-width': 2 
-                    } 
-                });
+            if (typeof lucide !== 'undefined' && container) {
+                const icons = container.querySelectorAll('[data-lucide]');
+                if (icons.length > 0) {
+                    lucide.createIcons({ 
+                        attrs: { 'stroke-width': 2 },
+                        icons: icons
+                    });
+                }
             }
         }, 10);
     }
