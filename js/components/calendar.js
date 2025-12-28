@@ -1,5 +1,6 @@
 const CalendarView = {
     currentDayInView: null,
+    savedScrollPosition: null,  // NOUVEAU : Sauvegarder la position
     
     render(hotels, restaurants, activities) {
         const container = document.getElementById('calendarView');
@@ -256,8 +257,15 @@ const CalendarView = {
             }
         }, 10);
 
-        // Scroller vers aujourd'hui si le jour existe
-        this.scrollToToday();
+        // NOUVEAU : Si position sauvegardée, y retourner
+        if (this.savedScrollPosition) {
+            setTimeout(() => {
+                this.scrollToSavedPosition();
+            }, 100);
+        } else {
+            // Sinon, scroller vers aujourd'hui
+            this.scrollToToday();
+        }
         
         // NOUVEAU : Setup détection changement de jour
         this.setupDayChangeDetection();
@@ -282,6 +290,79 @@ const CalendarView = {
                 scrollToDay(todayIndex);
             }, 150);
         }
+    },
+    
+    // NOUVEAU : Sauvegarder la position actuelle
+    saveCurrentPosition() {
+        const days = document.querySelectorAll('.timeline-day');
+        if (!days.length) return;
+        
+        const container = document.querySelector('.timeline-container');
+        if (!container) return;
+        
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + (containerRect.width / 2);
+        
+        let closestDay = null;
+        let closestDistance = Infinity;
+        
+        days.forEach(day => {
+            const dayRect = day.getBoundingClientRect();
+            const dayCenter = dayRect.left + (dayRect.width / 2);
+            const distance = Math.abs(containerCenter - dayCenter);
+            
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestDay = day;
+            }
+        });
+        
+        if (closestDay) {
+            this.savedScrollPosition = closestDay.dataset.date;
+            console.log('✅ Position sauvegardée:', this.savedScrollPosition);
+        }
+    },
+    
+    // NOUVEAU : Retourner à la position sauvegardée
+    scrollToSavedPosition() {
+        if (!this.savedScrollPosition) return;
+        
+        const savedDay = document.querySelector(`[data-date="${this.savedScrollPosition}"]`);
+        if (savedDay) {
+            // Scroll horizontal vers le jour
+            const container = document.querySelector('.timeline-container');
+            const days = document.querySelectorAll('.timeline-day');
+            let dayIndex = -1;
+            
+            days.forEach((day, index) => {
+                if (day.dataset.date === this.savedScrollPosition) {
+                    dayIndex = index;
+                }
+            });
+            
+            if (dayIndex !== -1 && container) {
+                const dayWidth = container.scrollWidth / days.length;
+                container.scrollTo({
+                    left: dayWidth * dayIndex,
+                    behavior: 'instant'
+                });
+            }
+            
+            // Scroll vertical vers le header
+            const dayHeader = savedDay.querySelector('.timeline-date-header');
+            if (dayHeader) {
+                const headerTop = dayHeader.getBoundingClientRect().top + window.pageYOffset;
+                window.scrollTo({
+                    top: headerTop - 100,
+                    behavior: 'instant'
+                });
+            }
+            
+            console.log('✅ Retour à la position:', this.savedScrollPosition);
+        }
+        
+        // Reset
+        this.savedScrollPosition = null;
     },
     
     // NOUVEAU : Détecter changement de jour au scroll

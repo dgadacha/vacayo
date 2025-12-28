@@ -238,6 +238,10 @@ const app = {
 
     async saveItem(e) {
         e.preventDefault();
+
+        if (document.getElementById('calendarView').style.display !== 'none') {
+            CalendarView.saveCurrentPosition();
+        }
         
         // Vérifier les permissions
         if (!currentTrip.canEdit()) {
