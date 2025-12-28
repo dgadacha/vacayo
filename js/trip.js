@@ -407,6 +407,11 @@ const app = {
         const itemType = detailContent.dataset.itemType;
         
         if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
+
+        // Sauvegarder la position du calendrier si on est dessus
+        if (document.getElementById('calendarView').style.display !== 'none') {
+            CalendarView.saveCurrentPosition();
+        }
         
         const result = await FirebaseService.deleteActivity(currentTripId, itemId);
         
