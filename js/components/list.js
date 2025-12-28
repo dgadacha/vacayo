@@ -99,12 +99,12 @@ const ListView = {
                              alt="${item.name}" 
                              class="timeline-card-photo" 
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="timeline-card-photo-placeholder" style="display: none;">
-                            <i data-lucide="${getCategoryIcon(item.type, item.category)}"></i>
+                        <div class="timeline-card-photo-placeholder" style="display: none; background: linear-gradient(135deg, ${getCategoryIcon(item.type, item.category).color}22 0%, ${getCategoryIcon(item.type, item.category).color}11 100%);">
+                            <i data-lucide="${getCategoryIcon(item.type, item.category).icon}" style="color: ${getCategoryIcon(item.type, item.category).color};"></i>
                         </div>
                     ` : `
-                        <div class="timeline-card-photo-placeholder">
-                            <i data-lucide="${getCategoryIcon(item.type, item.category)}"></i>
+                        <div class="timeline-card-photo-placeholder" style="background: linear-gradient(135deg, ${getCategoryIcon(item.type, item.category).color}22 0%, ${getCategoryIcon(item.type, item.category).color}11 100%);">
+                            <i data-lucide="${getCategoryIcon(item.type, item.category).icon}" style="color: ${getCategoryIcon(item.type, item.category).color};"></i>
                         </div>
                     `}
                     

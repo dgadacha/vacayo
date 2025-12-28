@@ -1595,8 +1595,8 @@ select:focus, input:focus, textarea:focus {
 }
 
 .timeline-card-photo-placeholder i {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
 }
 
 .stat-subtext {
