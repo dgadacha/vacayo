@@ -157,6 +157,9 @@ const app = {
     },
 
     renderAll() {
+        // Vider le cache
+        FilterCache.clear();
+
         // Mettre à jour le filtre ville
         this.updateCityFilter();
         
@@ -370,7 +373,7 @@ const app = {
             
             // Update Firestore
             await FirebaseService.updateActivity(currentTripId, id, { isDone: item.isDone });
-            
+
             this.renderAll();
             Dashboard.update(this.hotels, this.restaurants, this.activities);
         }
@@ -415,7 +418,7 @@ const app = {
             } else {
                 this.activities = this.activities.filter(a => a.id !== itemId);
             }
-            
+
             this.renderAll();
             Dashboard.update(this.hotels, this.restaurants, this.activities);
             ModalManager.close('detailModal');
@@ -545,6 +548,7 @@ const app = {
                 this.hotels = hotels;
                 this.restaurants = restaurants;
                 this.activities = activities;
+
                 this.renderAll();
                 Dashboard.update(this.hotels, this.restaurants, this.activities);
 
@@ -754,7 +758,7 @@ async function saveQuickDate() {
         // Re-render
         app.renderAll();
         Dashboard.update(app.hotels, app.restaurants, app.activities);
-        
+
         // Fermer la modal
         closeModal('quickDateModal');
         currentQuickDateItem = null;
