@@ -8,8 +8,8 @@ const Dashboard = {
         const itemsWithDate = [...hotels, ...restaurants, ...activities].filter(item => item.date);
         const totalBudget = itemsWithDate.reduce((sum, item) => sum + (item.price || 0), 0);
 
-        // Budget estimé total (restaurants + activités uniquement)
-        const totalEstimatedBudget = [...restaurants, ...activities].reduce((sum, item) => sum + (item.price || 0), 0);
+        // Budget estimé total
+        const totalEstimatedBudget = [...restaurants, ...activities, ...hotels].reduce((sum, item) => sum + (item.price || 0), 0);
         
         const currencySymbol = currentTrip?.currencySymbol || '¥';
         document.getElementById('totalBudget').textContent = totalBudget.toLocaleString() + currencySymbol;
