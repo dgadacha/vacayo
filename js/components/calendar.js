@@ -74,8 +74,19 @@ const CalendarView = {
         
         sortedDates.forEach(dateKey => {
             const date = new Date(dateKey + 'T00:00:00');
-            const dayItems = SortManager.applySorting(itemsByDate[dateKey]);
-            
+
+            // Trier les items : hôtels d'abord, puis par heure croissante
+            const dayItems = itemsByDate[dateKey].sort((a, b) => {
+                // Hôtels toujours en premier
+                if (a.type === 'hotel' && b.type !== 'hotel') return -1;
+                if (a.type !== 'hotel' && b.type === 'hotel') return 1;
+                
+                // Si même type, trier par heure
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateA - dateB;
+            });
+
             const dayName = date.toLocaleDateString('fr-FR', { weekday: 'long' });
             const dayNumber = date.getDate();
             const monthName = date.toLocaleDateString('fr-FR', { month: 'long' });
