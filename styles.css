@@ -1890,3 +1890,10 @@ select:focus, input:focus, textarea:focus {
         gap: 12px;
     }
 }
+
+.city-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 2px 0;
+    font-weight: 500;
+}

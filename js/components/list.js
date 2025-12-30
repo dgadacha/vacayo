@@ -89,6 +89,12 @@ const ListView = {
                     <div class="flight-route-simple">
                         <div class="flight-city">
                             <div class="city-name">${item.departureCity || item.departureAirport || ''}</div>
+                            ${item.departureDate ? `
+                            <div class="city-date">${new Date(item.departureDate).toLocaleDateString('fr-FR', { 
+                                day: 'numeric', 
+                                month: 'short'
+                            })}</div>
+                        ` : ''}
                             <div class="city-time">${departureTime}</div>
                         </div>
                         
@@ -100,6 +106,12 @@ const ListView = {
                         
                         <div class="flight-city">
                             <div class="city-name">${item.arrivalCity || item.arrivalAirport || ''}</div>
+                            ${item.arrivalDate ? `
+                            <div class="city-date">${new Date(item.arrivalDate).toLocaleDateString('fr-FR', { 
+                                day: 'numeric', 
+                                month: 'short'
+                            })}</div>
+                        ` : ''}
                             <div class="city-time">${arrivalTime}</div>
                         </div>
                     </div>
