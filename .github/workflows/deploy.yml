@@ -29,6 +29,15 @@ jobs:
 
       - run: npm ci
 
+      # Workaround for npm/cli#4828: optional platform-specific binaries
+      # (@rollup/rollup-linux-x64-gnu, @esbuild/linux-x64) sometimes don't
+      # get installed by 'npm ci' on Linux runners. Force-install them.
+      - name: Ensure Linux native binaries
+        run: |
+          npm install --no-save --no-package-lock --silent \
+            @rollup/rollup-linux-x64-gnu \
+            @esbuild/linux-x64 || true
+
       - name: Build
         run: npm run build
         env:
