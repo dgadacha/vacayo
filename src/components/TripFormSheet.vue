@@ -1,8 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useTripsStore } from '@/stores/trips'
-import { CURRENCIES } from '@/utils/helpers'
-import { X, Save, Plus, Plane, MapPin, Globe2, Calendar, Wallet, Image, Loader2, CircleDollarSign } from 'lucide-vue-next'
+import { CURRENCIES, formatDate } from '@/utils/helpers'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -16,6 +15,9 @@ const saving = ref(false)
 const error = ref('')
 
 const form = ref(emptyForm())
+const showStartPicker = ref(false)
+const showEndPicker = ref(false)
+const showCurrencyPicker = ref(false)
 
 function emptyForm() {
   return {
@@ -47,12 +49,39 @@ watch(() => props.modelValue, (open) => {
   }
 })
 
-function onCurrencyChange(code) {
+const currencyLabel = computed(() => {
+  const c = CURRENCIES.find(x => x.code === form.value.currency)
+  return c ? `${c.symbol} — ${c.code}` : form.value.currency
+})
+
+const currencyColumns = computed(() =>
+  CURRENCIES.map(c => ({ text: `${c.symbol} — ${c.code} (${c.label})`, value: c.code }))
+)
+
+function onCurrencyConfirm({ selectedOptions }) {
+  const code = selectedOptions[0].value
   const c = CURRENCIES.find(x => x.code === code)
   if (c) {
     form.value.currency = c.code
     form.value.currencySymbol = c.symbol
   }
+  showCurrencyPicker.value = false
+}
+
+function parseToColumns(value) {
+  if (!value) return [String(new Date().getFullYear()), '01', '01']
+  const d = value.includes('T') ? value.split('T')[0] : value
+  const [y, m, day] = d.split('-')
+  return [y, m, day]
+}
+
+function onStartConfirm({ selectedValues }) {
+  form.value.startDate = selectedValues.join('-')
+  showStartPicker.value = false
+}
+function onEndConfirm({ selectedValues }) {
+  form.value.endDate = selectedValues.join('-')
+  showEndPicker.value = false
 }
 
 function close() { if (!saving.value) emit('update:modelValue', false) }
@@ -89,106 +118,143 @@ async function submit() {
     :close-on-click-overlay="!saving"
     :style="{ maxHeight: '92vh' }"
   >
-    <form @submit.prevent="submit" class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
-        <div>
-          <div class="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 flex items-center justify-between rounded-t-3xl z-10">
-            <button type="button" @click="close" :disabled="saving" class="btn-icon -ml-1 disabled:opacity-40">
-              <X class="w-5 h-5" :stroke-width="2" />
-            </button>
-            <h2 class="font-semibold tracking-tight">{{ isEdit ? 'Modifier le voyage' : 'Nouveau voyage' }}</h2>
-            <button :disabled="saving" type="submit" class="btn-accent !py-1.5 !px-3 text-xs">
-              <Loader2 v-if="saving" class="w-3.5 h-3.5 animate-spin" :stroke-width="2.5" />
-              <Save v-else class="w-3.5 h-3.5" :stroke-width="2.5" />
-              {{ saving ? '' : 'Sauver' }}
-            </button>
-          </div>
+    <div class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
+      <van-nav-bar
+        :title="isEdit ? 'Modifier le voyage' : 'Nouveau voyage'"
+        left-text="Annuler"
+        :right-text="saving ? 'Enregistrement…' : 'Sauver'"
+        @click-left="close"
+        @click-right="submit"
+        :border="false"
+      />
 
-          <div class="p-5 space-y-4">
-            <div>
-              <label class="label">Nom *</label>
-              <div class="relative">
-                <Plane class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                <input v-model="form.name" required class="input pl-9" placeholder="Japon 2026" />
-              </div>
-            </div>
+      <van-form @submit="submit" class="pb-4">
+        <van-cell-group inset title="Infos">
+          <van-field
+            v-model="form.name"
+            name="name"
+            label="Nom"
+            placeholder="Japon 2026"
+            required
+            :rules="[{ required: true, message: 'Nom requis' }]"
+            clearable
+          />
+          <van-field
+            v-model="form.destination"
+            label="Destination"
+            placeholder="Tokyo"
+            clearable
+          />
+          <van-field
+            v-model="form.country"
+            label="Pays"
+            placeholder="Japon"
+            clearable
+          />
+        </van-cell-group>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="label">Destination</label>
-                <div class="relative">
-                  <MapPin class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                  <input v-model="form.destination" class="input pl-9" placeholder="Tokyo" />
-                </div>
-              </div>
-              <div>
-                <label class="label">Pays</label>
-                <div class="relative">
-                  <Globe2 class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                  <input v-model="form.country" class="input pl-9" placeholder="Japon" />
-                </div>
-              </div>
-            </div>
+        <van-cell-group inset title="Dates" class="!mt-4">
+          <van-field
+            readonly
+            clickable
+            :model-value="form.startDate ? formatDate(form.startDate, 'd MMM yyyy') : ''"
+            label="Début"
+            placeholder="Choisir"
+            right-icon="calendar-o"
+            @click="showStartPicker = true"
+          />
+          <van-field
+            readonly
+            clickable
+            :model-value="form.endDate ? formatDate(form.endDate, 'd MMM yyyy') : ''"
+            label="Fin"
+            placeholder="Choisir"
+            right-icon="calendar-o"
+            @click="showEndPicker = true"
+          />
+        </van-cell-group>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="label">Début</label>
-                <div class="relative">
-                  <Calendar class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                  <input v-model="form.startDate" type="date" class="input pl-9" />
-                </div>
-              </div>
-              <div>
-                <label class="label">Fin</label>
-                <div class="relative">
-                  <Calendar class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                  <input v-model="form.endDate" type="date" class="input pl-9" />
-                </div>
-              </div>
-            </div>
+        <van-cell-group inset title="Budget" class="!mt-4">
+          <van-field
+            readonly
+            clickable
+            :model-value="currencyLabel"
+            label="Devise"
+            right-icon="arrow"
+            @click="showCurrencyPicker = true"
+          />
+          <van-field
+            v-model.number="form.budget"
+            label="Total"
+            type="number"
+            placeholder="0"
+          >
+            <template #button>
+              <span class="text-slate-500 text-sm">{{ form.currencySymbol }}</span>
+            </template>
+          </van-field>
+        </van-cell-group>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="label">Devise</label>
-                <div class="relative">
-                  <CircleDollarSign class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                  <select :value="form.currency" @change="onCurrencyChange($event.target.value)" class="input pl-9 appearance-none">
-                    <option v-for="c in CURRENCIES" :key="c.code" :value="c.code">{{ c.symbol }} — {{ c.code }} ({{ c.label }})</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label class="label">Budget total</label>
-                <div class="relative">
-                  <Wallet class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                  <input v-model.number="form.budget" type="number" min="0" class="input pl-9" placeholder="0" />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label class="label">Image de couverture (URL)</label>
-              <div class="relative">
-                <Image class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" :stroke-width="2" />
-                <input v-model="form.coverImage" type="url" class="input pl-9" placeholder="https://…" />
-              </div>
-              <div v-if="form.coverImage" class="mt-2 rounded-lg overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700 aspect-video bg-slate-50 dark:bg-slate-800">
-                <img :src="form.coverImage" class="w-full h-full object-cover" @error="$event.target.style.display='none'" />
-              </div>
-            </div>
-
-            <p v-if="error" class="text-sm text-red-600 bg-red-50 ring-1 ring-red-100 dark:bg-red-950/50 dark:ring-red-900 dark:text-red-400 rounded-lg px-3 py-2">{{ error }}</p>
-
-            <div class="pt-2 safe-bottom">
-              <button :disabled="saving" type="submit" class="btn-primary w-full py-3">
-                <Loader2 v-if="saving" class="w-4 h-4 animate-spin" :stroke-width="2.5" />
-                <template v-else>
-                  <component :is="isEdit ? Save : Plus" class="w-4 h-4" :stroke-width="2.5" />
-                  {{ isEdit ? 'Mettre à jour' : 'Créer' }}
-                </template>
-              </button>
-            </div>
-          </div>
+        <van-cell-group inset title="Image de couverture" class="!mt-4">
+          <van-field
+            v-model="form.coverImage"
+            label="URL"
+            placeholder="https://…"
+            clearable
+          />
+        </van-cell-group>
+        <div v-if="form.coverImage" class="mx-4 mt-2 rounded-xl overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700 aspect-video bg-slate-50 dark:bg-slate-800">
+          <img :src="form.coverImage" class="w-full h-full object-cover" @error="$event.target.style.display='none'" />
         </div>
-      </form>
+
+        <div v-if="error" class="mx-4 mt-3">
+          <van-notice-bar :text="error" color="#dc2626" background="#fef2f2" />
+        </div>
+
+        <div class="px-4 mt-5">
+          <van-button
+            block
+            type="primary"
+            size="large"
+            round
+            native-type="submit"
+            :loading="saving"
+          >
+            {{ isEdit ? 'Mettre à jour' : 'Créer' }}
+          </van-button>
+        </div>
+      </van-form>
+    </div>
+  </van-popup>
+
+  <!-- Pickers (teleported above the popup) -->
+  <van-popup v-model:show="showStartPicker" position="bottom" round teleport="body">
+    <van-date-picker
+      :model-value="parseToColumns(form.startDate)"
+      :min-date="new Date(2020, 0, 1)"
+      :max-date="new Date(2035, 11, 31)"
+      title="Date de début"
+      @confirm="onStartConfirm"
+      @cancel="showStartPicker = false"
+    />
+  </van-popup>
+  <van-popup v-model:show="showEndPicker" position="bottom" round teleport="body">
+    <van-date-picker
+      :model-value="parseToColumns(form.endDate)"
+      :min-date="new Date(2020, 0, 1)"
+      :max-date="new Date(2035, 11, 31)"
+      title="Date de fin"
+      @confirm="onEndConfirm"
+      @cancel="showEndPicker = false"
+    />
+  </van-popup>
+  <van-popup v-model:show="showCurrencyPicker" position="bottom" round teleport="body">
+    <van-picker
+      :model-value="[form.currency]"
+      :columns="currencyColumns"
+      title="Devise"
+      @confirm="onCurrencyConfirm"
+      @cancel="showCurrencyPicker = false"
+    />
   </van-popup>
 </template>

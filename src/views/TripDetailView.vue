@@ -151,21 +151,32 @@ function back() { router.push({ name: 'trips' }) }
 
 const showMenu = ref(false)
 const showEditTrip = ref(false)
-function toggleMenu() { showMenu.value = !showMenu.value }
-function closeMenu() { showMenu.value = false }
+
+const menuActions = computed(() => {
+  const a = []
+  if (canEdit.value) a.push({ text: 'Modifier le voyage', key: 'edit', icon: 'edit' })
+  a.push({ text: `Exporter (${activities.all.length})`, key: 'export', icon: 'down' })
+  if (trips.isOwner(trip.value)) a.push({ text: 'Supprimer', key: 'delete', icon: 'delete', color: '#dc2626' })
+  return a
+})
+
+function onMenuSelect(action) {
+  showMenu.value = false
+  if (action.key === 'edit') handleEditTrip()
+  else if (action.key === 'export') handleExport()
+  else if (action.key === 'delete') handleDeleteTrip()
+}
 
 function handleExport() {
   if (!trip.value) return
   const payload = exportTrip(trip.value, activities.all)
   downloadJson(safeFilename(trip.value.name), payload)
   toast.success(`Voyage exporté (${activities.all.length} items)`)
-  closeMenu()
 }
 
 function handleEditTrip() {
   if (!canEdit.value) return
   showEditTrip.value = true
-  closeMenu()
 }
 
 function onTripSaved(t) {
@@ -175,7 +186,6 @@ function onTripSaved(t) {
 
 async function handleDeleteTrip() {
   if (!trips.isOwner(trip.value)) { toast.error('Seul le propriétaire peut supprimer'); return }
-  closeMenu()
   const ok = await confirm({
     title: `Supprimer "${trip.value.name}" ?`,
     message: 'Les activités liées resteront en base. Cette action est irréversible.',
@@ -196,58 +206,51 @@ async function handleDeleteTrip() {
 <template>
   <Skeleton v-if="!trip" variant="trip-detail" />
   <main v-else class="min-h-screen pb-28 bg-slate-50 dark:bg-slate-950 overflow-x-clip">
-    <header class="sticky top-0 z-20 bg-white/85 dark:bg-slate-950/85 backdrop-blur border-b border-slate-200/70 dark:border-slate-800/70 safe-top">
-      <div class="max-w-2xl mx-auto px-3 py-2.5 flex items-center gap-2">
-        <button @click="back" class="btn-icon" aria-label="Retour">
+    <van-nav-bar fixed placeholder safe-area-inset-top :border="true">
+      <template #left>
+        <button @click="back" class="btn-icon -ml-1" aria-label="Retour">
           <ArrowLeft class="w-5 h-5" :stroke-width="2" />
         </button>
-        <div class="flex items-center gap-2.5 min-w-0 flex-1">
-          <div class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 relative">
+      </template>
+      <template #title>
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 relative">
             <img v-if="trip.coverImage" :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display='none'" />
             <div v-else class="absolute inset-0 flex items-center justify-center bg-gradient-to-br text-white" :class="tripGradient">
-              <Plane class="w-4 h-4" :stroke-width="2" />
+              <Plane class="w-3.5 h-3.5" :stroke-width="2" />
             </div>
           </div>
-          <div class="min-w-0 flex-1">
-            <h1 class="font-semibold tracking-tight truncate leading-tight text-[15px]">{{ trip.name }}</h1>
-            <div class="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-              <MapPin v-if="headerLine" class="w-3 h-3 flex-shrink-0" :stroke-width="2" />
+          <div class="min-w-0 text-left">
+            <h1 class="font-semibold tracking-tight truncate leading-tight text-[14px]">{{ trip.name }}</h1>
+            <div class="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400 font-normal -mt-0.5">
               <span class="truncate">{{ headerLine }}</span>
-              <span v-if="trip.startDate" class="text-slate-300 dark:text-slate-600">·</span>
+              <span v-if="trip.startDate && headerLine" class="text-slate-300 dark:text-slate-600">·</span>
               <span v-if="trip.startDate" class="whitespace-nowrap">{{ formatDate(trip.startDate, 'd MMM') }}<span v-if="trip.endDate"> → {{ formatDate(trip.endDate, 'd MMM') }}</span></span>
             </div>
           </div>
-          <span v-if="role === 'viewer'" class="chip bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700">
-            <Lock class="w-3 h-3" :stroke-width="2" />
-            Lecture
-          </span>
-          <div class="relative">
-            <button @click="toggleMenu" class="btn-icon" aria-label="Menu">
-              <MoreVertical class="w-5 h-5" :stroke-width="2" />
-            </button>
-            <Transition name="fade">
-              <div v-if="showMenu" class="absolute right-0 top-full mt-1 z-40 w-56 card !rounded-xl shadow-lg p-1">
-                <button v-if="canEdit" @click="handleEditTrip" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 text-sm">
-                  <Pencil class="w-4 h-4 text-slate-500 dark:text-slate-400" :stroke-width="2" />
-                  <span>Modifier le voyage</span>
-                </button>
-                <button @click="handleExport" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 text-sm">
-                  <Download class="w-4 h-4 text-slate-500 dark:text-slate-400" :stroke-width="2" />
-                  <span>Exporter en JSON</span>
-                  <span class="ml-auto text-[10px] text-slate-400">{{ activities.all.length }}</span>
-                </button>
-                <div v-if="trips.isOwner(trip)" class="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
-                <button v-if="trips.isOwner(trip)" @click="handleDeleteTrip" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/50 flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
-                  <Trash2 class="w-4 h-4" :stroke-width="2" />
-                  <span>Supprimer le voyage</span>
-                </button>
-              </div>
-            </Transition>
-            <div v-if="showMenu" class="fixed inset-0 z-30" @click="closeMenu" />
-          </div>
         </div>
-      </div>
-    </header>
+      </template>
+      <template #right>
+        <div class="flex items-center gap-0.5 -mr-1">
+          <span v-if="role === 'viewer'" class="chip bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 mr-1">
+            <Lock class="w-3 h-3" :stroke-width="2" />
+          </span>
+          <van-popover
+            v-model:show="showMenu"
+            placement="bottom-end"
+            :actions="menuActions"
+            @select="onMenuSelect"
+            teleport="body"
+          >
+            <template #reference>
+              <button class="btn-icon" aria-label="Menu">
+                <MoreVertical class="w-5 h-5" :stroke-width="2" />
+              </button>
+            </template>
+          </van-popover>
+        </div>
+      </template>
+    </van-nav-bar>
 
     <div class="max-w-2xl mx-auto" @touchstart.passive="onTabSwipeStart" @touchend.passive="onTabSwipeEnd" @touchcancel.passive="onTabSwipeEnd">
       <template v-if="currentTab.key !== 'map'">
