@@ -1,0 +1,26 @@
+<script setup>
+import { useActivitiesStore } from '@/stores/activities'
+import ActivityCard from '@/components/ActivityCard.vue'
+import EmptyState from '@/components/EmptyState.vue'
+import Skeleton from '@/components/Skeleton.vue'
+import { Compass } from 'lucide-vue-next'
+
+defineProps({ onEdit: Function, onView: Function })
+const activities = useActivitiesStore()
+</script>
+
+<template>
+  <div class="px-4 pt-3 pb-4 space-y-2.5">
+    <Skeleton v-if="activities.loading && activities.all.length === 0" variant="activity" :count="4" />
+    <template v-else>
+      <EmptyState v-if="activities.filteredActivities.length === 0" :icon="Compass" title="Aucune activité" message="Musées, parcs, expériences, shopping…" />
+      <ActivityCard
+        v-for="a in activities.filteredActivities"
+        :key="a.id"
+        :activity="a"
+        @edit="onEdit && onEdit($event)"
+        @view="onView && onView($event)"
+      />
+    </template>
+  </div>
+</template>
