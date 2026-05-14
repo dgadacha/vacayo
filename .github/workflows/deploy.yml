@@ -22,12 +22,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
+
+      - run: node --version && npm --version
 
       - run: npm ci
 
-      - run: npm run build
+      - name: Build
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
 
       # SPA fallback: GitHub Pages serves 404.html for unknown paths.
       # Copy index.html so Vue Router can take over on any route.
