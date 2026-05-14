@@ -3,10 +3,6 @@ import { computed, inject, ref } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
 import { ACTIVITY_TYPES, PRIORITY_OPTIONS } from '@/utils/constants'
 import { formatPrice, formatDate, formatTime, colorFromString } from '@/utils/helpers'
-import {
-  X, Check, MapPin, ExternalLink, Pencil, Trash2, BadgeCheck, Copy,
-  Calendar, Tag, FileText, Receipt
-} from 'lucide-vue-next'
 import { useToast } from '@/composables/useToast'
 import { useConfirm } from '@/composables/useConfirm'
 
@@ -73,6 +69,10 @@ function edit() {
   emit('edit', props.activity)
   close()
 }
+
+const priorityTagType = computed(() => ({
+  'must-do': 'danger', 'high': 'warning', 'normal': 'default'
+}[props.activity?.priority] || 'default'))
 </script>
 
 <template>
@@ -84,101 +84,64 @@ function edit() {
     safe-area-inset-bottom
     teleport="body"
     :style="{ maxHeight: '92vh' }"
+    closeable
   >
-    <div v-if="activity" class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
-          <!-- Photo / hero -->
-          <div class="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden rounded-t-3xl">
-            <img v-if="activity.photoUrl" :src="activity.photoUrl" :alt="activity.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display='none'" />
-            <div v-else class="absolute inset-0 flex items-center justify-center bg-gradient-to-br text-white" :class="placeholderGradient">
-              <component :is="meta?.iconBig" class="w-16 h-16" :stroke-width="1.25" />
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/30" />
-            <button @click="close" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 backdrop-blur text-white flex items-center justify-center hover:bg-black/60" aria-label="Fermer">
-              <X class="w-5 h-5" :stroke-width="2" />
-            </button>
-            <div class="absolute top-3 left-3 flex gap-1.5 flex-wrap">
-              <span class="chip bg-white/95 text-slate-700 ring-white/0">
-                <component :is="meta?.icon" class="w-3 h-3" :stroke-width="2" />
-                {{ meta?.label }}
-              </span>
-              <span v-if="activity.priority !== 'normal'" class="chip" :class="priorityMeta?.color">
-                <span class="w-1.5 h-1.5 rounded-full" :class="priorityMeta?.dot" />
-                {{ priorityMeta?.label }}
-              </span>
-            </div>
-            <div class="absolute bottom-3 left-4 right-4 text-white">
-              <h2 class="text-xl font-bold tracking-tight leading-tight drop-shadow">{{ activity.name }}</h2>
-              <p v-if="activity.category" class="text-sm text-white/85 mt-0.5">{{ activity.category }}</p>
-            </div>
-          </div>
+    <div v-if="activity" class="overflow-y-auto" :style="{ maxHeight: '92vh' }">
+      <!-- Photo / hero -->
+      <div class="relative" style="aspect-ratio: 16/10; overflow: hidden;">
+        <img v-if="activity.photoUrl" :src="activity.photoUrl" :alt="activity.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display='none'" />
+        <div v-else class="absolute inset-0 flex items-center justify-center bg-gradient-to-br text-white" :class="placeholderGradient">
+          <component :is="meta?.iconBig" class="w-16 h-16" :stroke-width="1.25" />
+        </div>
+      </div>
 
-          <!-- Quick actions row -->
-          <div v-if="canEdit" class="flex border-b border-slate-100 dark:border-slate-800">
-            <button @click="toggleDone" class="flex-1 py-3 flex flex-col items-center gap-0.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-              <Check class="w-5 h-5" :class="activity.isDone ? 'text-emerald-600' : 'text-slate-400'" :stroke-width="2.25" />
-              <span class="text-[10px] font-semibold tracking-tight" :class="activity.isDone ? 'text-emerald-600' : 'text-slate-500 dark:text-slate-400'">{{ activity.isDone ? 'Fait' : 'À faire' }}</span>
-            </button>
-            <div class="w-px bg-slate-100 dark:bg-slate-800" />
-            <button @click="toggleBooked" class="flex-1 py-3 flex flex-col items-center gap-0.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-              <BadgeCheck class="w-5 h-5" :class="activity.isBooked ? 'text-sky-600' : 'text-slate-400'" :stroke-width="2.25" />
-              <span class="text-[10px] font-semibold tracking-tight" :class="activity.isBooked ? 'text-sky-600' : 'text-slate-500 dark:text-slate-400'">{{ activity.isBooked ? 'Réservé' : 'Réserver' }}</span>
-            </button>
-            <div class="w-px bg-slate-100 dark:bg-slate-800" />
-            <button @click="edit" class="flex-1 py-3 flex flex-col items-center gap-0.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-              <Pencil class="w-5 h-5 text-slate-500 dark:text-slate-400" :stroke-width="2.25" />
-              <span class="text-[10px] font-semibold tracking-tight text-slate-500 dark:text-slate-400">Modifier</span>
-            </button>
-            <div class="w-px bg-slate-100 dark:bg-slate-800" />
-            <button @click="duplicate" class="flex-1 py-3 flex flex-col items-center gap-0.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-              <Copy class="w-5 h-5 text-slate-500 dark:text-slate-400" :stroke-width="2.25" />
-              <span class="text-[10px] font-semibold tracking-tight text-slate-500 dark:text-slate-400">Dupliquer</span>
-            </button>
+      <div class="p-4">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="min-w-0">
+            <h2 class="text-lg font-bold leading-tight">{{ activity.name }}</h2>
+            <p v-if="activity.category" class="text-sm opacity-70 mt-0.5">{{ activity.category }}</p>
           </div>
+          <div class="flex flex-col gap-1 items-end flex-shrink-0">
+            <van-tag plain size="small">{{ meta?.label }}</van-tag>
+            <van-tag v-if="activity.priority !== 'normal'" :type="priorityTagType" plain size="small">
+              {{ priorityMeta?.label }}
+            </van-tag>
+            <van-tag v-if="activity.isBooked" type="success" size="small">✓ Réservé</van-tag>
+          </div>
+        </div>
+      </div>
 
-          <!-- Details -->
-          <div class="p-5 space-y-3 text-sm">
-            <div v-if="dateLabel" class="flex items-start gap-3">
-              <Calendar class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" :stroke-width="2" />
-              <p class="capitalize">{{ dateLabel }}</p>
-            </div>
-            <div v-if="activity.city" class="flex items-start gap-3">
-              <MapPin class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" :stroke-width="2" />
-              <p>{{ activity.city }}</p>
-            </div>
-            <div v-if="activity.price > 0" class="flex items-start gap-3">
-              <Receipt class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" :stroke-width="2" />
-              <p class="font-semibold">{{ formatPrice(activity.price, symbol) }}</p>
-            </div>
-            <div v-if="activity.category" class="flex items-start gap-3">
-              <Tag class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" :stroke-width="2" />
-              <p>{{ activity.category }}</p>
-            </div>
-            <div v-if="activity.notes" class="flex items-start gap-3">
-              <FileText class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" :stroke-width="2" />
-              <p class="whitespace-pre-line text-slate-700 dark:text-slate-200 leading-relaxed">{{ activity.notes }}</p>
-            </div>
-          </div>
+      <!-- Quick actions -->
+      <van-grid v-if="canEdit" :column-num="4" :border="false">
+        <van-grid-item :icon="activity.isDone ? 'success' : 'passed'" :text="activity.isDone ? 'Fait' : 'À faire'" @click="toggleDone" />
+        <van-grid-item :icon="activity.isBooked ? 'checked' : 'passed'" :text="activity.isBooked ? 'Réservé' : 'Réserver'" @click="toggleBooked" />
+        <van-grid-item icon="edit" text="Modifier" @click="edit" />
+        <van-grid-item icon="records" text="Dupliquer" @click="duplicate" />
+      </van-grid>
 
-          <!-- Links -->
-          <div v-if="activity.googleMapsUrl || activity.bookingUrl" class="px-5 pb-3 space-y-2">
-            <button v-if="activity.googleMapsUrl" @click="openMaps" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition px-3 py-3 flex items-center gap-3 text-left">
-              <MapPin class="w-4 h-4 text-slate-500 dark:text-slate-400" :stroke-width="2" />
-              <span class="flex-1 text-sm font-medium">Ouvrir dans Google Maps</span>
-              <ExternalLink class="w-4 h-4 text-slate-400" :stroke-width="2" />
-            </button>
-            <button v-if="activity.bookingUrl" @click="openBooking" class="w-full rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition px-3 py-3 flex items-center gap-3 text-left">
-              <ExternalLink class="w-4 h-4 text-slate-500 dark:text-slate-400" :stroke-width="2" />
-              <span class="flex-1 text-sm font-medium truncate">{{ activity.bookingUrl }}</span>
-            </button>
-          </div>
+      <!-- Details cell-group -->
+      <van-cell-group inset title="Détails" style="margin-top: 12px;">
+        <van-cell v-if="dateLabel" title="Date" :label="dateLabel" icon="calendar-o" class="capitalize" />
+        <van-cell v-if="activity.city" title="Ville" :label="activity.city" icon="location-o" />
+        <van-cell v-if="activity.price > 0" title="Prix" :label="formatPrice(activity.price, symbol)" icon="balance-o" />
+      </van-cell-group>
 
-          <!-- Delete -->
-          <div v-if="canEdit" class="px-5 pb-6 safe-bottom">
-            <button @click="remove" class="w-full text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-xl py-2.5 flex items-center justify-center gap-2 transition">
-              <Trash2 class="w-4 h-4" :stroke-width="2" />
-              Supprimer
-            </button>
-          </div>
+      <van-cell-group v-if="activity.notes" inset title="Notes" style="margin-top: 12px;">
+        <van-cell>
+          <template #title>
+            <p class="whitespace-pre-line leading-relaxed text-sm">{{ activity.notes }}</p>
+          </template>
+        </van-cell>
+      </van-cell-group>
+
+      <van-cell-group v-if="activity.googleMapsUrl || activity.bookingUrl" inset title="Liens" style="margin-top: 12px;">
+        <van-cell v-if="activity.googleMapsUrl" title="Google Maps" icon="location-o" is-link @click="openMaps" />
+        <van-cell v-if="activity.bookingUrl" title="Site / Booking" icon="link-o" is-link @click="openBooking" />
+      </van-cell-group>
+
+      <div v-if="canEdit" class="px-4 mt-4 mb-6 safe-bottom">
+        <van-button type="danger" plain block round icon="delete-o" @click="remove">Supprimer</van-button>
+      </div>
     </div>
   </van-popup>
 </template>

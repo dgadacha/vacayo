@@ -49,11 +49,10 @@ provide('canEdit', canEdit)
 provide('openTripEditor', () => { if (canEdit.value) showEditTrip.value = true })
 
 const TABS = [
-  { key: 'hotels', label: 'Hôtels', icon: BedDouble, component: markRaw(HotelsTab), defaultType: 'hotel', filterType: 'hotel' },
-  { key: 'restaurants', label: 'Restos', icon: UtensilsCrossed, component: markRaw(RestaurantsTab), defaultType: 'restaurant', filterType: 'restaurant' },
-  { key: 'activities', label: 'Activités', icon: Compass, component: markRaw(ActivitiesTab), defaultType: 'activity', filterType: 'activity' },
-  { key: 'calendar', label: 'Planning', icon: CalendarDays, component: markRaw(CalendarTab), defaultType: 'activity', filterType: null }
-  // { key: 'map', label: 'Carte', icon: Map, component: markRaw(MapTab), defaultType: 'activity', filterType: null }
+  { key: 'hotels', label: 'Hôtels', icon: BedDouble, vanIcon: 'hotel-o', component: markRaw(HotelsTab), defaultType: 'hotel', filterType: 'hotel' },
+  { key: 'restaurants', label: 'Restos', icon: UtensilsCrossed, vanIcon: 'cashier-o', component: markRaw(RestaurantsTab), defaultType: 'restaurant', filterType: 'restaurant' },
+  { key: 'activities', label: 'Activités', icon: Compass, vanIcon: 'compass-o', component: markRaw(ActivitiesTab), defaultType: 'activity', filterType: 'activity' },
+  { key: 'calendar', label: 'Planning', icon: CalendarDays, vanIcon: 'calendar-o', component: markRaw(CalendarTab), defaultType: 'activity', filterType: null }
 ]
 
 const currentTab = computed(() => TABS.find(t => t.key === activeTab.value) || TABS[0])
@@ -205,54 +204,45 @@ async function handleDeleteTrip() {
 
 <template>
   <Skeleton v-if="!trip" variant="trip-detail" />
-  <main v-else class="min-h-screen pb-28 bg-slate-50 dark:bg-slate-950 overflow-x-clip">
-    <van-nav-bar fixed placeholder safe-area-inset-top :border="true">
-      <template #left>
-        <button @click="back" class="btn-icon -ml-1" aria-label="Retour">
-          <ArrowLeft class="w-5 h-5" :stroke-width="2" />
-        </button>
-      </template>
+  <main v-else class="min-h-screen pb-28" style="overflow-x: clip;">
+    <van-nav-bar
+      left-arrow
+      @click-left="back"
+      fixed placeholder safe-area-inset-top
+    >
       <template #title>
-        <div class="flex items-center gap-2 min-w-0">
-          <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 relative">
-            <img v-if="trip.coverImage" :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display='none'" />
-            <div v-else class="absolute inset-0 flex items-center justify-center bg-gradient-to-br text-white" :class="tripGradient">
-              <Plane class="w-3.5 h-3.5" :stroke-width="2" />
-            </div>
+        <div class="flex items-center justify-center gap-2 min-w-0">
+          <van-image v-if="trip.coverImage" :src="trip.coverImage" width="28" height="28" radius="6" fit="cover" />
+          <div v-else class="w-7 h-7 rounded-md flex items-center justify-center bg-gradient-to-br text-white text-[10px] font-bold" :class="tripGradient">
+            {{ (trip.name || '?').charAt(0).toUpperCase() }}
           </div>
           <div class="min-w-0 text-left">
-            <h1 class="font-semibold tracking-tight truncate leading-tight text-[14px]">{{ trip.name }}</h1>
-            <div class="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400 font-normal -mt-0.5">
-              <span class="truncate">{{ headerLine }}</span>
-              <span v-if="trip.startDate && headerLine" class="text-slate-300 dark:text-slate-600">·</span>
-              <span v-if="trip.startDate" class="whitespace-nowrap">{{ formatDate(trip.startDate, 'd MMM') }}<span v-if="trip.endDate"> → {{ formatDate(trip.endDate, 'd MMM') }}</span></span>
+            <div class="text-sm font-semibold truncate">{{ trip.name }}</div>
+            <div class="text-[10px] opacity-60 truncate font-normal -mt-0.5">
+              <span v-if="headerLine">{{ headerLine }}</span>
+              <span v-if="trip.startDate && headerLine"> · </span>
+              <span v-if="trip.startDate">{{ formatDate(trip.startDate, 'd MMM') }}<span v-if="trip.endDate"> → {{ formatDate(trip.endDate, 'd MMM') }}</span></span>
             </div>
           </div>
         </div>
       </template>
       <template #right>
-        <div class="flex items-center gap-0.5 -mr-1">
-          <span v-if="role === 'viewer'" class="chip bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 mr-1">
-            <Lock class="w-3 h-3" :stroke-width="2" />
-          </span>
-          <van-popover
-            v-model:show="showMenu"
-            placement="bottom-end"
-            :actions="menuActions"
-            @select="onMenuSelect"
-            teleport="body"
-          >
-            <template #reference>
-              <button class="btn-icon" aria-label="Menu">
-                <MoreVertical class="w-5 h-5" :stroke-width="2" />
-              </button>
-            </template>
-          </van-popover>
-        </div>
+        <van-tag v-if="role === 'viewer'" type="default" plain size="mini" style="margin-right: 8px;">Lecture</van-tag>
+        <van-popover
+          v-model:show="showMenu"
+          placement="bottom-end"
+          :actions="menuActions"
+          @select="onMenuSelect"
+          teleport="body"
+        >
+          <template #reference>
+            <van-icon name="ellipsis" size="22" />
+          </template>
+        </van-popover>
       </template>
     </van-nav-bar>
 
-    <div class="max-w-2xl mx-auto" @touchstart.passive="onTabSwipeStart" @touchend.passive="onTabSwipeEnd" @touchcancel.passive="onTabSwipeEnd">
+    <div @touchstart.passive="onTabSwipeStart" @touchend.passive="onTabSwipeEnd" @touchcancel.passive="onTabSwipeEnd">
       <template v-if="currentTab.key !== 'map'">
         <DashboardStats />
         <BudgetBar />
@@ -266,27 +256,21 @@ async function handleDeleteTrip() {
     <van-tabbar
       :model-value="activeTab"
       @change="setTab"
-      active-color="var(--van-text-color)"
-      inactive-color="var(--van-text-color-3)"
       safe-area-inset-bottom
       placeholder
     >
-      <van-tabbar-item v-for="t in TABS" :key="t.key" :name="t.key">
-        <span class="!text-[10px] !font-semibold !tracking-tight">{{ t.label }}</span>
-        <template #icon>
-          <component :is="t.icon" class="w-[22px] h-[22px]" :stroke-width="activeTab === t.key ? 2.25 : 1.75" />
-        </template>
+      <van-tabbar-item v-for="t in TABS" :key="t.key" :name="t.key" :icon="t.vanIcon">
+        {{ t.label }}
       </van-tabbar-item>
     </van-tabbar>
 
-    <button
+    <van-floating-bubble
       v-if="canEdit && currentTab.key !== 'map'"
+      icon="plus"
+      axis="lock"
+      magnetic="x"
       @click="openAdd"
-      class="fixed bottom-[4.5rem] right-4 z-30 w-14 h-14 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-lg shadow-slate-900/25 flex items-center justify-center hover:bg-slate-800 dark:hover:bg-slate-200 active:scale-95 transition"
-      :aria-label="`Ajouter ${currentTab.label.toLowerCase()}`"
-    >
-      <Plus class="w-6 h-6" :stroke-width="2.5" />
-    </button>
+    />
 
     <LongPressHint :active="showLongPressHint" />
 
