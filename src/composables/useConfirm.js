@@ -1,35 +1,23 @@
-import { ref, reactive } from 'vue'
-
-const state = reactive({
-  open: false,
-  title: '',
-  message: '',
-  confirmLabel: 'Confirmer',
-  cancelLabel: 'Annuler',
-  destructive: false,
-  resolve: null
-})
+import { showConfirmDialog } from 'vant'
+import 'vant/es/dialog/style'
 
 export function useConfirm() {
-  function confirm(opts = {}) {
-    return new Promise((resolve) => {
-      state.title = opts.title || 'Confirmer'
-      state.message = opts.message || ''
-      state.confirmLabel = opts.confirmLabel || 'Confirmer'
-      state.cancelLabel = opts.cancelLabel || 'Annuler'
-      state.destructive = !!opts.destructive
-      state.resolve = resolve
-      state.open = true
-    })
+  async function confirm(opts = {}) {
+    try {
+      await showConfirmDialog({
+        title: opts.title || 'Confirmer',
+        message: opts.message,
+        confirmButtonText: opts.confirmLabel || 'Confirmer',
+        cancelButtonText: opts.cancelLabel || 'Annuler',
+        confirmButtonColor: opts.destructive ? '#dc2626' : '#0f172a',
+        closeOnPopstate: true,
+        showCancelButton: true,
+        teleport: 'body'
+      })
+      return true
+    } catch {
+      return false
+    }
   }
   return { confirm }
-}
-
-export function useConfirmState() {
-  function handle(value) {
-    state.open = false
-    state.resolve?.(value)
-    state.resolve = null
-  }
-  return { state, handle }
 }

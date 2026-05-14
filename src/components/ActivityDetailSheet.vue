@@ -76,11 +76,16 @@ function edit() {
 </script>
 
 <template>
-  <Transition name="sheet">
-    <div v-if="modelValue && activity" class="fixed inset-0 z-[60]">
-      <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="close" />
-      <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg max-h-[92vh] overflow-y-auto animate-slide-up shadow-xl">
+  <van-popup
+    :show="modelValue"
+    @update:show="$emit('update:modelValue', $event)"
+    position="bottom"
+    round
+    safe-area-inset-bottom
+    teleport="body"
+    :style="{ maxHeight: '92vh' }"
+  >
+    <div v-if="activity" class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
           <!-- Photo / hero -->
           <div class="relative aspect-[4/3] sm:aspect-[16/9] overflow-hidden rounded-t-3xl">
             <img v-if="activity.photoUrl" :src="activity.photoUrl" :alt="activity.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display='none'" />
@@ -174,13 +179,6 @@ function edit() {
               Supprimer
             </button>
           </div>
-        </div>
-      </div>
     </div>
-  </Transition>
+  </van-popup>
 </template>
-
-<style scoped>
-.sheet-enter-active, .sheet-leave-active { transition: opacity 0.25s ease; }
-.sheet-enter-from, .sheet-leave-to { opacity: 0; }
-</style>

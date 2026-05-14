@@ -99,11 +99,24 @@ function onCardClick(e) {
   emit('view', props.activity)
 }
 
-async function actionDuplicate() { closeActions(); await duplicate() }
-async function actionDelete() { closeActions(); await remove() }
-function actionToggleDone() { closeActions(); toggleDone() }
-function actionToggleBooked() { closeActions(); toggleBooked() }
-function actionEdit() { closeActions(); emit('edit', props.activity) }
+const actionSheetItems = computed(() => [
+  { name: 'Modifier', key: 'edit' },
+  { name: props.activity.isDone ? 'Marquer à faire' : 'Marquer fait', key: 'done' },
+  { name: props.activity.isBooked ? 'Marquer non réservé' : 'Marquer réservé', key: 'booked' },
+  { name: 'Dupliquer', key: 'duplicate' },
+  { name: 'Supprimer', key: 'delete', color: '#dc2626' }
+])
+
+async function onActionSelect(item) {
+  showActions.value = false
+  switch (item.key) {
+    case 'edit': emit('edit', props.activity); break
+    case 'done': toggleDone(); break
+    case 'booked': toggleBooked(); break
+    case 'duplicate': await duplicate(); break
+    case 'delete': await remove(); break
+  }
+}
 </script>
 
 <template>
@@ -195,49 +208,21 @@ function actionEdit() { closeActions(); emit('edit', props.activity) }
       </div>
     </div>
 
-    <Teleport to="body">
-      <Transition name="actions">
-        <div v-if="showActions" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-          <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeActions" />
-          <div class="relative w-full sm:max-w-sm bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl p-2 pb-4 sm:pb-2 safe-bottom animate-slide-up shadow-xl">
-            <div class="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mt-2 mb-2 sm:hidden" />
-            <div class="px-3 py-2">
-              <p class="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold">Actions</p>
-              <h3 class="font-semibold text-sm truncate">{{ activity.name }}</h3>
-            </div>
-            <div class="space-y-0.5">
-              <button @click="actionEdit" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-sm">
-                <Pencil class="w-4 h-4 text-slate-500 dark:text-slate-400" :stroke-width="2" />
-                <span>Modifier</span>
-              </button>
-              <button @click="actionToggleDone" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-sm">
-                <Check class="w-4 h-4 text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
-                <span>{{ activity.isDone ? 'Marquer à faire' : 'Marquer fait' }}</span>
-              </button>
-              <button @click="actionToggleBooked" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-sm">
-                <BadgeCheck class="w-4 h-4 text-sky-600 dark:text-sky-400" :stroke-width="2" />
-                <span>{{ activity.isBooked ? 'Marquer non réservé' : 'Marquer réservé' }}</span>
-              </button>
-              <button @click="actionDuplicate" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-3 text-sm">
-                <Copy class="w-4 h-4 text-slate-500 dark:text-slate-400" :stroke-width="2" />
-                <span>Dupliquer</span>
-              </button>
-              <div class="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
-              <button @click="actionDelete" class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/50 flex items-center gap-3 text-sm text-red-600 dark:text-red-400">
-                <Trash2 class="w-4 h-4" :stroke-width="2" />
-                <span>Supprimer</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
+    <van-action-sheet
+      :show="showActions"
+      @update:show="showActions = $event"
+      :title="activity.name"
+      teleport="body"
+      cancel-text="Annuler"
+      close-on-click-action
+      :actions="actionSheetItems"
+      @select="onActionSelect"
+      @cancel="closeActions"
+    />
   </article>
 </template>
 
 <style scoped>
-.actions-enter-active, .actions-leave-active { transition: opacity 0.2s ease; }
-.actions-enter-from, .actions-leave-to { opacity: 0; }
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;

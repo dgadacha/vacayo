@@ -68,23 +68,25 @@ function onImported(res) {
 
 <template>
   <main class="min-h-screen pb-24">
-    <header class="sticky top-0 z-20 bg-white/85 dark:bg-slate-950/85 backdrop-blur border-b border-slate-200/70 dark:border-slate-800/70 safe-top">
-      <div class="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
-        <div class="min-w-0">
-          <h1 class="text-[22px] font-bold tracking-tight">Mes voyages</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ auth.user?.email }}</p>
+    <van-sticky>
+      <header class="bg-white dark:bg-slate-950 border-b border-slate-200/70 dark:border-slate-800/70 safe-top">
+        <div class="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <h1 class="text-[22px] font-bold tracking-tight">Mes voyages</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ auth.user?.email }}</p>
+          </div>
+          <div class="flex items-center gap-1">
+            <ThemeToggle />
+            <button @click="showImport = true" class="btn-icon" aria-label="Importer un JSON" title="Importer un JSON">
+              <Upload class="w-5 h-5" :stroke-width="2" />
+            </button>
+            <button @click="logout" class="btn-icon" aria-label="Déconnexion">
+              <LogOut class="w-5 h-5" :stroke-width="2" />
+            </button>
+          </div>
         </div>
-        <div class="flex items-center gap-1">
-          <ThemeToggle />
-          <button @click="showImport = true" class="btn-icon" aria-label="Importer un JSON" title="Importer un JSON">
-            <Upload class="w-5 h-5" :stroke-width="2" />
-          </button>
-          <button @click="logout" class="btn-icon" aria-label="Déconnexion">
-            <LogOut class="w-5 h-5" :stroke-width="2" />
-          </button>
-        </div>
-      </div>
-    </header>
+      </header>
+    </van-sticky>
 
     <section class="max-w-2xl mx-auto px-5 mt-4">
       <Skeleton v-if="loading && sortedTrips.length === 0" variant="trip" :count="3" />

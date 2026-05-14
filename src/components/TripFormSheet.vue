@@ -79,14 +79,18 @@ async function submit() {
 </script>
 
 <template>
-  <Transition name="sheet">
-    <div v-if="modelValue" class="fixed inset-0 z-40">
-      <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" @click="close" />
-      <form
-        @submit.prevent="submit"
-        class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4"
-      >
-        <div class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md max-h-[92vh] overflow-y-auto animate-slide-up">
+  <van-popup
+    :show="modelValue"
+    @update:show="$emit('update:modelValue', $event)"
+    position="bottom"
+    round
+    safe-area-inset-bottom
+    teleport="body"
+    :close-on-click-overlay="!saving"
+    :style="{ maxHeight: '92vh' }"
+  >
+    <form @submit.prevent="submit" class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
+        <div>
           <div class="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-3 flex items-center justify-between rounded-t-3xl z-10">
             <button type="button" @click="close" :disabled="saving" class="btn-icon -ml-1 disabled:opacity-40">
               <X class="w-5 h-5" :stroke-width="2" />
@@ -186,11 +190,5 @@ async function submit() {
           </div>
         </div>
       </form>
-    </div>
-  </Transition>
+  </van-popup>
 </template>
-
-<style scoped>
-.sheet-enter-active, .sheet-leave-active { transition: opacity 0.25s ease; }
-.sheet-enter-from, .sheet-leave-to { opacity: 0; }
-</style>

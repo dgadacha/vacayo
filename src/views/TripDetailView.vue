@@ -260,21 +260,21 @@ async function handleDeleteTrip() {
       </Transition>
     </div>
 
-    <nav class="fixed bottom-0 inset-x-0 z-20 bg-white/95 dark:bg-slate-950/95 backdrop-blur border-t border-slate-200/70 dark:border-slate-800/70 safe-bottom">
-      <div class="max-w-2xl mx-auto grid grid-cols-4">
-        <button
-          v-for="t in TABS"
-          :key="t.key"
-          @click="setTab(t.key)"
-          class="flex flex-col items-center justify-center gap-0.5 py-2 transition relative no-tap-highlight"
-          :class="activeTab === t.key ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'"
-        >
+    <van-tabbar
+      :model-value="activeTab"
+      @change="setTab"
+      active-color="var(--van-text-color)"
+      inactive-color="var(--van-text-color-3)"
+      safe-area-inset-bottom
+      placeholder
+    >
+      <van-tabbar-item v-for="t in TABS" :key="t.key" :name="t.key">
+        <span class="!text-[10px] !font-semibold !tracking-tight">{{ t.label }}</span>
+        <template #icon>
           <component :is="t.icon" class="w-[22px] h-[22px]" :stroke-width="activeTab === t.key ? 2.25 : 1.75" />
-          <span class="text-[10px] font-semibold tracking-tight">{{ t.label }}</span>
-          <span v-if="activeTab === t.key" class="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-slate-900 dark:bg-slate-100 rounded-full" />
-        </button>
-      </div>
-    </nav>
+        </template>
+      </van-tabbar-item>
+    </van-tabbar>
 
     <button
       v-if="canEdit && currentTab.key !== 'map'"
