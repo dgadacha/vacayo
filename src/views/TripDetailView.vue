@@ -98,15 +98,13 @@ const showLongPressHint = computed(() => !!currentTab.value.type)
 const status = computed(() => trip.value ? tripStatus(trip.value) : null)
 const memberCount = computed(() => Object.keys(trip.value?.members || {}).length)
 
-// ---- Navigation bar: transparent over the cover, bar material once scrolled past it.
-// Without a cover the large title is ~60pt tall, so the bar takes the title sooner.
+// ---- Navigation bar: always opaque (iOS blurs whatever sits see-through at the top
+// of the installed app). It takes the trip name once the page title scrolls under it.
 const HERO_H = 320
-const collapseAt = computed(() => hasCover.value ? HERO_H - 110 : 56)
+const collapseAt = computed(() => hasCover.value ? HERO_H - 90 : 56)
 const scrollY = ref(0)
 function onScroll() { scrollY.value = window.scrollY }
-const scrolled = computed(() => scrollY.value > collapseAt.value)
-const solidHeader = scrolled
-const overCover = computed(() => hasCover.value && !solidHeader.value)
+const solidHeader = computed(() => scrollY.value > collapseAt.value)
 
 const tabTransition = ref('tab-fwd')
 function setTab(key) {
@@ -305,26 +303,23 @@ async function handleDeleteTrip() {
 
   <main v-else class="min-h-[100dvh] pb-[calc(env(safe-area-inset-bottom)+5rem)]" style="overflow-x: clip; --vc-topbar-h: calc(env(safe-area-inset-top) + 44px)">
     <!-- Navigation bar -->
-    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="solidHeader ? 'material hairline-b' : overCover ? '' : 'bg-[color:var(--vc-bg)]'">
+    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="solidHeader ? 'material hairline-b' : 'bg-[color:var(--vc-bg)]'">
       <div class="h-11 px-2 flex items-center gap-1.5 relative max-w-2xl mx-auto">
-        <button v-if="!overCover" type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40 -ml-1" aria-label="Retour aux voyages" @click="back">
+        <button type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40 -ml-1" aria-label="Retour aux voyages" @click="back">
           <ChevronLeft class="w-7 h-7" :stroke-width="2.4" />
           <span class="t-body -ml-0.5">Voyages</span>
-        </button>
-        <button v-else type="button" class="glass-btn" aria-label="Retour aux voyages" @click="back">
-          <ChevronLeft class="w-5 h-5 -ml-0.5" :stroke-width="2.6" />
         </button>
 
         <p class="absolute inset-x-28 text-center t-headline truncate transition-opacity duration-200 pointer-events-none" :class="solidHeader ? 'opacity-100' : 'opacity-0'">{{ trip.name }}</p>
 
         <div class="ml-auto flex items-center gap-2">
-          <button type="button" :class="overCover ? 'glass-btn' : 'bar-btn'" aria-label="Copilote IA" @click="openChat()">
+          <button type="button" class="bar-btn" aria-label="Copilote IA" @click="openChat()">
             <Sparkles class="w-[18px] h-[18px]" :stroke-width="2.2" />
           </button>
-          <button v-if="canEdit" type="button" :class="overCover ? 'glass-btn' : 'bar-btn'" :aria-label="activeTab === 'calendar' ? 'Ajouter au planning' : 'Ajouter'" @click="onAdd">
+          <button v-if="canEdit" type="button" class="bar-btn" :aria-label="activeTab === 'calendar' ? 'Ajouter au planning' : 'Ajouter'" @click="onAdd">
             <Plus class="w-5 h-5" :stroke-width="2.4" />
           </button>
-          <button type="button" :class="overCover ? 'glass-btn' : 'bar-btn'" aria-label="Options du voyage" @click="showMenu = true">
+          <button type="button" class="bar-btn" aria-label="Options du voyage" @click="showMenu = true">
             <Ellipsis class="w-5 h-5" :stroke-width="2.4" />
           </button>
         </div>
@@ -332,10 +327,10 @@ async function handleDeleteTrip() {
     </header>
 
     <div @touchstart.passive="onTabSwipeStart" @touchend.passive="onTabSwipeEnd" @touchcancel.passive="onTabSwipeEnd">
-      <!-- Cover -->
-      <section v-if="hasCover" class="relative text-white overflow-hidden" :style="{ height: HERO_H + 'px', background: 'var(--vc-fill)' }">
+      <!-- Cover, under the bar -->
+      <section v-if="hasCover" class="relative text-white overflow-hidden" :style="{ height: HERO_H + 'px', marginTop: 'var(--vc-topbar-h)', background: 'var(--vc-fill)' }">
         <img :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="coverFailed = true" />
-        <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/75" />
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/75" />
         <div class="absolute inset-x-0 bottom-0 px-4 pb-5 max-w-2xl mx-auto">
           <p v-if="kicker" class="t-footnote font-semibold uppercase text-white/75">{{ kicker }}</p>
           <h1 class="t-large [text-wrap:balance]">{{ trip.name }}</h1>
