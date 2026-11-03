@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useTripsStore } from '@/stores/trips'
 import { useAuthStore } from '@/stores/auth'
 import { importTrip } from '@/services/transfer'
+import SheetHeader from '@/components/SheetHeader.vue'
 
 const props = defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue', 'imported'])
@@ -93,12 +94,7 @@ async function confirmImport() {
     :style="{ maxHeight: '92vh' }"
   >
     <div class="overflow-y-auto" :style="{ maxHeight: '92vh' }">
-      <van-nav-bar
-        title="Importer un voyage"
-        left-text="Annuler"
-        @click-left="close"
-        :border="false"
-      />
+      <SheetHeader title="Importer un voyage" cancel-label="Annuler" @cancel="close" />
 
       <div v-if="!preview" class="p-5">
         <label class="block cursor-pointer">
@@ -134,12 +130,11 @@ async function confirmImport() {
       </div>
 
       <div v-if="preview" class="flex gap-2 px-4 mt-4 mb-4 safe-bottom">
-        <van-button v-if="!importing" block plain round @click="reset">
-          Changer
-        </van-button>
-        <van-button block type="primary" round :loading="importing" @click="confirmImport">
-          Importer {{ summary.total }}
-        </van-button>
+        <button v-if="!importing" type="button" class="btn btn-gray flex-1" @click="reset">Changer</button>
+        <button type="button" class="btn btn-primary flex-1" :disabled="importing" @click="confirmImport">
+          <van-loading v-if="importing" size="18" color="#fff" />
+          <template v-else>Importer {{ summary.total }}</template>
+        </button>
       </div>
     </div>
   </van-popup>

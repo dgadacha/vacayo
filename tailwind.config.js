@@ -5,25 +5,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81'
+        // iOS system colors (light variants; dark variants come from the --vc-* tokens)
+        ios: {
+          blue: '#007aff',
+          red: '#ff3b30',
+          orange: '#ff9500',
+          yellow: '#ffcc00',
+          green: '#34c759',
+          teal: '#30b0c7',
+          indigo: '#5856d6',
+          purple: '#af52de',
+          pink: '#ff2d55',
+          gray: '#8e8e93'
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', 'system-ui', '"Helvetica Neue"', 'Arial', 'sans-serif']
       },
       boxShadow: {
-        soft: '0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.06)',
-        lift: '0 8px 30px rgb(15 23 42 / 0.12)'
+        soft: '0 1px 2px rgb(0 0 0 / 0.04)',
+        lift: '0 10px 30px rgb(0 0 0 / 0.14)'
       },
       animation: {
         'slide-up': 'slideUp 0.3s ease-out',

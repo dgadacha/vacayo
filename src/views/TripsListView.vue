@@ -4,26 +4,25 @@ import { useRouter } from 'vue-router'
 import { useTripsStore } from '@/stores/trips'
 import { useAuthStore } from '@/stores/auth'
 import { formatDate, colorFromString, tripStatus } from '@/utils/helpers'
+import { useScrolled } from '@/composables/useScrolled'
 import ImportDialog from '@/components/ImportDialog.vue'
 import TripFormSheet from '@/components/TripFormSheet.vue'
 import AccountSheet from '@/components/AccountSheet.vue'
 import TripStatusChip from '@/components/TripStatusChip.vue'
-import AppLogo from '@/components/AppLogo.vue'
-import FabButton from '@/components/FabButton.vue'
 import { useToast } from '@/composables/useToast'
-import { MapPin, Plus, Upload, Plane, Eye, Users } from 'lucide-vue-next'
+import { Plus, ChevronRight, Users, Eye, Luggage } from 'lucide-vue-next'
 
 const router = useRouter()
 const trips = useTripsStore()
 const auth = useAuthStore()
 const toast = useToast()
+const collapsed = useScrolled(44)
 
 const showCreate = ref(false)
 const showImport = ref(false)
 const showAccount = ref(false)
 
 const loading = computed(() => trips.loading && trips.trips.length === 0)
-const firstName = computed(() => (auth.user?.name || '').split(/[\s.]/)[0])
 const initial = computed(() => (auth.user?.name || '?').charAt(0).toUpperCase())
 
 const withStatus = computed(() => trips.trips.map(t => ({ ...t, status: tripStatus(t) })))
@@ -52,19 +51,19 @@ function place(t) { return [t.destination, t.country !== t.destination ? t.count
 function dates(t) {
   if (!t.startDate) return ''
   const sameYear = (t.startDate || '').slice(0, 4) === (t.endDate || '').slice(0, 4)
-  return `${formatDate(t.startDate, sameYear ? 'd MMM' : 'd MMM yyyy')}${t.endDate ? ' → ' + formatDate(t.endDate, 'd MMM yyyy') : ''}`
-}
-function roleLabel(t) {
-  const r = trips.roleOf(t)
-  return r === 'viewer' ? 'Lecture seule' : r === 'editor' ? 'Partagé' : ''
+  return `${formatDate(t.startDate, sameYear ? 'd MMM' : 'd MMM yyyy')}${t.endDate ? ' – ' + formatDate(t.endDate, 'd MMM yyyy') : ''}`
 }
 function memberCount(t) { return Object.keys(t.members || {}).length }
+function featuredKicker(t) {
+  if (t.status.state === 'ongoing') return `En ce moment · ${t.status.label}`
+  return `Prochain départ · ${t.status.label}`
+}
 
 function open(t) { router.push({ name: 'trip', params: { id: t.id } }) }
 function hideImg(e) { e.target.style.display = 'none' }
 
 function onCreated(t) {
-  toast.success(`Voyage « ${t.name} » créé`)
+  toast.success(`« ${t.name} » créé`)
   router.push({ name: 'trip', params: { id: t.id } })
 }
 function onImported(res) {
@@ -74,89 +73,92 @@ function onImported(res) {
 </script>
 
 <template>
-  <main class="min-h-screen pb-28">
-    <header class="sticky top-0 z-20 px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-3 backdrop-blur-xl" style="background: color-mix(in srgb, var(--vc-bg) 85%, transparent)">
-      <div class="flex items-center justify-between gap-3 max-w-2xl mx-auto">
-        <div class="min-w-0">
-          <p class="text-sm text-muted">Bonjour {{ firstName }} 👋</p>
-          <h1 class="text-[28px] font-extrabold tracking-tight leading-tight">Mes voyages</h1>
-        </div>
-        <button type="button" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-soft flex-shrink-0" style="background: var(--vc-ai)" aria-label="Mon compte" @click="showAccount = true">
-          {{ initial }}
+  <main class="min-h-[100dvh] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
+    <!-- Navigation bar: transparent over the large title, translucent once it scrolls away -->
+    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="collapsed ? 'material hairline-b' : ''">
+      <div class="h-11 px-2 flex items-center justify-end relative max-w-2xl mx-auto">
+        <p class="absolute inset-x-16 text-center t-headline transition-opacity duration-200 pointer-events-none" :class="collapsed ? 'opacity-100' : 'opacity-0'">Voyages</p>
+        <button type="button" class="btn-icon" aria-label="Nouveau voyage" @click="showCreate = true">
+          <Plus class="w-[26px] h-[26px]" :stroke-width="2.2" />
         </button>
       </div>
     </header>
 
-    <div class="px-4 max-w-2xl mx-auto">
+    <div class="pt-[calc(env(safe-area-inset-top)+44px)] max-w-2xl mx-auto">
+      <!-- Large title -->
+      <div class="px-4 pt-1 pb-3 flex items-end justify-between gap-3">
+        <div>
+          <p class="t-footnote font-semibold uppercase text-muted">{{ formatDate(new Date(), 'EEEE d MMMM') }}</p>
+          <h1 class="t-large">Voyages</h1>
+        </div>
+        <button type="button" class="w-9 h-9 mb-1 rounded-full flex items-center justify-center text-white t-headline flex-shrink-0 bg-gradient-to-b from-[#a1a1a6] to-[#7c7c80]" aria-label="Mon compte" @click="showAccount = true">
+          {{ initial }}
+        </button>
+      </div>
+
       <!-- Loading -->
-      <div v-if="loading" class="space-y-3 pt-2">
-        <div class="shimmer h-52 !rounded-3xl" />
-        <div v-for="i in 2" :key="i" class="shimmer h-20 !rounded-2xl" />
+      <div v-if="loading" class="px-4 space-y-3">
+        <div class="shimmer h-[380px] !rounded-[20px]" />
+        <div class="shimmer h-36 !rounded-xl" />
       </div>
 
       <!-- Empty -->
-      <div v-else-if="trips.trips.length === 0" class="pt-10 pb-6 text-center">
-        <div class="relative inline-flex">
-          <AppLogo :size="72" class="rounded-3xl shadow-lift" />
-          <span class="absolute -right-3 -bottom-2 w-9 h-9 rounded-full card flex items-center justify-center">
-            <Plane class="w-4 h-4" style="color: var(--vc-primary)" :stroke-width="2" />
-          </span>
+      <div v-else-if="trips.trips.length === 0" class="px-8 pt-16 text-center">
+        <div class="inline-flex w-20 h-20 rounded-[22px] items-center justify-center text-white bg-gradient-to-b from-[#5ac8fa] to-[#007aff] shadow-lift">
+          <Luggage class="w-10 h-10" :stroke-width="1.6" />
         </div>
-        <h2 class="mt-6 text-xl font-bold">Ton premier voyage commence ici</h2>
-        <p class="mt-2 text-sm text-muted max-w-xs mx-auto">Crée un voyage, ajoute tes hôtels, restos et activités, puis invite tes compagnons de route.</p>
-        <div class="mt-6 flex gap-2 justify-center">
-          <button type="button" class="btn btn-secondary" @click="showImport = true"><Upload class="w-4 h-4" :stroke-width="2" />Importer</button>
-          <button type="button" class="btn btn-primary" @click="showCreate = true"><Plus class="w-4 h-4" :stroke-width="2.5" />Créer un voyage</button>
-        </div>
+        <h2 class="t-title2 mt-6">Aucun voyage</h2>
+        <p class="t-subhead text-muted mt-2">Crée ton premier voyage pour y ranger hôtels, restos et activités, puis invite tes compagnons de route.</p>
+        <button type="button" class="btn btn-primary w-full mt-8" @click="showCreate = true">Créer un voyage</button>
+        <button type="button" class="btn btn-plain w-full mt-1" @click="showImport = true">Importer un fichier</button>
       </div>
 
       <template v-else>
-        <!-- Featured -->
-        <button v-if="featured" type="button" class="block w-full text-left mt-1 mb-6 rounded-3xl overflow-hidden relative h-56 shadow-lift active:scale-[0.99] transition" @click="open(featured)">
-          <div class="absolute inset-0 bg-gradient-to-br" :class="tripGradient(featured)" />
-          <img v-if="featured.coverImage" :src="featured.coverImage" :alt="featured.name" class="absolute inset-0 w-full h-full object-cover" @error="hideImg" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
-          <div class="absolute top-3 left-3 flex gap-2">
-            <TripStatusChip :trip="featured" overlay />
-            <span v-if="memberCount(featured) > 1" class="chip bg-white/20 text-white ring-white/30 backdrop-blur"><Users class="w-3 h-3" :stroke-width="2" />{{ memberCount(featured) }}</span>
-          </div>
-          <div class="absolute bottom-0 inset-x-0 p-5 text-white">
-            <p class="text-xs font-semibold uppercase tracking-wider text-white/70">{{ featured.status.state === 'ongoing' ? 'En ce moment' : 'Prochain départ' }}</p>
-            <h2 class="text-2xl font-extrabold tracking-tight leading-tight mt-0.5">{{ featured.name }}</h2>
-            <p class="text-sm text-white/85 mt-1 flex items-center gap-1.5">
-              <MapPin v-if="place(featured)" class="w-3.5 h-3.5" :stroke-width="2" />
-              <span class="truncate">{{ place(featured) }}<span v-if="place(featured) && dates(featured)"> · </span>{{ dates(featured) }}</span>
-            </p>
-          </div>
-        </button>
+        <!-- Featured: App Store "Today" card -->
+        <div v-if="featured" class="px-4 mb-8">
+          <button type="button" class="block w-full text-left rounded-[20px] overflow-hidden relative h-[400px] shadow-lift active:scale-[0.97] transition-transform duration-300" @click="open(featured)">
+            <div class="absolute inset-0 bg-gradient-to-br" :class="tripGradient(featured)" />
+            <img v-if="featured.coverImage" :src="featured.coverImage" :alt="featured.name" class="absolute inset-0 w-full h-full object-cover" @error="hideImg" />
+            <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
+            <div class="absolute top-0 inset-x-0 p-5 text-white">
+              <p class="t-footnote font-semibold uppercase text-white/75">{{ featuredKicker(featured) }}</p>
+              <h2 class="t-title1 mt-1 [text-wrap:balance]">{{ featured.name }}</h2>
+            </div>
+            <div class="absolute bottom-0 inset-x-0 px-5 py-4 text-white flex items-center gap-3">
+              <div class="flex-1 min-w-0">
+                <p v-if="place(featured)" class="t-headline truncate">{{ place(featured) }}</p>
+                <p v-if="dates(featured)" class="t-subhead text-white/80 truncate">{{ dates(featured) }}</p>
+              </div>
+              <span v-if="memberCount(featured) > 1" class="chip material !bg-white/25 text-white"><Users class="w-3 h-3" :stroke-width="2.4" />{{ memberCount(featured) }}</span>
+              <span class="btn btn-sm !h-8 !text-[15px] bg-white/90 text-[#007aff] !font-bold">Ouvrir</span>
+            </div>
+          </button>
+        </div>
 
-        <!-- Other trips -->
-        <section v-for="s in sections" :key="s.key" class="mb-6">
-          <h3 class="section-label px-1 mb-2">{{ s.title }}</h3>
-          <div class="space-y-2.5">
-            <button v-for="t in s.items" :key="t.id" type="button" class="card w-full flex items-center gap-3 p-2.5 pr-3.5 text-left active:scale-[0.99] transition" @click="open(t)">
-              <div class="w-16 h-16 rounded-xl overflow-hidden relative flex-shrink-0 bg-gradient-to-br" :class="tripGradient(t)">
+        <!-- Other trips: inset grouped lists -->
+        <section v-for="s in sections" :key="s.key" class="mb-8">
+          <h3 class="list-header">{{ s.title }}</h3>
+          <div class="list" style="--sep-inset: 84px">
+            <button v-for="t in s.items" :key="t.id" type="button" class="row !py-2.5" @click="open(t)">
+              <div class="w-14 h-14 rounded-[10px] overflow-hidden relative flex-shrink-0 bg-gradient-to-br" :class="tripGradient(t)">
                 <img v-if="t.coverImage" :src="t.coverImage" :alt="t.name" class="absolute inset-0 w-full h-full object-cover" loading="lazy" @error="hideImg" />
-                <span v-else class="absolute inset-0 flex items-center justify-center text-white text-xl font-extrabold">{{ (t.name || '?').charAt(0).toUpperCase() }}</span>
+                <span v-else class="absolute inset-0 flex items-center justify-center text-white t-title2">{{ (t.name || '?').charAt(0).toUpperCase() }}</span>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="font-semibold truncate" :class="{ 'text-muted': s.key === 'past' }">{{ t.name }}</p>
-                <p v-if="place(t)" class="text-[13px] text-muted truncate">{{ place(t) }}</p>
-                <p v-if="dates(t)" class="text-xs text-subtle mt-0.5">{{ dates(t) }}</p>
+                <p class="t-headline truncate">{{ t.name }}</p>
+                <p v-if="place(t)" class="t-subhead text-muted truncate">{{ place(t) }}</p>
+                <p v-if="dates(t)" class="t-footnote text-muted truncate">{{ dates(t) }}</p>
               </div>
-              <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+              <div class="flex flex-col items-end gap-1 flex-shrink-0">
                 <TripStatusChip :trip="t" />
-                <span v-if="roleLabel(t)" class="text-[10px] font-medium text-subtle flex items-center gap-1">
-                  <Eye v-if="trips.roleOf(t) === 'viewer'" class="w-3 h-3" :stroke-width="2" />{{ roleLabel(t) }}
-                </span>
+                <span v-if="trips.roleOf(t) === 'viewer'" class="t-caption text-muted flex items-center gap-1"><Eye class="w-3 h-3" :stroke-width="2" />Lecture</span>
               </div>
+              <ChevronRight class="w-4 h-4 text-subtle flex-shrink-0 -mr-1" :stroke-width="2.5" />
             </button>
           </div>
         </section>
       </template>
     </div>
-
-    <FabButton v-if="trips.trips.length > 0" label="Nouveau voyage" @click="showCreate = true" />
 
     <ImportDialog v-model="showImport" @imported="onImported" />
     <TripFormSheet v-model="showCreate" @saved="onCreated" />

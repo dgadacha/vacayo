@@ -15,7 +15,8 @@ function readPref() {
 function apply(mode) {
   document.documentElement.classList.toggle('dark', mode === 'dark')
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--vc-bg').trim()
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg || (mode === 'dark' ? '#0b1020' : '#f5f6fa'))
+  // Both light/dark metas follow the chosen mode (it may differ from the system's)
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute('content', bg || (mode === 'dark' ? '#000000' : '#f2f2f7')))
 }
 
 export const useThemeStore = defineStore('theme', () => {

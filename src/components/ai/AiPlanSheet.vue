@@ -77,7 +77,7 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '88vh' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Planifier la wishlist" subtitle="L'IA répartit tes idées sur le séjour" :icon="Wand2" @close="close" />
 

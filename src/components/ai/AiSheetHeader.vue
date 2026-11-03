@@ -1,6 +1,7 @@
 <script setup>
-import { Sparkles, X } from 'lucide-vue-next'
+import { Sparkles } from 'lucide-vue-next'
 
+// iOS sheet header for the AI sheets: grabber, gradient glyph + title, Done.
 defineProps({
   title: { type: String, required: true },
   subtitle: { type: String, default: '' },
@@ -10,17 +11,20 @@ defineEmits(['close'])
 </script>
 
 <template>
-  <header class="flex items-center gap-3 px-4 h-16 flex-shrink-0 border-b" style="border-color: var(--vc-border-soft)">
-    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0" style="background: var(--vc-ai)">
-      <component :is="icon || Sparkles" class="w-[18px] h-[18px]" :stroke-width="2" />
+  <header class="flex-shrink-0">
+    <div class="grabber" />
+    <div class="h-[52px] px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+      <div class="justify-self-start"><slot name="actions" /></div>
+      <div class="flex items-center gap-2 min-w-0 max-w-[62vw]">
+        <span class="w-6 h-6 rounded-[7px] flex items-center justify-center text-white flex-shrink-0" style="background: var(--vc-ai)">
+          <component :is="icon || Sparkles" class="w-[14px] h-[14px]" :stroke-width="2.2" />
+        </span>
+        <div class="min-w-0 text-left">
+          <p class="t-headline leading-tight truncate">{{ title }}</p>
+          <p v-if="subtitle" class="t-caption text-muted truncate">{{ subtitle }}</p>
+        </div>
+      </div>
+      <button type="button" class="justify-self-end t-headline text-tint active:opacity-40" @click="$emit('close')">OK</button>
     </div>
-    <div class="flex-1 min-w-0">
-      <h2 class="font-bold text-[15px] leading-tight truncate">{{ title }}</h2>
-      <p v-if="subtitle" class="text-xs text-muted truncate">{{ subtitle }}</p>
-    </div>
-    <slot name="actions" />
-    <button type="button" class="btn-icon" aria-label="Fermer" @click="$emit('close')">
-      <X class="w-5 h-5" :stroke-width="2" />
-    </button>
   </header>
 </template>

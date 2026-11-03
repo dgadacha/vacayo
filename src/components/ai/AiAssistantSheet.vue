@@ -90,66 +90,67 @@ function close() { emit('update:modelValue', false) }
     position="bottom"
     round
     teleport="body"
-    :style="{ height: '88vh' }"
+    :style="{ height: '94vh', background: 'var(--vc-surface-elevated)' }"
     @update:show="emit('update:modelValue', $event)"
   >
     <div class="h-full flex flex-col">
-      <AiSheetHeader title="Copilote" :subtitle="trip?.name ? `Connaît tout « ${trip.name} »` : 'Claude Haiku'" @close="close">
+      <AiSheetHeader title="Copilote" :subtitle="trip?.name || 'Claude Haiku'" @close="close">
         <template #actions>
-          <button v-if="messages.length" type="button" class="btn-icon" aria-label="Nouvelle conversation" @click="reset">
-            <RotateCcw class="w-[18px] h-[18px]" :stroke-width="2" />
+          <button v-if="messages.length" type="button" class="t-body text-tint active:opacity-40" aria-label="Nouvelle conversation" @click="reset">
+            <RotateCcw class="w-5 h-5" :stroke-width="2.2" />
           </button>
         </template>
       </AiSheetHeader>
 
-      <div ref="scroller" class="flex-1 overflow-y-auto px-4 py-4 space-y-3" aria-live="polite">
-        <div v-if="!messages.length" class="pt-6 text-center">
-          <div class="inline-flex w-14 h-14 rounded-2xl items-center justify-center" style="background: var(--vc-primary-soft); color: var(--vc-primary)">
-            <MessageCircle class="w-7 h-7" :stroke-width="1.75" />
+      <div ref="scroller" class="flex-1 overflow-y-auto px-3 py-3 space-y-1.5" aria-live="polite">
+        <div v-if="!messages.length" class="pt-8 px-4 text-center">
+          <div class="inline-flex w-16 h-16 rounded-[18px] items-center justify-center text-white" style="background: var(--vc-ai)">
+            <MessageCircle class="w-8 h-8" :stroke-width="1.8" />
           </div>
-          <p class="mt-3 font-semibold">Pose-moi une question sur ton voyage</p>
-          <p class="text-sm text-muted mt-1 max-w-xs mx-auto">Je vois tes hôtels, restos, activités, dates et budget.</p>
-          <div class="mt-5 flex flex-col gap-2 max-w-sm mx-auto">
-            <button v-for="s in SUGGESTIONS" :key="s" type="button" class="text-left text-sm px-4 py-2.5 rounded-2xl surface-2 active:scale-[0.99] transition" @click="send(s)">{{ s }}</button>
+          <p class="t-title3 mt-4">Pose une question sur ton voyage</p>
+          <p class="t-subhead text-muted mt-1 max-w-xs mx-auto">Le copilote voit tes hôtels, restos, activités, dates et budget.</p>
+          <div class="list !mx-0 mt-6 text-left">
+            <button v-for="s in SUGGESTIONS" :key="s" type="button" class="row t-body text-tint" @click="send(s)">{{ s }}</button>
           </div>
         </div>
 
         <template v-for="(m, i) in messages" :key="i">
-          <div v-if="m.role === 'user'" class="flex justify-end">
-            <p class="max-w-[85%] rounded-2xl rounded-br-md px-3.5 py-2 text-[14px] whitespace-pre-line text-white" style="background: var(--vc-primary)">{{ m.text }}</p>
+          <div v-if="m.role === 'user'" class="flex justify-end pl-12">
+            <p class="bubble bubble-me whitespace-pre-line">{{ m.text }}</p>
           </div>
-          <div v-else class="flex justify-start">
-            <div class="max-w-[92%] rounded-2xl rounded-bl-md px-3.5 py-2.5 text-[14px] leading-relaxed surface-2">
+          <div v-else class="flex justify-start pr-8">
+            <div class="bubble bubble-them">
               <div v-if="m.text" class="md" v-html="renderMarkdownLite(m.text)" />
-              <div v-else-if="!m.error" class="flex gap-1 py-1.5" aria-label="L'IA réfléchit">
-                <span v-for="d in 3" :key="d" class="typing-dot" :style="{ animationDelay: `${d * 0.15}s` }" />
+              <div v-else-if="!m.error" class="flex gap-1 py-1.5 px-0.5" aria-label="L'IA réfléchit">
+                <span v-for="d in 3" :key="d" class="typing-dot" :style="{ animationDelay: `${d * 0.18}s` }" />
               </div>
-              <div v-if="m.error" class="text-rose-600 dark:text-rose-400 text-sm">
+              <div v-if="m.error" class="t-subhead" style="color: var(--vc-red)">
                 {{ m.error }}
-                <button type="button" class="block mt-1.5 font-semibold underline" @click="retry">Réessayer</button>
+                <button type="button" class="block mt-1 font-semibold text-tint" @click="retry">Réessayer</button>
               </div>
             </div>
           </div>
         </template>
       </div>
 
-      <form class="flex-shrink-0 px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] border-t" style="border-color: var(--vc-border-soft)" @submit.prevent="send()">
-        <div class="flex items-end gap-2 rounded-3xl surface-2 pl-4 pr-1.5 py-1.5">
+      <form class="flex-shrink-0 px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] material hairline-t" @submit.prevent="send()">
+        <div class="composer flex items-end gap-1.5 rounded-[20px] pl-3.5 pr-1 py-1" :class="{ 'ai-glow': streaming }">
           <textarea
             ref="inputEl"
             v-model="input"
             rows="1"
-            placeholder="Demande n'importe quoi…"
-            class="flex-1 bg-transparent outline-none resize-none text-[15px] py-1.5 max-h-28"
+            placeholder="Demande au copilote"
+            enterkeyhint="send"
+            class="flex-1 bg-transparent outline-none resize-none text-[17px] leading-[22px] py-[5px] max-h-28"
             aria-label="Message au copilote"
             @keydown="onKeydown"
             @input="e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px' }"
           />
-          <button v-if="streaming" type="button" class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style="background: var(--vc-text); color: var(--vc-bg)" aria-label="Arrêter" @click="stop">
-            <Square class="w-3.5 h-3.5" fill="currentColor" :stroke-width="0" />
+          <button v-if="streaming" type="button" class="w-[30px] h-[30px] mb-px rounded-full flex items-center justify-center flex-shrink-0" style="background: var(--vc-primary); color: #fff" aria-label="Arrêter" @click="stop">
+            <Square class="w-3 h-3" fill="currentColor" :stroke-width="0" />
           </button>
-          <button v-else type="submit" class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition text-white disabled:opacity-40" style="background: var(--vc-ai)" :disabled="!canSend" aria-label="Envoyer">
-            <ArrowUp class="w-[18px] h-[18px]" :stroke-width="2.5" />
+          <button v-else type="submit" class="w-[30px] h-[30px] mb-px rounded-full flex items-center justify-center flex-shrink-0 transition text-white disabled:opacity-30" style="background: var(--vc-primary)" :disabled="!canSend" aria-label="Envoyer">
+            <ArrowUp class="w-[18px] h-[18px]" :stroke-width="3" />
           </button>
         </div>
       </form>
@@ -158,17 +159,22 @@ function close() { emit('update:modelValue', false) }
 </template>
 
 <style scoped>
-.md :deep(p) { margin: 0 0 0.5em; }
+/* iMessage-like bubbles */
+.bubble { padding: 7px 12px; border-radius: 18px; font-size: 17px; line-height: 22px; max-width: 100%; overflow-wrap: anywhere; }
+.bubble-me { background: var(--vc-primary); color: #fff; border-bottom-right-radius: 6px; }
+.bubble-them { background: var(--vc-bubble); color: var(--vc-text); border-bottom-left-radius: 6px; }
+.composer { background: var(--vc-surface); box-shadow: inset 0 0 0 0.5px var(--vc-border); }
+.md :deep(p) { margin: 0 0 0.45em; }
 .md :deep(p:last-child) { margin-bottom: 0; }
-.md :deep(ul), .md :deep(ol) { margin: 0.25em 0 0.6em; padding-left: 1.2em; }
+.md :deep(ul), .md :deep(ol) { margin: 0.2em 0 0.5em; padding-left: 1.15em; }
 .md :deep(ul) { list-style: disc; }
 .md :deep(ol) { list-style: decimal; }
-.md :deep(li) { margin: 0.15em 0; }
-.md :deep(strong) { font-weight: 650; }
+.md :deep(li) { margin: 0.1em 0; }
+.md :deep(strong) { font-weight: 600; }
 .typing-dot {
-  @apply w-1.5 h-1.5 rounded-full;
-  background: var(--vc-subtle);
-  animation: bounce 1s infinite ease-in-out;
+  @apply w-2 h-2 rounded-full;
+  background: var(--vc-gray);
+  animation: blink 1.2s infinite ease-in-out;
 }
-@keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-4px); opacity: 1; } }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.3; } 40% { opacity: 1; } }
 </style>

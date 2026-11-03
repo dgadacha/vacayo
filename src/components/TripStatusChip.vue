@@ -9,19 +9,19 @@ const props = defineProps({
 
 const status = computed(() => tripStatus(props.trip))
 const tone = computed(() => {
-  if (props.overlay) return 'bg-white/20 text-white ring-white/30 backdrop-blur'
+  if (props.overlay) return 'material !bg-white/25 text-white'
   return {
-    upcoming: 'bg-indigo-50 text-indigo-700 ring-indigo-200 dark:bg-indigo-500/15 dark:text-indigo-300 dark:ring-indigo-500/30',
-    ongoing: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30',
-    past: 'bg-slate-100 text-slate-500 ring-slate-200 dark:bg-slate-500/15 dark:text-slate-400 dark:ring-slate-500/30',
-    undated: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+    upcoming: 'bg-[#007aff]/12 text-[#007aff] dark:bg-[#0a84ff]/20 dark:text-[#409cff]',
+    ongoing: 'bg-[#34c759]/15 text-[#248a3d] dark:bg-[#30d158]/20 dark:text-[#30d158]',
+    past: 'bg-[#8e8e93]/15 text-[#6c6c70] dark:text-[#aeaeb2]',
+    undated: 'bg-[#ff9500]/15 text-[#c93400] dark:text-[#ffb340]'
   }[status.value.state]
 })
 </script>
 
 <template>
   <span class="chip" :class="tone">
-    <span v-if="status.state === 'ongoing'" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+    <span v-if="status.state === 'ongoing'" class="w-1.5 h-1.5 rounded-full bg-[#34c759] animate-pulse" />
     {{ status.label }}
   </span>
 </template>

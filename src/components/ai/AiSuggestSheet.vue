@@ -92,7 +92,7 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '88vh' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Idées de l'IA" :subtitle="trip?.destination ? `Pour ${trip.destination}` : 'Selon ton voyage'" :icon="Lightbulb" @close="close" />
 
@@ -101,11 +101,11 @@ function close() { emit('update:modelValue', false) }
           <button v-for="(m, k) in ACTIVITY_TYPES" :key="k" type="button" :aria-pressed="kind === k" @click="setKind(k)">{{ m.plural }}</button>
         </div>
         <form class="flex gap-2" @submit.prevent="run()">
-          <input v-model="wish" type="text" class="flex-1 min-w-0 h-11 rounded-full surface-2 px-4 text-sm outline-none focus:ring-2" style="--tw-ring-color: var(--vc-primary)" placeholder="Une envie précise ? (facultatif)" aria-label="Envie" />
-          <button type="submit" class="btn btn-ai !h-11" :disabled="loading"><Sparkles class="w-4 h-4" :stroke-width="2" />Proposer</button>
+          <input v-model="wish" type="text" class="flex-1 min-w-0 h-[50px] rounded-[14px] surface px-4 text-[17px] outline-none focus:ring-2" style="--tw-ring-color: var(--vc-primary)" placeholder="Une envie précise ? (facultatif)" aria-label="Envie" />
+          <button type="submit" class="btn btn-ai" :disabled="loading"><Sparkles class="w-4 h-4" :stroke-width="2" />Proposer</button>
         </form>
         <div data-no-swipe class="flex gap-1.5 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-          <button v-for="c in CHIPS[kind]" :key="c" type="button" class="h-8 px-3 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 surface-2 text-muted" :disabled="loading" @click="run(c)">{{ c }}</button>
+          <button v-for="c in CHIPS[kind]" :key="c" type="button" class="h-8 px-3.5 rounded-full text-[15px] font-medium whitespace-nowrap flex-shrink-0 surface active:opacity-60" :disabled="loading" @click="run(c)">{{ c }}</button>
         </div>
       </div>
 
