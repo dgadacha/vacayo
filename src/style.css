@@ -231,15 +231,15 @@ html:root {
   .btn-ai { background: var(--vc-ai); color: #fff; }
   .btn-sm { height: 34px; padding: 0 14px; border-radius: 999px; font-size: 15px; }
 
-  /* Round glass button used over images (Maps / App Store style) */
+  /* Round button over the cover. No backdrop blur: over a flat gradient cover it
+     read as a smudge on iPhone; a crisp disc with a thin edge reads on any cover. */
   .glass-btn {
     @apply inline-flex items-center justify-center rounded-full flex-shrink-0 transition;
     width: 34px;
     height: 34px;
     color: #fff;
-    background: rgb(0 0 0 / 0.28);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    backdrop-filter: blur(16px) saturate(160%);
+    background: rgb(0 0 0 / 0.3);
+    box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.25);
   }
   .glass-btn:active { opacity: 0.6; }
   .bar-btn {
@@ -342,38 +342,38 @@ html:root {
 .van-picker__toolbar { height: 50px; }
 .van-picker__confirm { font-weight: 600; }
 
-/* Action sheet: two rounded groups (actions, then Cancel), like UIAlertController */
+/* Action sheet: two rounded groups (title + actions, then Cancel), like
+   UIAlertController. Scoped under .van-action-sheet so these win over Vant's own
+   styles, which load after this file. */
 .van-action-sheet.van-popup {
   background: transparent !important;
   padding: 0 8px calc(env(safe-area-inset-bottom) + 8px);
   border-radius: 0 !important;
 }
-.van-action-sheet__header {
-  background: var(--vc-bar);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+.van-action-sheet .van-action-sheet__header {
+  background: var(--vc-surface-elevated);
   border-radius: 14px 14px 0 0;
   color: var(--vc-muted);
   font-weight: 600;
   box-shadow: inset 0 -0.5px 0 var(--vc-border);
 }
-.van-action-sheet__content {
+/* Every sheet has Annuler, so no close cross */
+.van-action-sheet .van-action-sheet__close { display: none; }
+.van-action-sheet .van-action-sheet__content {
   border-radius: 14px;
   overflow: hidden;
-  background: var(--vc-bar);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  background: var(--vc-surface-elevated);
 }
-.van-action-sheet__header + .van-action-sheet__content { border-radius: 0 0 14px 14px; }
-.van-action-sheet__item {
+.van-action-sheet .van-action-sheet__header + .van-action-sheet__content { border-radius: 0 0 14px 14px; }
+.van-action-sheet .van-action-sheet__item {
   background: transparent;
   min-height: 57px;
   box-shadow: inset 0 0.5px 0 var(--vc-border);
 }
-.van-action-sheet__content > .van-action-sheet__item:first-child { box-shadow: none; }
-.van-action-sheet__item:active, .van-action-sheet__cancel:active { background: var(--vc-fill) !important; }
-.van-action-sheet__gap { height: 8px; background: transparent; }
-.van-action-sheet__cancel {
+.van-action-sheet .van-action-sheet__content > .van-action-sheet__item:first-child { box-shadow: none; }
+.van-action-sheet .van-action-sheet__item:active, .van-action-sheet .van-action-sheet__cancel:active { background: var(--vc-fill) !important; }
+.van-action-sheet .van-action-sheet__gap { height: 8px; background: transparent; }
+.van-action-sheet .van-action-sheet__cancel {
   border-radius: 14px;
   height: 57px;
   font-size: 20px;
