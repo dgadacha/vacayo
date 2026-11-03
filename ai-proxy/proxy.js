@@ -14,6 +14,14 @@ const FIREBASE_JWKS = createRemoteJWKSet(
   new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com')
 )
 
+// An allowed origin may contain `*` for one DNS label part, e.g. Vercel previews:
+// https://vacayo-*-team.vercel.app
+function originMatches(pattern, origin) {
+  if (!pattern.includes('*')) return pattern === origin
+  const re = new RegExp('^' + pattern.split('*').map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[a-z0-9-]*') + '$')
+  return re.test(origin)
+}
+
 function corsHeaders(origin) {
   return { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' }
 }
@@ -43,7 +51,7 @@ export async function handleRequest(request, env) {
   const allowedOrigins = (env.ALLOWED_ORIGINS || DEFAULT_ORIGINS).split(',').map((o) => o.trim()).filter(Boolean)
 
   const origin = request.headers.get('origin')
-  if (!origin || !allowedOrigins.includes(origin)) {
+  if (!origin || !allowedOrigins.some((o) => originMatches(o, origin))) {
     return errorResponse(403, 'permission_error', 'Origin not allowed')
   }
   const cors = corsHeaders(origin)

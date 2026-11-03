@@ -1,0 +1,7 @@
+# Not part of the web app (the proxy is its own Vercel project)
+ai-proxy/
+scripts/
+firebase.json
+.claude/
+.env*
+*.log

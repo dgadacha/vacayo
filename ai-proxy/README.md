@@ -2,7 +2,7 @@
 
 Petite Vercel Function qui relaie les appels à l'API Claude pour l'app Vacayo.
 
-GitHub Pages ne sert que des fichiers statiques et ne peut pas garder de secret :
+L’app est un site statique (Vite) qui ne peut pas garder de secret côté navigateur :
 ce proxy détient la clé API Anthropic et ne répond qu'aux utilisateurs connectés
 du projet Firebase `vacayo-77ad3`.
 
@@ -34,7 +34,7 @@ La logique est dans `proxy.js` ; `api/v1/messages.js` n'est que le point d'entr�
 |---|---|---|
 | `ANTHROPIC_API_KEY` | oui | — |
 | `FIREBASE_PROJECT_ID` | non | `vacayo-77ad3` |
-| `ALLOWED_ORIGINS` | non | `https://dgadacha.github.io` + `http://localhost:5173` à `5175` |
+| `ALLOWED_ORIGINS` | non | `https://dgadacha.github.io` + `http://localhost:5173` à `5175` (liste séparée par des virgules ; `*` accepté dans une origine, ex. `https://vacayo-*-equipe.vercel.app` pour les aperçus) |
 
 ## Déployer
 
@@ -56,12 +56,11 @@ variable d'environnement, redéployer (`npx vercel deploy --prod`).
 
 ## Brancher l'app
 
-1. Dans GitHub, **Settings → Secrets and variables → Actions → Variables**, créer la
-   variable de dépôt `VITE_AI_PROXY_URL` avec l'URL de production, par exemple
-   `https://vacayo-ai-proxy.vercel.app`.
-2. `.github/workflows/deploy.yml` passe déjà cette variable au build : elle sera
-   prise en compte au prochain déploiement de `main`.
-3. En local, mettre la même valeur dans `.env.local` à la racine de l'app.
+1. Dans le projet Vercel de l’app (`vacayo`), définir la variable d’environnement
+   `VITE_AI_PROXY_URL` avec l’URL de production du proxy, par exemple
+   `https://vacayo-ai-proxy.vercel.app`, puis redéployer l’app.
+2. Ajouter le domaine de l’app à `ALLOWED_ORIGINS` sur ce projet-ci, puis le redéployer.
+3. En local, mettre la même valeur dans `.env.local` à la racine de l’app.
 
 Sans `VITE_AI_PROXY_URL`, l'app n'utilise pas de proxy : chaque utilisateur doit
 alors coller sa propre clé API Anthropic pour accéder aux fonctions IA.
