@@ -36,8 +36,8 @@ const FEATURES = [
 </script>
 
 <template>
-  <van-popup v-model:show="ai.showSettings" position="bottom" round teleport="body" :style="{ maxHeight: '94vh', background: 'var(--vc-bg)' }">
-    <div class="overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" :style="{ maxHeight: '94vh', background: 'var(--vc-bg)' }">
+  <van-popup v-model:show="ai.showSettings" position="bottom" round teleport="body" :style="{ maxHeight: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }">
+    <div class="overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" :style="{ maxHeight: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }">
       <SheetHeader
         title="Assistant IA"
         :cancel-label="ai.viaProxy ? '' : 'Annuler'"

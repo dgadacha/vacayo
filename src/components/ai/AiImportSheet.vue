@@ -93,7 +93,7 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Ajout magique" subtitle="Colle un texte, l'IA crée les fiches" :icon="Wand2" @close="close" />
 
@@ -107,7 +107,7 @@ function close() { emit('update:modelValue', false) }
           placeholder="Ex. « Votre réservation au Ryokan Yachiyo du 14 au 17 nov. est confirmée (n° 8842)… »"
           aria-label="Texte à analyser"
         />
-        <p v-if="error" role="alert" class="mt-3 rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
+        <p v-if="error" role="alert" class="mt-3 rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700">{{ error }}</p>
         <div class="mt-3 flex gap-2 pb-[env(safe-area-inset-bottom)]">
           <button v-if="canPaste" type="button" class="btn btn-secondary" @click="pasteFromClipboard"><ClipboardPaste class="w-4 h-4" :stroke-width="2" />Coller</button>
           <button type="button" class="btn btn-ai flex-1" :disabled="!text.trim()" @click="analyze"><Wand2 class="w-4 h-4" :stroke-width="2" />Analyser</button>
@@ -148,11 +148,11 @@ function close() { emit('update:modelValue', false) }
                   <span class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-xs">
                     <span :class="r.date ? '' : 'text-subtle italic'">{{ whenLabel(r) }}</span>
                     <span v-if="r.price" class="font-semibold">{{ new Intl.NumberFormat('fr-FR').format(r.price) }} {{ symbol }}</span>
-                    <span v-if="r.isBooked" class="chip bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"><BadgeCheck class="w-3 h-3" :stroke-width="2" />Réservé</span>
+                    <span v-if="r.isBooked" class="chip bg-emerald-50 text-emerald-700 ring-emerald-200"><BadgeCheck class="w-3 h-3" :stroke-width="2" />Réservé</span>
                   </span>
                   <span v-if="r.notes" class="block text-xs text-subtle mt-1.5 line-clamp-2 whitespace-pre-line">{{ r.notes }}</span>
                 </span>
-                <span class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ring-1 transition" :class="selected.has(i) ? 'text-white ring-transparent' : 'ring-slate-300 dark:ring-slate-600 text-transparent'" :style="selected.has(i) ? { background: 'var(--vc-primary)' } : {}">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ring-1 transition" :class="selected.has(i) ? 'text-white ring-transparent' : 'ring-slate-300 text-transparent'" :style="selected.has(i) ? { background: 'var(--vc-primary)' } : {}">
                   <Check class="w-3.5 h-3.5" :stroke-width="3" />
                 </span>
               </button>

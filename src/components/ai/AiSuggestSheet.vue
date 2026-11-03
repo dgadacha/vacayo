@@ -92,7 +92,7 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Idées de l'IA" :subtitle="trip?.destination ? `Pour ${trip.destination}` : 'Selon ton voyage'" :icon="Lightbulb" @close="close" />
 
@@ -110,7 +110,7 @@ function close() { emit('update:modelValue', false) }
       </div>
 
       <div class="flex-1 overflow-y-auto px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
-        <p v-if="error" role="alert" class="rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
+        <p v-if="error" role="alert" class="rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700">{{ error }}</p>
 
         <div v-if="loading" class="space-y-2.5 pt-1">
           <p class="text-sm font-medium text-center ai-text">Haiku cherche des idées…</p>

@@ -177,7 +177,7 @@ async function submit() {
     round
     teleport="body"
     :close-on-click-overlay="!saving"
-    :style="{ height: '94vh', background: 'var(--vc-bg)' }"
+    :style="{ height: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }"
   >
     <div class="h-full overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" style="background: var(--vc-bg)">
       <SheetHeader

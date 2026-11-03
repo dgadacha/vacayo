@@ -6,6 +6,7 @@ import { ACTIVITY_TYPES } from '@/utils/constants'
 import { formatDate, formatTime, nightsBetween } from '@/utils/helpers'
 import { useToast } from '@/composables/useToast'
 import AiSheetHeader from './AiSheetHeader.vue'
+import AiTripProgress from './AiTripProgress.vue'
 import { Sparkles, Check, MapPin, RefreshCw } from 'lucide-vue-next'
 
 const props = defineProps({ modelValue: Boolean })
@@ -19,7 +20,8 @@ const toast = useToast()
 
 const step = ref('prefs') // prefs | working | review
 const prefs = reactive({ pace: 'balanced', interests: [], lodging: 'comfort', notes: '' })
-const found = ref(0)
+const progress = ref(null)
+const finished = ref(false)
 const result = ref(null)
 const selected = ref(new Set())
 const error = ref('')
@@ -75,18 +77,24 @@ function toggle(i) {
 async function run() {
   if (missing.value || tooLong.value) return
   error.value = ''
-  found.value = 0
+  progress.value = null
+  finished.value = false
   step.value = 'working'
   abort = new AbortController()
   try {
-    result.value = await generateTrip({
+    const out = await generateTrip({
       trip: trip.value,
       items: activities.all,
       prefs: { ...prefs, interests: [...prefs.interests] },
-      onProgress: (n) => { found.value = n },
+      onProgress: (p) => { progress.value = p },
       signal: abort.signal
     })
-    selected.value = new Set(result.value.items.map((_, i) => i))
+    // Let the full bar and the last check mark show for a moment
+    finished.value = true
+    await new Promise(r => setTimeout(r, 700))
+    if (step.value !== 'working') return
+    result.value = out
+    selected.value = new Set(out.items.map((_, i) => i))
     step.value = 'review'
   } catch (e) {
     const msg = aiErrorMessage(e)
@@ -126,7 +134,7 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Générer le voyage" :subtitle="destination || 'Avec Claude Haiku'" @close="close" />
 
@@ -181,17 +189,18 @@ function close() { emit('update:modelValue', false) }
       </div>
 
       <!-- 2. Working -->
-      <div v-else-if="step === 'working'" class="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <div class="ai-glow rounded-[26px]">
-          <div class="w-24 h-24 rounded-[24px] flex items-center justify-center text-white" style="background: var(--vc-ai)">
-            <Sparkles class="w-12 h-12 animate-pulse" :stroke-width="1.6" />
-          </div>
-        </div>
-        <p class="t-title3 mt-7">Création de ton voyage</p>
-        <p class="t-subhead text-muted mt-1">{{ found ? `${found} lieu${found > 1 ? 'x' : ''} trouvé${found > 1 ? 's' : ''}` : 'Haiku réfléchit à l’itinéraire…' }}</p>
-        <p class="t-footnote text-subtle mt-3">Environ 30 secondes pour une semaine.</p>
-        <button type="button" class="btn btn-plain mt-6" @click="cancel">Annuler</button>
-      </div>
+      <AiTripProgress
+        v-else-if="step === 'working'"
+        :progress="progress"
+        :done="finished"
+        :destination="destination"
+        :days="days"
+        :start-date="trip?.startDate || ''"
+        :pace="prefs.pace"
+        :keep-hotels="hasHotels"
+      >
+        <button v-if="!finished" type="button" class="btn btn-plain mt-4" @click="cancel">Annuler</button>
+      </AiTripProgress>
 
       <!-- 3. Review -->
       <template v-else-if="result">

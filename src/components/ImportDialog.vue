@@ -91,9 +91,9 @@ async function confirmImport() {
     safe-area-inset-bottom
     teleport="body"
     :close-on-click-overlay="!importing"
-    :style="{ maxHeight: '92vh' }"
+    :style="{ maxHeight: 'var(--vc-sheet-h)' }"
   >
-    <div class="overflow-y-auto" :style="{ maxHeight: '92vh' }">
+    <div class="overflow-y-auto" :style="{ maxHeight: 'var(--vc-sheet-h)' }">
       <SheetHeader title="Importer un voyage" cancel-label="Annuler" @cancel="close" />
 
       <div v-if="!preview" class="p-5">

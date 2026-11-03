@@ -84,10 +84,10 @@ function askAi() {
     position="bottom"
     round
     teleport="body"
-    :style="{ maxHeight: '94vh', background: 'var(--vc-bg)' }"
+    :style="{ maxHeight: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }"
     @update:show="$emit('update:modelValue', $event)"
   >
-    <div v-if="item" class="overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" :style="{ maxHeight: '94vh', background: 'var(--vc-bg)' }">
+    <div v-if="item" class="overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" :style="{ maxHeight: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }">
       <div v-if="hasPhoto" class="relative h-48">
         <img :src="item.photoUrl" :alt="item.name" class="absolute inset-0 w-full h-full object-cover" @error="imgFailed = true" />
         <div class="grabber absolute top-0 inset-x-0 !bg-white/70" />
