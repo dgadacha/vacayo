@@ -273,8 +273,9 @@ L’interface suit les codes d’iOS (typo système, grands titres, listes group
 balayages, feuilles et alertes natives), en mode clair uniquement. Jetons de design
 `--vc-*` dans `src/style.css`, partagés avec Vant (`--van-*`). Les feuilles plein
 écran font `--vc-sheet-h` de haut : elles s’arrêtent sous la barre d’état et la
-Dynamic Island, comme une app installée sur l’écran d’accueil (`viewport-fit=cover`).
-Icône dans `public/apple-touch-icon.png`, manifeste dans `public/manifest.webmanifest`.
+Dynamic Island. Barre d’état opaque (`apple-mobile-web-app-status-bar-style` à
+`default`) : en `black-translucent`, iOS 26 floute le haut de l’app installée sur
+l’écran d’accueil, boutons de navigation compris. Icône dans `public/apple-touch-icon.png`, manifeste dans `public/manifest.webmanifest`.
 
 ### Tutoriel de première utilisation
 
