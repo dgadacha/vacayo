@@ -81,7 +81,7 @@ async function add(idea, i) {
       googleMapsUrl: mapsSearchUrl(idea.name, idea.city)
     })
     added.value = new Set([...added.value, i])
-    toast.success('Ajouté à ta wishlist')
+    toast.success('Ajouté à ta liste d’envies')
   } catch (e) {
     toast.error(e.message || "Erreur lors de l'ajout")
   }
@@ -122,7 +122,7 @@ function close() { emit('update:modelValue', false) }
             <component :is="ACTIVITY_TYPES[kind].icon" class="w-7 h-7" :stroke-width="1.75" />
           </div>
           <p class="mt-3 font-semibold">Des idées sur mesure</p>
-          <p class="text-sm text-muted mt-1">L'IA tient compte de tes villes étapes et de ce que tu as déjà prévu. Les idées ajoutées vont dans ta wishlist (sans date).</p>
+          <p class="text-sm text-muted mt-1">L'IA tient compte de tes villes étapes et de ce que tu as déjà prévu. Les idées ajoutées vont dans ta liste d’envies (sans date).</p>
         </div>
 
         <div v-else class="space-y-2.5 pt-1">

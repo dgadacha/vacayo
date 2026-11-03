@@ -190,7 +190,7 @@ function askAiForDay() {
   const city = dayHotel.value?.city
   const prompt = hasEvents.value
     ? `Regarde mon programme du ${label} : est-ce que l'ordre et les horaires sont réalistes ? Propose un enchaînement optimisé et ce qu'il manque.`
-    : `Ma journée du ${label}${city ? ` à ${city}` : ''} est libre. Propose-moi un programme (matin, midi, après-midi, soir) en t'appuyant d'abord sur ma wishlist.`
+    : `Ma journée du ${label}${city ? ` à ${city}` : ''} est libre. Propose-moi un programme (matin, midi, après-midi, soir) en t'appuyant d'abord sur ma liste d'envies (les éléments sans date).`
   aiActions?.openChat(prompt)
 }
 </script>
