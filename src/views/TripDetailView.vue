@@ -10,7 +10,6 @@ import ActivityFormSheet from '@/components/ActivityFormSheet.vue'
 import ActivityDetailSheet from '@/components/ActivityDetailSheet.vue'
 import ItemsTab from '@/components/tabs/ItemsTab.vue'
 import CalendarTab from '@/components/tabs/CalendarTab.vue'
-import MapTab from '@/components/tabs/MapTab.vue'
 import TripFormSheet from '@/components/TripFormSheet.vue'
 import LongPressHint from '@/components/LongPressHint.vue'
 import AiAssistantSheet from '@/components/ai/AiAssistantSheet.vue'
@@ -18,8 +17,8 @@ import AiImportSheet from '@/components/ai/AiImportSheet.vue'
 import AiSuggestSheet from '@/components/ai/AiSuggestSheet.vue'
 import AiPlanSheet from '@/components/ai/AiPlanSheet.vue'
 import AiTripGeneratorSheet from '@/components/ai/AiTripGeneratorSheet.vue'
-import { ChevronLeft, Sparkles, Ellipsis, Plus, BedDouble, UtensilsCrossed, Ticket, CalendarDays, Map } from 'lucide-vue-next'
-import { colorFromString, formatDate, tripStatus } from '@/utils/helpers'
+import { ChevronLeft, Sparkles, Ellipsis, Plus, BedDouble, UtensilsCrossed, Ticket, CalendarDays } from 'lucide-vue-next'
+import { formatDate, tripStatus } from '@/utils/helpers'
 import { exportTrip, downloadJson, safeFilename } from '@/services/transfer'
 import { useToast } from '@/composables/useToast'
 import { useConfirm } from '@/composables/useConfirm'
@@ -85,24 +84,29 @@ const TABS = [
   { key: 'hotels', label: 'Hôtels', icon: BedDouble, type: 'hotel' },
   { key: 'restaurants', label: 'Restos', icon: UtensilsCrossed, type: 'restaurant' },
   { key: 'activities', label: 'Activités', icon: Ticket, type: 'activity' },
-  { key: 'calendar', label: 'Planning', icon: CalendarDays, component: markRaw(CalendarTab) },
-  { key: 'map', label: 'Carte', icon: Map, component: markRaw(MapTab) }
+  { key: 'calendar', label: 'Planning', icon: CalendarDays, component: markRaw(CalendarTab) }
 ]
 
 const currentTab = computed(() => TABS.find(t => t.key === activeTab.value) || TABS[0])
 const currentTabIdx = computed(() => TABS.findIndex(t => t.key === activeTab.value))
-const isMap = computed(() => activeTab.value === 'map')
 const defaultType = computed(() => currentTab.value.type || 'activity')
-const tripGradient = computed(() => colorFromString(trip.value?.name || ''))
+// No banner (or a broken link): plain large title instead of a coloured placeholder
+const coverFailed = ref(false)
+const hasCover = computed(() => !!trip.value?.coverImage && !coverFailed.value)
+watch(() => trip.value?.coverImage, () => { coverFailed.value = false })
 const showLongPressHint = computed(() => !!currentTab.value.type)
 const status = computed(() => trip.value ? tripStatus(trip.value) : null)
 const memberCount = computed(() => Object.keys(trip.value?.members || {}).length)
 
-// ---- Navigation bar: transparent over the cover, translucent material once scrolled past it
+// ---- Navigation bar: transparent over the cover, bar material once scrolled past it.
+// Without a cover the large title is ~60pt tall, so the bar takes the title sooner.
 const HERO_H = 320
-const scrolled = ref(false)
-function onScroll() { scrolled.value = window.scrollY > HERO_H - 110 }
-const solidHeader = computed(() => scrolled.value || isMap.value)
+const collapseAt = computed(() => hasCover.value ? HERO_H - 110 : 56)
+const scrollY = ref(0)
+function onScroll() { scrollY.value = window.scrollY }
+const scrolled = computed(() => scrollY.value > collapseAt.value)
+const solidHeader = scrolled
+const overCover = computed(() => hasCover.value && !solidHeader.value)
 
 const tabTransition = ref('tab-fwd')
 function setTab(key) {
@@ -114,14 +118,14 @@ function setTab(key) {
   tabTransition.value = newIdx > currentTabIdx.value ? 'tab-fwd' : 'tab-bwd'
   activeTab.value = key
   // Keep the cover collapsed if it already was, so the new tab starts at its top
-  const stick = HERO_H - 100
+  const stick = collapseAt.value + 10
   if (window.scrollY > stick) window.scrollTo({ top: stick })
 }
 
 // Swipe left/right on the content to change tab (not on the map, rows or horizontal strips)
 const tabSwipe = { x: 0, y: 0, t: 0, active: false }
 function onTabSwipeStart(e) {
-  if (e.target.closest('.leaflet-container, [data-no-swipe], .van-swipe-cell')) return
+  if (e.target.closest('[data-no-swipe], .van-swipe-cell')) return
   const t = e.touches[0]
   Object.assign(tabSwipe, { x: t.clientX, y: t.clientY, t: Date.now(), active: true })
 }
@@ -301,9 +305,9 @@ async function handleDeleteTrip() {
 
   <main v-else class="min-h-[100dvh] pb-[calc(env(safe-area-inset-bottom)+5rem)]" style="overflow-x: clip; --vc-topbar-h: calc(env(safe-area-inset-top) + 44px)">
     <!-- Navigation bar -->
-    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="solidHeader ? 'material hairline-b' : ''">
+    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="solidHeader ? 'material hairline-b' : overCover ? '' : 'bg-[color:var(--vc-bg)]'">
       <div class="h-11 px-2 flex items-center gap-1.5 relative max-w-2xl mx-auto">
-        <button v-if="solidHeader" type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40 -ml-1" aria-label="Retour aux voyages" @click="back">
+        <button v-if="!overCover" type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40 -ml-1" aria-label="Retour aux voyages" @click="back">
           <ChevronLeft class="w-7 h-7" :stroke-width="2.4" />
           <span class="t-body -ml-0.5">Voyages</span>
         </button>
@@ -314,13 +318,13 @@ async function handleDeleteTrip() {
         <p class="absolute inset-x-28 text-center t-headline truncate transition-opacity duration-200 pointer-events-none" :class="solidHeader ? 'opacity-100' : 'opacity-0'">{{ trip.name }}</p>
 
         <div class="ml-auto flex items-center gap-2">
-          <button type="button" :class="solidHeader ? 'bar-btn' : 'glass-btn'" aria-label="Copilote IA" @click="openChat()">
+          <button type="button" :class="overCover ? 'glass-btn' : 'bar-btn'" aria-label="Copilote IA" @click="openChat()">
             <Sparkles class="w-[18px] h-[18px]" :stroke-width="2.2" />
           </button>
-          <button v-if="canEdit && !isMap" type="button" :class="solidHeader ? 'bar-btn' : 'glass-btn'" :aria-label="activeTab === 'calendar' ? 'Ajouter au planning' : 'Ajouter'" @click="onAdd">
+          <button v-if="canEdit" type="button" :class="overCover ? 'glass-btn' : 'bar-btn'" :aria-label="activeTab === 'calendar' ? 'Ajouter au planning' : 'Ajouter'" @click="onAdd">
             <Plus class="w-5 h-5" :stroke-width="2.4" />
           </button>
-          <button type="button" :class="solidHeader ? 'bar-btn' : 'glass-btn'" aria-label="Options du voyage" @click="showMenu = true">
+          <button type="button" :class="overCover ? 'glass-btn' : 'bar-btn'" aria-label="Options du voyage" @click="showMenu = true">
             <Ellipsis class="w-5 h-5" :stroke-width="2.4" />
           </button>
         </div>
@@ -329,23 +333,24 @@ async function handleDeleteTrip() {
 
     <div @touchstart.passive="onTabSwipeStart" @touchend.passive="onTabSwipeEnd" @touchcancel.passive="onTabSwipeEnd">
       <!-- Cover -->
-      <template v-if="!isMap">
-        <section class="relative text-white overflow-hidden" :style="{ height: HERO_H + 'px' }">
-          <div class="absolute inset-0 bg-gradient-to-br" :class="tripGradient" />
-          <img v-if="trip.coverImage" :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display = 'none'" />
-          <!-- Photos need a strong scrim for the status bar and title; a plain gradient much less -->
-          <div class="absolute inset-0 bg-gradient-to-b" :class="trip.coverImage ? 'from-black/35 via-transparent to-black/75' : 'from-transparent from-40% to-black/45'" />
-          <div class="absolute inset-x-0 bottom-0 px-4 pb-5 max-w-2xl mx-auto">
-            <p v-if="kicker" class="t-footnote font-semibold uppercase text-white/75">{{ kicker }}</p>
-            <h1 class="t-large [text-wrap:balance]">{{ trip.name }}</h1>
-            <p v-if="place || dates" class="t-subhead text-white/85 truncate">{{ [place, dates].filter(Boolean).join(' · ') }}</p>
-          </div>
-        </section>
-        <div class="max-w-2xl mx-auto pt-4">
-          <TripSummary @plan="openPlan" @generate="openGenerator" />
+      <section v-if="hasCover" class="relative text-white overflow-hidden" :style="{ height: HERO_H + 'px', background: 'var(--vc-fill)' }">
+        <img :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="coverFailed = true" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/75" />
+        <div class="absolute inset-x-0 bottom-0 px-4 pb-5 max-w-2xl mx-auto">
+          <p v-if="kicker" class="t-footnote font-semibold uppercase text-white/75">{{ kicker }}</p>
+          <h1 class="t-large [text-wrap:balance]">{{ trip.name }}</h1>
+          <p v-if="place || dates" class="t-subhead text-white/85 truncate">{{ [place, dates].filter(Boolean).join(' · ') }}</p>
         </div>
-      </template>
-      <div v-else :style="{ height: 'var(--vc-topbar-h)' }" />
+      </section>
+      <!-- No banner: iOS large title under the bar -->
+      <section v-else class="px-4 pt-[calc(env(safe-area-inset-top)+44px)] max-w-2xl mx-auto">
+        <p v-if="kicker" class="t-footnote font-semibold uppercase text-muted">{{ kicker }}</p>
+        <h1 class="t-large [text-wrap:balance]">{{ trip.name }}</h1>
+        <p v-if="place || dates" class="t-subhead text-muted truncate">{{ [place, dates].filter(Boolean).join(' · ') }}</p>
+      </section>
+      <div class="max-w-2xl mx-auto pt-4">
+        <TripSummary @plan="openPlan" @generate="openGenerator" />
+      </div>
 
       <div class="max-w-2xl mx-auto">
         <FilterBar v-if="currentTab.type" :type="currentTab.type" class="mt-6" />
