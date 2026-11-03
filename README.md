@@ -126,14 +126,6 @@ combien d’éléments s’y trouvent ; touche-la pour voir la liste et ouvrir u
   <img src="docs/screenshots/10-carte.jpg" width="260" alt="Carte du voyage">
 </p>
 
-### Clair ou sombre
-
-Vacayo suit le réglage de ton iPhone, ou le thème que tu choisis dans ton compte.
-
-<p align="center">
-  <img src="docs/screenshots/20-sombre.jpg" width="260" alt="Vacayo en mode sombre">
-</p>
-
 ## L’assistant IA
 
 L’assistant s’appuie sur **Claude Haiku**, un modèle d’intelligence artificielle
@@ -159,12 +151,16 @@ niveau d’hébergement, et ajoute une précision si tu veux (« arrivée le mat
 
 L’IA propose alors les **étapes** du voyage, les **hôtels** de chaque étape et un
 **programme jour par jour**, en tenant compte du jour d’arrivée et du jour de départ.
-Tu peux tout revoir, relancer une autre proposition, puis **Ajouter au voyage**.
+Pendant la préparation (environ une demi-minute pour une semaine), tu suis
+l’avancement étape par étape : villes choisies, hôtels, puis chaque jour du programme.
+Tu peux ensuite tout revoir, relancer une autre proposition, puis **Ajouter au voyage**.
 
 <p align="center">
-  <img src="docs/screenshots/12-generer.jpg" width="260" alt="Choix du rythme et des envies">
+  <img src="docs/screenshots/12-generer.jpg" width="220" alt="Choix du rythme et des envies">
   &nbsp;
-  <img src="docs/screenshots/13-generer-apercu.jpg" width="260" alt="Voyage proposé par l’IA">
+  <img src="docs/screenshots/22-generation.jpg" width="220" alt="Avancement de la préparation, étape par étape">
+  &nbsp;
+  <img src="docs/screenshots/13-generer-apercu.jpg" width="220" alt="Voyage proposé par l’IA">
 </p>
 
 ### Ajout magique
@@ -219,7 +215,6 @@ mardi ? », « Que faire s’il pleut à Kyoto ? ».
 
 Touche ton initiale en haut de la liste des voyages :
 
-- **Apparence** : clair, sombre ou automatique ;
 - **Assistant IA** : son état (activé, ou ta clé personnelle si besoin) ;
 - **Revoir le tutoriel** ;
 - **Importer un voyage** à partir d’un fichier exporté depuis Vacayo ;
@@ -283,9 +278,11 @@ Compte démo : voir l’en-tête de `scripts/seed-emulators.js` (n’existe que 
 ### Sur iPhone
 
 L’interface suit les codes d’iOS (typo système, grands titres, listes groupées,
-balayages, feuilles et alertes natives). Jetons de design `--vc-*` dans
-`src/style.css`, partagés avec Vant (`--van-*`), clair et sombre. Icône dans
-`public/apple-touch-icon.png`, manifeste dans `public/manifest.webmanifest`.
+balayages, feuilles et alertes natives), en mode clair uniquement. Jetons de design
+`--vc-*` dans `src/style.css`, partagés avec Vant (`--van-*`). Les feuilles plein
+écran font `--vc-sheet-h` de haut : elles s’arrêtent sous la barre d’état et la
+Dynamic Island, comme une app installée sur l’écran d’accueil (`viewport-fit=cover`).
+Icône dans `public/apple-touch-icon.png`, manifeste dans `public/manifest.webmanifest`.
 
 ### Tutoriel de première utilisation
 
@@ -363,7 +360,7 @@ Dans `docs/screenshots/`, prises sur les émulateurs (compte démo) dans une fen
 
 - `src/views/` : connexion, liste des voyages, détail d’un voyage
 - `src/components/` : cartes, fiches (bottom sheets), onglets (`tabs/`), IA (`ai/`), tutoriel
-- `src/stores/` : Pinia (auth, voyages, éléments, thème, IA)
+- `src/stores/` : Pinia (auth, voyages, éléments, IA)
 - `src/style.css` : jetons de design
 - `scripts/` : seed des émulateurs, remise à zéro du tutoriel
 - `ai-proxy/` : Vercel Function qui garde la clé Anthropic
