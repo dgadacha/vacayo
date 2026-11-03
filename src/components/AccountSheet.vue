@@ -6,7 +6,7 @@ import { useThemeStore } from '@/stores/theme'
 import { useAiStore } from '@/stores/ai'
 import { useConfirm } from '@/composables/useConfirm'
 import SheetHeader from '@/components/SheetHeader.vue'
-import { Sparkles, Download, ChevronRight, Sun, Moon, SunMoon } from 'lucide-vue-next'
+import { Sparkles, Download, ChevronRight, Sun, Moon, SunMoon, GraduationCap } from 'lucide-vue-next'
 
 defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue', 'import'])
@@ -27,6 +27,7 @@ const THEMES = [
 function close() { emit('update:modelValue', false) }
 function openAi() { close(); ai.showSettings = true }
 function openImport() { close(); emit('import') }
+function openTutorial() { close(); auth.replayTutorial() }
 async function logout() {
   const ok = await confirm({ title: 'Se déconnecter ?', message: 'Tes voyages restent enregistrés dans ton compte.', confirmLabel: 'Se déconnecter', destructive: true })
   if (!ok) return
@@ -66,6 +67,11 @@ async function logout() {
           <span class="row-icon" style="background: var(--vc-ai)"><Sparkles class="w-[17px] h-[17px]" :stroke-width="2" /></span>
           <span class="flex-1 t-body">Assistant IA</span>
           <span class="t-body text-muted">{{ ai.ready ? 'Activé' : 'Désactivé' }}</span>
+          <ChevronRight class="w-4 h-4 text-subtle -mr-1" :stroke-width="2.5" />
+        </button>
+        <button type="button" class="row" @click="openTutorial">
+          <span class="row-icon bg-[#ff9500]"><GraduationCap class="w-[17px] h-[17px]" :stroke-width="2" /></span>
+          <span class="flex-1 t-body">Revoir le tutoriel</span>
           <ChevronRight class="w-4 h-4 text-subtle -mr-1" :stroke-width="2.5" />
         </button>
         <button type="button" class="row" @click="openImport">

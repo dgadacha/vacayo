@@ -186,8 +186,15 @@ watch(tripId, async (id) => {
   if (!id) return
   notFound.value = false
   fallbackTrip.value = null
+  activeTab.value = 'hotels'
   await ensureTrip(id)
   activities.setTrip(id)
+})
+// Same view reused for another trip: onMounted won't run again
+watch(() => route.query.generate, (v) => {
+  if (!v) return
+  router.replace({ query: {} })
+  openGenerator()
 })
 
 onBeforeUnmount(() => {

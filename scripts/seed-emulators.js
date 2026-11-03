@@ -27,7 +27,7 @@ async function main() {
   catch { user = await auth.createUser({ email: EMAIL, password: PASSWORD, displayName: 'Dylan' }) }
   const uid = user.uid
 
-  await db.collection('users').doc(uid).set({ email: EMAIL, displayName: 'Dylan', createdAt: admin.firestore.FieldValue.serverTimestamp() })
+  await db.collection('users').doc(uid).set({ email: EMAIL, displayName: 'Dylan', tutorialDone: false, createdAt: admin.firestore.FieldValue.serverTimestamp() })
 
   const old = await db.collection('trips').where(`members.${uid}`, '==', 'owner').get()
   for (const t of old.docs) {

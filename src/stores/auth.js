@@ -8,31 +8,40 @@ import {
   onAuthStateChanged,
   updateProfile
 } from 'firebase/auth'
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db, COL } from '@/services/firebase'
 
+// users/{uid}.tutorialDone: false until the first-use tutorial is finished.
+// Docs created before the field existed get it set to false here.
 async function ensureUserDoc(u, extra = {}) {
-  if (!u?.uid) return
+  if (!u?.uid) return null
   const ref = doc(db, COL.users, u.uid)
   const snap = await getDoc(ref)
   if (snap.exists()) {
-    if (extra.displayName && !snap.data().displayName) {
-      await setDoc(ref, { displayName: extra.displayName }, { merge: true })
-    }
-    return
+    const data = snap.data()
+    const patch = {}
+    if (extra.displayName && !data.displayName) patch.displayName = extra.displayName
+    if (typeof data.tutorialDone !== 'boolean') patch.tutorialDone = false
+    if (Object.keys(patch).length) await setDoc(ref, patch, { merge: true })
+    return { ...data, ...patch }
   }
-  await setDoc(ref, {
+  const data = {
     email: u.email || '',
     displayName: extra.displayName || u.displayName || (u.email?.split('@')[0]) || '',
     photoURL: u.photoURL || '',
+    tutorialDone: false,
     createdAt: serverTimestamp()
-  })
+  }
+  await setDoc(ref, data)
+  return data
 }
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const ready = ref(false)
   const error = ref('')
+  const profile = ref(null) // users/{uid} document
+  const tutorialReplay = ref(false) // "Revoir le tutoriel" from the account sheet
 
   onAuthStateChanged(auth, async (u) => {
     if (u) {
@@ -42,14 +51,28 @@ export const useAuthStore = defineStore('auth', () => {
         name: u.displayName || u.email?.split('@')[0] || 'Utilisateur',
         photoURL: u.photoURL
       }
-      ensureUserDoc(u).catch(e => console.warn('ensureUserDoc failed', e))
+      ensureUserDoc(u)
+        .then(p => { if (user.value?.uid === u.uid) profile.value = p })
+        .catch(e => console.warn('ensureUserDoc failed', e))
     } else {
       user.value = null
+      profile.value = null
+      tutorialReplay.value = false
     }
     ready.value = true
   })
 
   const isAuthenticated = computed(() => !!user.value)
+  const showTutorial = computed(() => !!user.value && (tutorialReplay.value || profile.value?.tutorialDone === false))
+
+  async function completeTutorial() {
+    tutorialReplay.value = false
+    if (!user.value || profile.value?.tutorialDone === true) return
+    profile.value = { ...profile.value, tutorialDone: true }
+    try { await updateDoc(doc(db, COL.users, user.value.uid), { tutorialDone: true }) }
+    catch (e) { console.warn('completeTutorial failed', e) }
+  }
+  function replayTutorial() { tutorialReplay.value = true }
 
   function friendly(e) {
     const code = e?.code || ''
@@ -71,7 +94,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = ''
     try {
       const cred = await signInWithEmailAndPassword(auth, email.trim(), password)
-      await ensureUserDoc(cred.user)
+      profile.value = await ensureUserDoc(cred.user)
       return cred.user
     } catch (e) {
       const msg = friendly(e)
@@ -86,7 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
       const cred = await createUserWithEmailAndPassword(auth, email.trim(), password)
       const name = displayName?.trim() || email.split('@')[0]
       try { await updateProfile(cred.user, { displayName: name }) } catch {}
-      await ensureUserDoc(cred.user, { displayName: name })
+      profile.value = await ensureUserDoc(cred.user, { displayName: name })
       return cred.user
     } catch (e) {
       const msg = friendly(e)
@@ -108,5 +131,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() { await signOut(auth) }
 
-  return { user, ready, error, isAuthenticated, login, register, resetPassword, logout }
+  return { user, ready, error, profile, isAuthenticated, showTutorial, completeTutorial, replayTutorial, login, register, resetPassword, logout }
 })

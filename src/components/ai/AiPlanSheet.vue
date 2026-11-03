@@ -79,7 +79,7 @@ function close() { emit('update:modelValue', false) }
 <template>
   <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
-      <AiSheetHeader title="Planifier la wishlist" subtitle="L'IA répartit tes idées sur le séjour" :icon="Wand2" @close="close" />
+      <AiSheetHeader title="Planifier la liste d’envies" subtitle="L'IA répartit tes idées sur le séjour" :icon="Wand2" @close="close" />
 
       <div class="flex-1 overflow-y-auto px-4 py-4">
         <div v-if="loading" class="space-y-3">
@@ -97,7 +97,7 @@ function close() { emit('update:modelValue', false) }
           <p v-if="plan.summary" class="text-sm leading-relaxed rounded-2xl px-4 py-3" style="background: var(--vc-primary-soft)">{{ plan.summary }}</p>
 
           <section v-for="d in byDay" :key="d.date" class="mt-5">
-            <h3 class="section-label mb-2 capitalize">{{ formatDate(d.date, 'EEEE d MMMM') }}</h3>
+            <h3 class="t-footnote text-muted mb-2 px-1 first-letter:uppercase">{{ formatDate(d.date, 'EEEE d MMMM') }}</h3>
             <div class="space-y-2">
               <button
                 v-for="a in d.items"
@@ -113,7 +113,7 @@ function close() { emit('update:modelValue', false) }
                 </span>
                 <span class="flex-1 min-w-0">
                   <span class="flex items-center gap-1.5">
-                    <component :is="ACTIVITY_TYPES[a.item.type]?.icon" class="w-3.5 h-3.5 flex-shrink-0 text-muted" :stroke-width="2" />
+                    <component :is="ACTIVITY_TYPES[a.item.type]?.icon" class="w-3.5 h-3.5 flex-shrink-0" :style="{ color: ACTIVITY_TYPES[a.item.type]?.color }" :stroke-width="2.2" />
                     <span class="font-semibold text-[15px] leading-snug truncate">{{ a.item.name }}</span>
                   </span>
                   <span v-if="a.item.city" class="block text-xs text-muted mt-0.5">{{ a.item.city }}</span>
