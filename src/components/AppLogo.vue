@@ -1,10 +1,10 @@
 <script setup>
+// iOS app icon: rounded square (radius 22.5%) on a sky gradient
 defineProps({ size: { type: Number, default: 40 } })
 const id = `vlogo-${Math.random().toString(36).slice(2, 8)}`
 </script>
 
 <template>
-  <!-- iOS app icon: squircle-ish radius (22.5%) on a sky gradient -->
   <svg :width="size" :height="size" viewBox="0 0 32 32" aria-hidden="true">
     <defs>
       <linearGradient :id="id" x1="0" y1="0" x2="0" y2="1">

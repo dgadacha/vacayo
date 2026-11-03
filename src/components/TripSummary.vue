@@ -4,7 +4,7 @@ import { useActivitiesStore } from '@/stores/activities'
 import { formatPrice, formatCompact } from '@/utils/helpers'
 import { Sparkles, ChevronRight } from 'lucide-vue-next'
 
-const emit = defineEmits(['plan'])
+const emit = defineEmits(['plan', 'generate'])
 
 const activities = useActivitiesStore()
 const trip = inject('trip', ref(null))
@@ -28,6 +28,17 @@ const dash = (pct) => `${Math.max(pct, 0.01)} 100`
 
 <template>
   <div>
+    <!-- Empty trip: the AI can draft everything from the destination and dates -->
+    <button v-if="stats.total === 0 && canEdit" type="button" class="mx-4 w-[calc(100%-2rem)] rounded-xl overflow-hidden text-left text-white active:scale-[0.98] transition-transform mb-4" style="background: var(--vc-ai)" @click="emit('generate')">
+      <div class="px-4 py-4 flex items-center gap-3">
+        <Sparkles class="w-8 h-8 flex-shrink-0" :stroke-width="1.8" />
+        <div class="flex-1 min-w-0">
+          <p class="t-headline">Générer le voyage avec l’IA</p>
+          <p class="t-subhead text-white/85">Étapes, hôtels et programme jour par jour, à partir de tes dates.</p>
+        </div>
+        <ChevronRight class="w-5 h-5 text-white/80" :stroke-width="2.5" />
+      </div>
+    </button>
     <div class="list">
       <div class="flex items-center gap-4 px-4 py-3.5">
         <!-- Two concentric rings, like Apple Fitness: done (outer), booked (inner) -->

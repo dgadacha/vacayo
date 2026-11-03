@@ -3,6 +3,7 @@
 //  - VITE_AI_PROXY_URL: our proxy (ai-proxy/) holds the key, we send the Firebase ID token;
 //  - otherwise the user's own key, called straight from the browser.
 import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 import { auth } from './firebase'
 import { useAiStore, AI_PROXY_URL, AI_MODEL } from '@/stores/ai'
 import { ACTIVITY_TYPES } from '@/utils/constants'
@@ -338,6 +339,146 @@ export async function planWishlist({ trip, items, signal }) {
     .sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`))
   const unplaced = out.unplaced.filter(x => byId.has(x.id) && !seen.has(x.id)).map(x => ({ ...x, item: byId.get(x.id) }))
   return { summary: out.summary, assignments, unplaced }
+}
+
+export const TRIP_MAX_DAYS = 30
+const PACE = {
+  calm: { label: 'tranquille', perDay: '2 activités' },
+  balanced: { label: 'équilibré', perDay: '3 activités' },
+  intense: { label: 'intense', perDay: '4 ou 5 activités' }
+}
+const LODGING = { budget: 'économique (auberges, business hotels)', comfort: 'confort (3-4 étoiles bien situés)', luxury: 'luxe (5 étoiles, ryokans haut de gamme…)' }
+
+/**
+ * Drafts a whole trip (stages, hotels, a day-by-day programme) from the trip's
+ * destination and dates. Streams so the UI can show progress; nothing is saved.
+ * prefs: { pace: 'calm'|'balanced'|'intense', interests: string[], lodging: 'budget'|'comfort'|'luxury', notes }
+ */
+export async function generateTrip({ trip, items, prefs = {}, onProgress, signal }) {
+  const start = trip?.startDate
+  const end = trip?.endDate
+  const destination = [trip?.destination, trip?.country].filter(Boolean).join(', ')
+  if (!destination || !start || !end) throw new AiSetupError('Indique la destination et les dates du voyage.')
+  const nights = Math.round((new Date(end) - new Date(start)) / 86400000)
+  if (nights < 0) throw new AiSetupError('La date de départ est avant la date d’arrivée.')
+  if (nights + 1 > TRIP_MAX_DAYS) throw new AiSetupError(`Le générateur gère jusqu’à ${TRIP_MAX_DAYS} jours.`)
+
+  const pace = PACE[prefs.pace] || PACE.balanced
+  const hasHotels = items.some(a => a.type === 'hotel')
+  // The model doesn't reliably know weekdays: spell them out (opening days matter)
+  const calendar = []
+  for (let d = new Date(`${start}T12:00`); format(d, 'yyyy-MM-dd') <= end; d.setDate(d.getDate() + 1)) {
+    calendar.push(`${format(d, 'yyyy-MM-dd')} (${format(d, 'EEEE', { locale: fr })})`)
+  }
+  const client = await getClient()
+  const { jsonSchemaOutputFormat } = sdk
+  const prompt = [
+    `Prépare un voyage complet à ${destination}, du ${start} (arrivée) au ${end} (départ) : ${nights + 1} jours, ${nights} nuit${nights > 1 ? 's' : ''}.`,
+    `Rythme ${pace.label} : ${pace.perDay} par jour, plus un restaurant le midi (12:30) et un le soir (19:30).`,
+    prefs.interests?.length ? `Envies : ${prefs.interests.join(', ')}.` : '',
+    `Hébergement : gamme ${LODGING[prefs.lodging] || LODGING.comfort}.`,
+    Number(trip.budget) ? `Budget total : ${trip.budget} ${trip.currencySymbol || '€'} pour tout le voyage, reste dedans.` : '',
+    prefs.notes ? `Précisions du voyageur : « ${String(prefs.notes).slice(0, 500)} ».` : '',
+    '',
+    'Règles :',
+    '- Découpe le séjour en étapes (villes) logiques avec des trajets réalistes ; pas de changement de ville tous les jours.',
+    hasHotels
+      ? '- Des hôtels sont déjà prévus : garde-les et ne propose un hôtel que pour les nuits non couvertes.'
+      : '- Un hôtel réel par étape (type "hotel") : date = arrivée, endDate = départ, time 15:00, endTime 11:00. Les étapes s’enchaînent (départ d’un hôtel = arrivée du suivant) et la dernière nuit se termine le jour du départ.',
+    `- Jours du voyage : ${calendar.join(', ')}. Respecte les jours de fermeture habituels (beaucoup de musées ferment le lundi ou le mardi).`,
+    '- Chaque jour, les activités et les restaurants sont dans la ville où l’on dort ce soir-là.',
+    '- Sauf précision contraire du voyageur : le jour d’arrivée commence vers 12:00 (déjeuner puis visites légères), et le jour du départ se limite à la matinée et au déjeuner, sans rien après 15:00.',
+    '- Lieux réels, connus et vérifiables uniquement ; aucun doublon ; ne reprends rien de ce qui est déjà dans le voyage.',
+    '- Dates au format YYYY-MM-DD comprises entre l’arrivée et le départ, heures au format HH:mm.',
+    '- Prix estimé dans la devise du voyage : par personne pour activités et restaurants, total du séjour pour un hôtel ; 0 si gratuit.',
+    '- "why" : une phrase de moins de 90 caractères. "summary" : 2 phrases sur l’itinéraire.'
+  ].filter(Boolean).join('\n')
+
+  const stream = client.messages.stream({
+    model: AI_MODEL,
+    max_tokens: 16000,
+    system: `${SYSTEM_BASE}\n\n${buildTripContext(trip, items)}`,
+    output_config: {
+      effort: 'medium',
+      format: jsonSchemaOutputFormat({
+        type: 'object',
+        additionalProperties: false,
+        required: ['summary', 'stages', 'items'],
+        properties: {
+          summary: { type: 'string' },
+          stages: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['city', 'from', 'to'],
+              properties: { city: { type: 'string' }, from: { type: 'string' }, to: { type: 'string' } }
+            }
+          },
+          items: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['type', 'name', 'city', 'category', 'date', 'time', 'endDate', 'endTime', 'price', 'priority', 'why'],
+              properties: {
+                type: TYPE_ENUM,
+                name: { type: 'string' },
+                city: { type: 'string' },
+                category: { type: 'string' },
+                date: { type: 'string', description: 'YYYY-MM-DD' },
+                time: { type: 'string', description: 'HH:mm' },
+                endDate: { type: 'string', description: 'YYYY-MM-DD pour un hôtel, sinon vide' },
+                endTime: { type: 'string', description: 'HH:mm pour un hôtel, sinon vide' },
+                price: { type: 'number' },
+                priority: PRIORITY_ENUM,
+                why: { type: 'string' }
+              }
+            }
+          }
+        }
+      })
+    },
+    messages: [{ role: 'user', content: prompt }]
+  }, { signal })
+
+  // Rough progress: count the places already written in the streamed JSON
+  let text = ''
+  for await (const event of stream) {
+    if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+      text += event.delta.text
+      onProgress?.((text.match(/"name"\s*:/g) || []).length)
+    }
+  }
+  const res = await stream.finalMessage()
+  if (res.stop_reason === 'refusal') throw new AiRefusalError()
+  if (res.stop_reason === 'max_tokens') throw new Error('Le voyage est trop long à générer d’un coup : essaie un rythme plus tranquille.')
+  const out = res.parsed_output
+  if (!out) throw new Error("Réponse de l'IA illisible, réessaie.")
+
+  // Keep only what fits the trip: valid dates inside the range, hotels with a real stay
+  const day = /^\d{4}-\d{2}-\d{2}$/
+  const hour = /^\d{2}:\d{2}$/
+  const inTrip = d => day.test(d) && d >= start && d <= end
+  const seen = new Set()
+  const generated = out.items
+    .filter(i => i.name && inTrip(i.date))
+    .filter(i => i.type !== 'hotel' || (inTrip(i.endDate) && i.endDate > i.date))
+    .filter(i => { const k = `${i.type}:${i.name.toLowerCase()}`; return !seen.has(k) && seen.add(k) })
+    .map(i => ({
+      type: i.type,
+      name: i.name,
+      city: i.city,
+      category: i.category,
+      price: Math.max(0, Math.round(Number(i.price) || 0)),
+      priority: i.priority,
+      notes: i.why,
+      date: `${i.date}T${hour.test(i.time) ? i.time : (i.type === 'hotel' ? '15:00' : '10:00')}`,
+      endDate: i.type === 'hotel' ? `${i.endDate}T${hour.test(i.endTime) ? i.endTime : '11:00'}` : '',
+      googleMapsUrl: mapsSearchUrl(i.name, i.city)
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+  return { summary: out.summary, stages: out.stages.filter(s => s.city), items: generated }
 }
 
 /** Fills the blanks of an item being edited (category, price, tips…). */

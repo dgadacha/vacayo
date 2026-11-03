@@ -17,6 +17,7 @@ import AiAssistantSheet from '@/components/ai/AiAssistantSheet.vue'
 import AiImportSheet from '@/components/ai/AiImportSheet.vue'
 import AiSuggestSheet from '@/components/ai/AiSuggestSheet.vue'
 import AiPlanSheet from '@/components/ai/AiPlanSheet.vue'
+import AiTripGeneratorSheet from '@/components/ai/AiTripGeneratorSheet.vue'
 import { ChevronLeft, Sparkles, Ellipsis, Plus, BedDouble, UtensilsCrossed, Ticket, CalendarDays, Map } from 'lucide-vue-next'
 import { colorFromString, formatDate, tripStatus } from '@/utils/helpers'
 import { exportTrip, downloadJson, safeFilename } from '@/services/transfer'
@@ -51,6 +52,7 @@ const chatPrompt = ref('')
 const showAiImport = ref(false)
 const showSuggest = ref(false)
 const showPlan = ref(false)
+const showGenerator = ref(false)
 
 function openChat(prompt = '') {
   if (!ai.requireReady()) return
@@ -62,6 +64,11 @@ function openPlan() {
   if (!ai.requireReady()) return
   showPlan.value = true
 }
+function openGenerator() {
+  if (!canEdit.value) return
+  if (!ai.requireReady()) return
+  showGenerator.value = true
+}
 
 provide('trip', trip)
 provide('canEdit', canEdit)
@@ -69,6 +76,7 @@ provide('openTripEditor', () => { if (canEdit.value) showEditTrip.value = true }
 provide('aiActions', {
   openChat,
   openPlan,
+  openGenerator,
   openSuggest: () => { if (ai.requireReady()) showSuggest.value = true },
   openImport: () => { if (ai.requireReady()) showAiImport.value = true }
 })
@@ -167,6 +175,11 @@ onMounted(async () => {
     return
   }
   activities.setTrip(tripId.value)
+  // Coming from "Nouveau voyage" with "Préparer avec l'IA" on
+  if (route.query.generate) {
+    router.replace({ query: {} })
+    openGenerator()
+  }
 })
 
 watch(tripId, async (id) => {
@@ -204,6 +217,7 @@ const ADD_LABEL = { hotel: 'Nouvel hôtel', restaurant: 'Nouveau restaurant', ac
 const IDEAS_LABEL = { hotel: 'Idées d’hôtels', restaurant: 'Idées de restos', activity: 'Idées d’activités' }
 const addActions = computed(() => [
   { name: ADD_LABEL[defaultType.value], key: 'manual' },
+  { name: 'Générer tout le voyage', subname: 'Étapes, hôtels et programme à partir des dates', key: 'ai-generate' },
   { name: 'Ajout magique', subname: 'Colle un mail de réservation, l’IA remplit les fiches', key: 'ai-import' },
   { name: IDEAS_LABEL[defaultType.value], subname: 'Suggestions de l’IA adaptées à tes étapes', key: 'ai-suggest' }
 ])
@@ -211,7 +225,8 @@ function onAddSelect(action) {
   showAddMenu.value = false
   if (action.key === 'manual') return openAdd(defaultType.value)
   if (!ai.requireReady()) return
-  if (action.key === 'ai-import') showAiImport.value = true
+  if (action.key === 'ai-generate') showGenerator.value = true
+  else if (action.key === 'ai-import') showAiImport.value = true
   else if (action.key === 'ai-suggest') showSuggest.value = true
 }
 function onAdd() {
@@ -268,7 +283,6 @@ async function handleDeleteTrip() {
 </script>
 
 <template>
-  <!-- Single stable root: the route-level <Transition> must not see the root element change -->
   <div>
   <div v-if="!trip" class="min-h-[100dvh]">
     <div class="shimmer !rounded-none" :style="{ height: HERO_H + 'px' }" />
@@ -320,7 +334,7 @@ async function handleDeleteTrip() {
           </div>
         </section>
         <div class="max-w-2xl mx-auto pt-4">
-          <TripSummary @plan="openPlan" />
+          <TripSummary @plan="openPlan" @generate="openGenerator" />
         </div>
       </template>
       <div v-else :style="{ height: 'var(--vc-topbar-h)' }" />
@@ -366,6 +380,7 @@ async function handleDeleteTrip() {
     <AiImportSheet v-model="showAiImport" />
     <AiSuggestSheet v-model="showSuggest" :type="defaultType" />
     <AiPlanSheet v-model="showPlan" />
+    <AiTripGeneratorSheet v-model="showGenerator" />
   </main>
   </div>
 </template>
