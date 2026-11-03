@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { Luggage, Plus, Sparkles, Hand, CalendarDays, MessageCircle, Smartphone, CircleCheck, Trash2, Bookmark, Share } from 'lucide-vue-next'
+import { Luggage, Plus, Sparkles, Hand, CalendarDays, MessageCircle, Smartphone, CircleCheck, Trash2, Bookmark, Share, Wand2, Lightbulb, CalendarRange } from 'lucide-vue-next'
 
 // First-use tutorial, shown while users/{uid}.tutorialDone is false (or replayed
 // from the account sheet). Swipeable pages, Apple onboarding style.
@@ -16,7 +16,14 @@ const PAGES = [
   { key: 'swipe', icon: Hand, bg: 'from-[#ffb340] to-[#ff9500]', title: 'Un geste pour tout', text: 'Balaie une ligne vers la gauche pour « Fait » ou « Supprimer », vers la droite pour « Réservé ». Un appui long ouvre toutes les options.' },
   { key: 'plan', icon: CalendarDays, bg: 'from-[#ff6961] to-[#ff3b30]', title: 'Jour par jour', text: 'L’onglet Planning montre chaque journée heure par heure, l’onglet Carte situe tous tes lieux.' },
   { key: 'copilot', icon: MessageCircle, bg: 'ai', title: 'Pose tes questions', text: 'Le bouton ✨ ouvre le copilote, qui connaît tout ton voyage.' },
+  { key: 'tools', icon: Wand2, bg: 'ai', title: 'L’IA t’aide aussi', text: 'L’IA propose, tu valides : rien n’est ajouté sans ton accord.' },
   { key: 'iphone', icon: Smartphone, bg: 'from-[#8e8e93] to-[#636366]', title: 'Sur ton iPhone', text: 'Dans Safari, touche Partager puis « Sur l’écran d’accueil » : Vacayo s’ouvre alors comme une vraie app.' }
+]
+const AI_TOOLS = [
+  { icon: Wand2, title: 'Ajout magique', text: 'Colle un mail de réservation' },
+  { icon: Lightbulb, title: 'Idées', text: 'Des lieux adaptés à tes étapes' },
+  { icon: CalendarRange, title: 'Planifier', text: 'Range tes envies jour par jour' },
+  { icon: Sparkles, title: 'Compléter avec l’IA', text: 'Un nom suffit à remplir la fiche' }
 ]
 const isLast = computed(() => page.value === PAGES.length - 1)
 
@@ -45,13 +52,13 @@ function next() {
       <div ref="track" class="flex-1 flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" @scroll.passive="onScroll">
         <section v-for="p in PAGES" :key="p.key" class="w-full flex-shrink-0 snap-center flex flex-col items-center justify-center px-9 text-center">
           <div
-            class="w-[112px] h-[112px] rounded-[26px] flex items-center justify-center text-white shadow-lift"
+            class="w-[112px] h-[112px] rounded-[26px] flex flex-shrink-0 items-center justify-center text-white shadow-lift [@media(max-height:700px)]:w-20 [@media(max-height:700px)]:h-20 [@media(max-height:700px)]:rounded-[19px]"
             :class="p.bg === 'ai' ? '' : 'bg-gradient-to-b ' + p.bg"
             :style="p.bg === 'ai' ? { background: 'var(--vc-ai)' } : {}"
           >
-            <component :is="p.icon" class="w-14 h-14" :stroke-width="1.6" />
+            <component :is="p.icon" class="w-14 h-14 [@media(max-height:700px)]:w-10 [@media(max-height:700px)]:h-10" :stroke-width="1.6" />
           </div>
-          <h2 class="t-title1 mt-8 [text-wrap:balance]">{{ p.title }}</h2>
+          <h2 class="t-title1 mt-8 [@media(max-height:700px)]:mt-5 [text-wrap:balance]">{{ p.title }}</h2>
           <p class="t-body text-muted mt-3 max-w-sm [text-wrap:pretty]">{{ p.text }}</p>
 
           <!-- Small live demos for the gestures and the copilot -->
@@ -67,6 +74,15 @@ function next() {
           <div v-else-if="p.key === 'copilot'" class="mt-7 w-full max-w-sm space-y-1.5 text-left">
             <p class="ml-auto w-fit max-w-[85%] rounded-[18px] rounded-br-md px-3 py-1.5 text-white" style="background: var(--vc-primary)">Qu’est-ce qu’il me reste à réserver ?</p>
             <p class="w-fit max-w-[85%] rounded-[18px] rounded-bl-md px-3 py-1.5" style="background: var(--vc-bubble)">Le ryokan à Kyoto et le créneau coucher de soleil à Shibuya Sky.</p>
+          </div>
+          <div v-else-if="p.key === 'tools'" class="mt-6 w-full max-w-sm list !mx-0 text-left" style="--sep-inset: 57px">
+            <div v-for="t in AI_TOOLS" :key="t.title" class="row">
+              <span class="row-icon" style="background: var(--vc-ai)"><component :is="t.icon" class="w-[17px] h-[17px]" :stroke-width="2" /></span>
+              <span class="min-w-0">
+                <span class="block t-body">{{ t.title }}</span>
+                <span class="block t-footnote text-muted truncate">{{ t.text }}</span>
+              </span>
+            </div>
           </div>
           <div v-else-if="p.key === 'iphone'" class="mt-7 inline-flex items-center gap-2 t-subhead text-muted">
             <Share class="w-5 h-5 text-tint" :stroke-width="2" /> Partager → Sur l’écran d’accueil

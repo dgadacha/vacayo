@@ -143,6 +143,13 @@ conçu par Anthropic. Il est reconnaissable à son dégradé de couleurs ✨.
 > pas, puis tu valides. Elle peut se tromper (un horaire, un prix) : vérifie avant de
 > réserver.
 
+Le tutoriel consacre une page à chacune des deux fonctions principales (générer le
+voyage, le copilote), et une dernière page résume les autres :
+
+<p align="center">
+  <img src="docs/screenshots/21-tutoriel-ia.jpg" width="260" alt="Page du tutoriel sur les fonctions IA : Ajout magique, Idées, Planifier, Compléter avec l’IA">
+</p>
+
 ### Générer tout le voyage
 
 À la création d’un voyage, laisse **Préparer avec l’IA** activé. Choisis le rythme
