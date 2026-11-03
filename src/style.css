@@ -381,6 +381,10 @@ html:root {
   background: var(--vc-surface-elevated);
 }
 
+/* Dimming overlay: anchored to the bottom like the sheets. Vant's height: 100%
+   stopped short of the home indicator in the installed iPhone app. */
+.van-overlay { bottom: 0; height: auto; }
+
 /* Alerts */
 .van-dialog .van-dialog__message { padding-bottom: 19px; }
 .van-dialog__header { font-size: 17px; }
