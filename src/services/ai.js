@@ -3,6 +3,7 @@
 //  - VITE_AI_PROXY_URL: our proxy (ai-proxy/) holds the key, we send the Firebase ID token;
 //  - otherwise the user's own key, called straight from the browser.
 import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 import { auth } from './firebase'
 import { useAiStore, AI_PROXY_URL, AI_MODEL } from '@/stores/ai'
 import { ACTIVITY_TYPES } from '@/utils/constants'
@@ -364,6 +365,11 @@ export async function generateTrip({ trip, items, prefs = {}, onProgress, signal
 
   const pace = PACE[prefs.pace] || PACE.balanced
   const hasHotels = items.some(a => a.type === 'hotel')
+  // The model doesn't reliably know weekdays: spell them out (opening days matter)
+  const calendar = []
+  for (let d = new Date(`${start}T12:00`); format(d, 'yyyy-MM-dd') <= end; d.setDate(d.getDate() + 1)) {
+    calendar.push(`${format(d, 'yyyy-MM-dd')} (${format(d, 'EEEE', { locale: fr })})`)
+  }
   const client = await getClient()
   const { jsonSchemaOutputFormat } = sdk
   const prompt = [
@@ -379,7 +385,9 @@ export async function generateTrip({ trip, items, prefs = {}, onProgress, signal
     hasHotels
       ? '- Des hôtels sont déjà prévus : garde-les et ne propose un hôtel que pour les nuits non couvertes.'
       : '- Un hôtel réel par étape (type "hotel") : date = arrivée, endDate = départ, time 15:00, endTime 11:00. Les étapes s’enchaînent (départ d’un hôtel = arrivée du suivant) et la dernière nuit se termine le jour du départ.',
-    '- Chaque jour, les activités et les restaurants sont dans la ville où l’on dort ce soir-là ; le premier et le dernier jour sont plus légers.',
+    `- Jours du voyage : ${calendar.join(', ')}. Respecte les jours de fermeture habituels (beaucoup de musées ferment le lundi ou le mardi).`,
+    '- Chaque jour, les activités et les restaurants sont dans la ville où l’on dort ce soir-là.',
+    '- Sauf précision contraire du voyageur : le jour d’arrivée commence vers 12:00 (déjeuner puis visites légères), et le jour du départ se limite à la matinée et au déjeuner, sans rien après 15:00.',
     '- Lieux réels, connus et vérifiables uniquement ; aucun doublon ; ne reprends rien de ce qui est déjà dans le voyage.',
     '- Dates au format YYYY-MM-DD comprises entre l’arrivée et le départ, heures au format HH:mm.',
     '- Prix estimé dans la devise du voyage : par personne pour activités et restaurants, total du séjour pour un hôtel ; 0 si gratuit.',

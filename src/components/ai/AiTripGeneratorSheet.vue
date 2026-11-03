@@ -187,8 +187,9 @@ function close() { emit('update:modelValue', false) }
             <Sparkles class="w-12 h-12 animate-pulse" :stroke-width="1.6" />
           </div>
         </div>
-        <p class="t-title3 mt-7">Haiku compose ton voyage…</p>
-        <p class="t-subhead text-muted mt-1">{{ found ? `${found} lieu${found > 1 ? 'x' : ''} trouvé${found > 1 ? 's' : ''}` : 'Étapes, hôtels, programme jour par jour' }}</p>
+        <p class="t-title3 mt-7">Création de ton voyage</p>
+        <p class="t-subhead text-muted mt-1">{{ found ? `${found} lieu${found > 1 ? 'x' : ''} trouvé${found > 1 ? 's' : ''}` : 'Haiku réfléchit à l’itinéraire…' }}</p>
+        <p class="t-footnote text-subtle mt-3">Environ 30 secondes pour une semaine.</p>
         <button type="button" class="btn btn-plain mt-6" @click="cancel">Annuler</button>
       </div>
 
