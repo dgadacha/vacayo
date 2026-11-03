@@ -19,6 +19,9 @@ const form = ref(emptyForm())
 const showStartPicker = ref(false)
 const showEndPicker = ref(false)
 const showCurrencyPicker = ref(false)
+// Creation only: open the AI trip generator right after the trip is created
+const withAi = ref(true)
+const canGenerate = computed(() => !!(form.value.destination.trim() && form.value.startDate && form.value.endDate))
 
 function emptyForm() {
   return {
@@ -32,6 +35,7 @@ function emptyForm() {
 watch(() => props.modelValue, (open) => {
   if (open) {
     error.value = ''
+    withAi.value = true
     if (props.trip) {
       form.value = {
         name: props.trip.name || '',
@@ -97,7 +101,7 @@ async function submit() {
       emit('saved', { id: props.trip.id, ...form.value })
     } else {
       const t = await trips.createTrip(form.value)
-      emit('saved', t)
+      emit('saved', { ...t, generate: withAi.value && canGenerate.value })
     }
     emit('update:modelValue', false)
   } catch (e) {
@@ -174,6 +178,17 @@ async function submit() {
           />
         </van-cell-group>
 
+        <template v-if="!isEdit">
+          <van-cell-group inset title="Assistant IA">
+            <van-cell title="Préparer avec l’IA" center>
+              <template #right-icon>
+                <van-switch v-model="withAi" />
+              </template>
+            </van-cell>
+          </van-cell-group>
+          <p class="list-footer">{{ canGenerate ? 'L’IA proposera étapes, hôtels et programme jour par jour, à valider avant ajout.' : 'Renseigne la destination et les dates pour que l’IA prépare le voyage.' }}</p>
+        </template>
+
         <van-cell-group inset title="Budget">
           <van-field
             readonly
@@ -226,7 +241,7 @@ async function submit() {
   </van-popup>
   <van-popup v-model:show="showEndPicker" position="bottom" round teleport="body">
     <van-date-picker
-      :model-value="parseToColumns(form.endDate)"
+      :model-value="parseToColumns(form.endDate || form.startDate)"
       :min-date="new Date(2020, 0, 1)"
       :max-date="new Date(2035, 11, 31)"
       title="Date de fin"

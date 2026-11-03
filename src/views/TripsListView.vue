@@ -64,7 +64,7 @@ function hideImg(e) { e.target.style.display = 'none' }
 
 function onCreated(t) {
   toast.success(`« ${t.name} » créé`)
-  router.push({ name: 'trip', params: { id: t.id } })
+  router.push({ name: 'trip', params: { id: t.id }, query: t.generate ? { generate: '1' } : {} })
 }
 function onImported(res) {
   toast.success(`${res.count} éléments importés`)

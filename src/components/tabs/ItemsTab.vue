@@ -3,7 +3,7 @@ import { computed, inject } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
 import ActivityCard from '@/components/ActivityCard.vue'
 import { ACTIVITY_TYPES } from '@/utils/constants'
-import { Sparkles, ClipboardPaste, Search } from 'lucide-vue-next'
+import { Sparkles, ClipboardPaste, Search, Wand2 } from 'lucide-vue-next'
 
 const props = defineProps({
   type: { type: String, required: true },
@@ -73,6 +73,10 @@ const EMPTY_TEXT = {
       <div v-if="canEdit" class="mt-6 max-w-xs mx-auto">
         <button type="button" class="btn btn-primary w-full" @click="onAdd && onAdd()">Ajouter</button>
         <div v-if="aiActions" class="list !mx-0 mt-4 text-left" style="--sep-inset: 57px">
+          <button v-if="activities.all.length === 0" type="button" class="row" @click="aiActions.openGenerator()">
+            <span class="row-icon" style="background: var(--vc-ai)"><Wand2 class="w-[17px] h-[17px]" :stroke-width="2" /></span>
+            <span class="t-body flex-1">Générer tout le voyage</span>
+          </button>
           <button type="button" class="row" @click="aiActions.openSuggest()">
             <span class="row-icon" style="background: var(--vc-ai)"><Sparkles class="w-[17px] h-[17px]" :stroke-width="2" /></span>
             <span class="t-body flex-1">Idées de l’IA</span>

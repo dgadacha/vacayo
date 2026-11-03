@@ -52,25 +52,26 @@ async function submit() {
   try {
     if (mode.value === 'login') {
       await auth.login(email.value, password.value)
-      router.replace({ name: 'trips' })
     } else if (mode.value === 'register') {
       await auth.register(email.value, password.value, name.value)
       toast.success('Bienvenue à bord !')
-      router.replace({ name: 'trips' })
     } else {
       await auth.resetPassword(email.value)
       info.value = 'Si un compte existe pour cette adresse, tu vas recevoir un lien de réinitialisation.'
+      loading.value = false
+      return
     }
   } catch (e) {
     error.value = e.message
-  } finally {
     loading.value = false
+    return
   }
+  // Keep the spinner on until the trips page replaces this one
+  router.replace({ name: 'trips' })
 }
 </script>
 
 <template>
-  <!-- Single stable root: the route-level <Transition> must not see the root element change -->
   <div>
   <!-- Welcome, Apple onboarding style -->
   <main v-if="mode === 'welcome'" class="min-h-[100dvh] flex flex-col px-8 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)] max-w-md mx-auto">
