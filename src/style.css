@@ -30,7 +30,7 @@ html:root {
   --vc-purple: #af52de;
   --vc-pink: #ff2d55;
   --vc-gray: #8e8e93;
-  --vc-bar: rgb(249 249 249 / 0.78);      /* bar material */
+  --vc-bar: #f9f9f9;                      /* bar material (opaque) */
   --vc-bubble: #e9e9eb;                   /* incoming message bubble */
   --vc-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
   --vc-shadow-lift: 0 10px 30px rgb(0 0 0 / 0.12);
@@ -89,7 +89,8 @@ html:root {
   --van-dialog-header-padding-top: 19px;
   --van-dialog-message-font-size: 13px;
   --van-dialog-message-line-height: 18px;
-  --van-dialog-message-padding: 2px 16px 19px;
+  --van-dialog-message-padding: 16px;     /* Vant uses it as the side padding only */
+  --van-dialog-has-title-message-padding-top: 2px;
   --van-dialog-button-height: 44px;
   --van-dialog-confirm-button-text-color: var(--vc-primary);
   --van-dialog-font-size: 17px;
@@ -159,11 +160,10 @@ html:root {
   .hairline-b { box-shadow: inset 0 -0.5px 0 var(--vc-border); }
   .hairline-t { box-shadow: inset 0 0.5px 0 var(--vc-border); }
 
-  /* Translucent bar material (navigation bars, tab bars, toolbars) */
+  /* Bar material (navigation bars, tab bars, toolbars): opaque, no backdrop blur.
+     Content blurred under the status bar was not wanted. */
   .material {
     background: var(--vc-bar);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    backdrop-filter: saturate(180%) blur(20px);
   }
 
   .card {
@@ -382,10 +382,7 @@ html:root {
 }
 
 /* Alerts */
-.van-dialog {
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  backdrop-filter: blur(30px) saturate(180%);
-}
+.van-dialog .van-dialog__message { padding-bottom: 19px; }
 .van-dialog__header { font-size: 17px; }
 .van-dialog__footer .van-button { background: transparent; font-size: 17px; }
 .van-dialog__cancel { color: var(--vc-primary) !important; }
@@ -394,8 +391,6 @@ html:root {
 
 /* Toasts as a compact HUD capsule */
 .van-toast {
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
   box-shadow: 0 8px 30px rgb(0 0 0 / 0.15);
   font-weight: 500;
 }
