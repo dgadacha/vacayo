@@ -8,6 +8,7 @@
     "dev:emulators": "VITE_FIREBASE_EMULATORS=true vite",
     "emulators": "firebase emulators:start --only auth,firestore --project demo-vacayo",
     "seed:emulators": "node scripts/seed-emulators.js",
+    "reset:tutorial": "node scripts/reset-tutorial.js",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -1,12 +1,15 @@
 <script setup>
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import AiSettingsSheet from '@/components/ai/AiSettingsSheet.vue'
 import AppLogo from '@/components/AppLogo.vue'
+import TutorialSheet from '@/components/TutorialSheet.vue'
 
 const auth = useAuthStore()
 const theme = useThemeStore()
+const route = useRoute()
 const ready = computed(() => auth.ready)
 const vantTheme = computed(() => theme.mode === 'dark' ? 'dark' : 'light')
 </script>
@@ -23,6 +26,7 @@ const vantTheme = computed(() => theme.mode === 'dark' ? 'dark' : 'light')
       </Transition>
     </RouterView>
     <AiSettingsSheet />
+    <TutorialSheet v-if="ready && route.name !== 'login'" />
   </van-config-provider>
 </template>
 
