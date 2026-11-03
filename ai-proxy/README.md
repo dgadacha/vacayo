@@ -1,60 +1,67 @@
 # vacayo-ai-proxy
 
-Petit Cloudflare Worker qui relaie les appels à l'API Claude pour l'app Vacayo.
+Petite Vercel Function qui relaie les appels à l'API Claude pour l'app Vacayo.
 
 GitHub Pages ne sert que des fichiers statiques et ne peut pas garder de secret :
-ce Worker détient la clé API Anthropic et ne répond qu'aux utilisateurs connectés
+ce proxy détient la clé API Anthropic et ne répond qu'aux utilisateurs connectés
 du projet Firebase `vacayo-77ad3`.
 
 ## Ce qu'il fait
 
-- Accepte uniquement `POST /v1/messages` (le chemin qu'appelle le SDK Anthropic
-  quand on lui donne l'URL du Worker comme `baseURL`). Tout le reste répond 404.
-- CORS : seules les origines listées dans `ALLOWED_ORIGINS` (`wrangler.toml`) sont
-  acceptées, les autres reçoivent un 403. Le préflight `OPTIONS` répond 204.
+- Répond sur `POST /v1/messages` (le chemin qu'appelle le SDK Anthropic quand on lui
+  donne l'URL du projet comme `baseURL`), réécrit vers `api/v1/messages.js` par
+  `vercel.json`. Les autres méthodes répondent 405.
+- CORS : seules les origines autorisées sont acceptées (403 sinon). Le préflight
+  `OPTIONS` répond 204.
 - Vérifie le jeton d'identité Firebase envoyé en `Authorization: Bearer <token>`
   (signature Google, émetteur et audience du projet). Jeton absent ou invalide → 401.
 - N'autorise que le modèle `claude-haiku-5-5` et plafonne `max_tokens` à 16 000.
 - Transmet la requête à `https://api.anthropic.com/v1/messages` avec la clé du
-  Worker. Seuls `content-type`, `x-api-key` et `anthropic-version` partent vers
+  proxy. Seuls `content-type`, `x-api-key` et `anthropic-version` partent vers
   Anthropic ; le jeton Firebase n'est jamais transmis.
-- Renvoie la réponse telle quelle, en flux : les réponses `stream: true` (SSE)
-  arrivent au navigateur au fil de l'eau, sans être mises en mémoire tampon.
+- Renvoie la réponse en flux : les réponses `stream: true` (SSE) arrivent au
+  navigateur au fil de l'eau, sans être mises en mémoire tampon.
 
-Les erreurs du Worker ont le même format que celles de l'API Anthropic
+Les erreurs du proxy ont le même format que celles de l'API Anthropic
 (`{ "type": "error", "error": { "type": "...", "message": "..." } }`), donc le
 SDK les remonte comme n'importe quelle erreur d'API.
 
+La logique est dans `proxy.js` ; `api/v1/messages.js` n'est que le point d'entrée Vercel.
+
+## Variables d'environnement (Vercel)
+
+| Variable | Obligatoire | Valeur par défaut |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | oui | — |
+| `FIREBASE_PROJECT_ID` | non | `vacayo-77ad3` |
+| `ALLOWED_ORIGINS` | non | `https://dgadacha.github.io` + `http://localhost:5173` à `5175` |
+
 ## Déployer
 
-Depuis ce dossier, avec un compte Cloudflare :
+Depuis ce dossier, avec un compte Vercel (le plan gratuit suffit) :
 
 ```bash
-npm install
-npx wrangler secret put ANTHROPIC_API_KEY   # colle la clé Anthropic quand on te la demande
-npx wrangler deploy
+npx vercel login
+npx vercel link                                   # crée le projet « vacayo-ai-proxy »
+npx vercel env add ANTHROPIC_API_KEY production   # colle la clé quand on te la demande
+npx vercel deploy --prod
 ```
 
-`wrangler deploy` affiche l'URL du Worker, de la forme
-`https://vacayo-ai-proxy.<sous-domaine>.workers.dev`.
+L'URL à utiliser est l'alias de production, de la forme
+`https://vacayo-ai-proxy.vercel.app` (pas l'URL avec un identifiant de déploiement,
+qui est protégée par Vercel).
 
-La clé ne doit jamais apparaître dans `wrangler.toml` ni dans le dépôt. Pour tester
-en local : mettre `ANTHROPIC_API_KEY=...` dans un fichier `.dev.vars` (ignoré par
-le `.gitignore` de ce dossier), puis `npm run dev`.
-
-Pour ajouter une origine (autre domaine, autre port Vite), modifier
-`ALLOWED_ORIGINS` dans `wrangler.toml` puis redéployer.
+La clé ne doit jamais apparaître dans le dépôt. Après toute modification d'une
+variable d'environnement, redéployer (`npx vercel deploy --prod`).
 
 ## Brancher l'app
 
 1. Dans GitHub, **Settings → Secrets and variables → Actions → Variables**, créer la
-   variable de dépôt `VITE_AI_PROXY_URL` avec l'URL du Worker, par exemple
-   `https://vacayo-ai-proxy.<sous-domaine>.workers.dev`.
-2. C'est tout : `.github/workflows/deploy.yml` passe déjà cette variable au build
-   (`VITE_AI_PROXY_URL: ${{ vars.VITE_AI_PROXY_URL }}`). Relancer le workflow pour
-   la prendre en compte.
-3. En local, mettre la même valeur dans `.env.local` :
-   `VITE_AI_PROXY_URL=https://vacayo-ai-proxy.<sous-domaine>.workers.dev`.
+   variable de dépôt `VITE_AI_PROXY_URL` avec l'URL de production, par exemple
+   `https://vacayo-ai-proxy.vercel.app`.
+2. `.github/workflows/deploy.yml` passe déjà cette variable au build : elle sera
+   prise en compte au prochain déploiement de `main`.
+3. En local, mettre la même valeur dans `.env.local` à la racine de l'app.
 
 Sans `VITE_AI_PROXY_URL`, l'app n'utilise pas de proxy : chaque utilisateur doit
 alors coller sa propre clé API Anthropic pour accéder aux fonctions IA.

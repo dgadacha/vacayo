@@ -42,7 +42,7 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          # Optional: URL of ai-proxy/ (Cloudflare Worker). Empty = each user pastes their own key.
+          # Optional: URL of ai-proxy/ (Vercel). Empty = each user pastes their own key.
           VITE_AI_PROXY_URL: ${{ vars.VITE_AI_PROXY_URL }}
 
       # SPA fallback: GitHub Pages serves 404.html for unknown paths.

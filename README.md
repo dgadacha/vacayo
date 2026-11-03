@@ -41,9 +41,9 @@ Rien n'est écrit sans validation de l'utilisateur, sauf la complétion du formu
 
 Trois façons de fournir la clé Anthropic :
 
-1. **Proxy (recommandé en prod)** : déployer `ai-proxy/` (Cloudflare Worker, voir son
+1. **Proxy (recommandé en prod)** : déployer `ai-proxy/` sur Vercel (voir son
    README) et définir la variable de dépôt GitHub `VITE_AI_PROXY_URL`. La clé reste
-   sur le Worker, qui n'accepte que les utilisateurs Firebase connectés.
+   sur le proxy, qui n'accepte que les utilisateurs Firebase connectés.
 2. **Clé perso** : sans proxy, chaque utilisateur colle sa clé dans
    Compte → Assistant IA. Elle reste dans le `localStorage` de son appareil.
 3. **Dev local** : dans `.env.local` (ignoré par git)
@@ -59,4 +59,4 @@ Trois façons de fournir la clé Anthropic :
 - `src/components/` : cartes, fiches (bottom sheets), onglets (`tabs/`), IA (`ai/`)
 - `src/stores/` : Pinia (auth, voyages, éléments, thème, IA)
 - `src/style.css` : jetons de design (`--vc-*`) partagés avec Vant (`--van-*`), clair et sombre
-- `ai-proxy/` : Worker Cloudflare qui garde la clé Anthropic
+- `ai-proxy/` : Vercel Function qui garde la clé Anthropic
