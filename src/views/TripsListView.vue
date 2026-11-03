@@ -75,8 +75,9 @@ function onImported(res) {
 
 <template>
   <main class="min-h-[100dvh] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
-    <!-- Navigation bar: transparent over the large title, translucent once it scrolls away -->
-    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="collapsed ? 'material hairline-b' : ''">
+    <!-- Navigation bar: always opaque (iOS blurs whatever sits see-through at the top of
+         the installed app), with a hairline and the title once the large title scrolls away -->
+    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="collapsed ? 'material hairline-b' : 'bg-[color:var(--vc-bg)]'">
       <div class="h-11 px-2 flex items-center justify-end relative max-w-2xl mx-auto">
         <p class="absolute inset-x-16 text-center t-headline transition-opacity duration-200 pointer-events-none" :class="collapsed ? 'opacity-100' : 'opacity-0'">Voyages</p>
         <button type="button" class="btn-icon" aria-label="Nouveau voyage" @click="showCreate = true">
