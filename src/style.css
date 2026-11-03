@@ -8,6 +8,7 @@
  * `html:` raises specificity above Vant's own declarations whatever the load order.
  */
 html:root {
+  color-scheme: light;                    /* light only: native controls too */
   --vc-bg: #f2f2f7;                       /* systemGroupedBackground */
   --vc-surface: #ffffff;                  /* secondarySystemGroupedBackground */
   --vc-surface-elevated: #ffffff;         /* sheets */
@@ -35,6 +36,9 @@ html:root {
   --vc-shadow-lift: 0 10px 30px rgb(0 0 0 / 0.12);
   /* Apple Intelligence–style gradient */
   --vc-ai: linear-gradient(120deg, #ff9f0a 0%, #ff375f 30%, #bf5af2 62%, #0a84ff 100%);
+  /* Full-height sheets stop 10pt below the status bar / Dynamic Island, like iOS
+     sheets (94vh put their header under it once installed on the home screen). */
+  --vc-sheet-h: calc(100vh - max(env(safe-area-inset-top), 20px) - 10px);
 
   --van-base-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Helvetica Neue', Arial, sans-serif;
   --van-primary-color: var(--vc-primary);
@@ -104,43 +108,8 @@ html:root {
   --van-loading-spinner-color: var(--vc-gray);
 }
 
-html.van-theme-dark,
-html.dark {
-  --vc-bg: #000000;
-  --vc-surface: #1c1c1e;
-  --vc-surface-elevated: #1c1c1e;
-  --vc-surface-2: rgb(118 118 128 / 0.24);
-  --vc-fill: rgb(120 120 128 / 0.32);
-  --vc-border: rgb(84 84 88 / 0.65);
-  --vc-border-soft: rgb(84 84 88 / 0.35);
-  --vc-text: #ffffff;
-  --vc-muted: rgb(235 235 245 / 0.6);
-  --vc-subtle: rgb(235 235 245 / 0.3);
-  --vc-primary: #0a84ff;
-  --vc-primary-soft: rgb(10 132 255 / 0.18);
-  --vc-red: #ff453a;
-  --vc-orange: #ff9f0a;
-  --vc-yellow: #ffd60a;
-  --vc-green: #30d158;
-  --vc-teal: #40c8e0;
-  --vc-indigo: #5e5ce6;
-  --vc-purple: #bf5af2;
-  --vc-pink: #ff375f;
-  --vc-bar: rgb(30 30 30 / 0.78);
-  --vc-bubble: #262629;
-  --vc-shadow: none;
-  --vc-shadow-lift: 0 10px 30px rgb(0 0 0 / 0.5);
-
-  --van-primary-color: var(--vc-primary);
-  --van-background: var(--vc-bg);
-  --van-background-2: var(--vc-surface);
-  --van-background-3: var(--vc-surface-2);
-  --van-text-color: var(--vc-text);
-  --van-text-color-2: var(--vc-muted);
-  --van-text-color-3: var(--vc-subtle);
-  --van-border-color: var(--vc-border);
-  --van-active-color: var(--vc-fill);
-  --van-popup-background: var(--vc-surface-elevated);
+@supports (height: 100dvh) {
+  html:root { --vc-sheet-h: calc(100dvh - max(env(safe-area-inset-top), 20px) - 10px); }
 }
 
 @layer base {
@@ -310,7 +279,6 @@ html.dark {
     font-weight: 600;
     box-shadow: 0 3px 8px rgb(0 0 0 / 0.12), 0 3px 1px rgb(0 0 0 / 0.04);
   }
-  html.dark .segmented > button[aria-pressed='true'] { background: #636366; }
 
   /* iOS search field */
   .search-field {

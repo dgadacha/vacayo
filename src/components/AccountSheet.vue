@@ -2,27 +2,20 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useThemeStore } from '@/stores/theme'
 import { useAiStore } from '@/stores/ai'
 import { useConfirm } from '@/composables/useConfirm'
 import SheetHeader from '@/components/SheetHeader.vue'
-import { Sparkles, Download, ChevronRight, Sun, Moon, SunMoon, GraduationCap } from 'lucide-vue-next'
+import { Sparkles, Download, ChevronRight, GraduationCap } from 'lucide-vue-next'
 
 defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue', 'import'])
 
 const router = useRouter()
 const auth = useAuthStore()
-const theme = useThemeStore()
 const ai = useAiStore()
 const { confirm } = useConfirm()
 
 const initial = computed(() => (auth.user?.name || '?').charAt(0).toUpperCase())
-const THEMES = [
-  { value: 'light', label: 'Clair', icon: Sun },
-  { value: 'dark', label: 'Sombre', icon: Moon },
-  { value: 'system', label: 'Auto', icon: SunMoon }
-]
 
 function close() { emit('update:modelValue', false) }
 function openAi() { close(); ai.showSettings = true }
@@ -38,8 +31,8 @@ async function logout() {
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ maxHeight: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
-    <div class="overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" :style="{ maxHeight: '94vh', background: 'var(--vc-bg)' }">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ maxHeight: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
+    <div class="overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" :style="{ maxHeight: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }">
       <SheetHeader title="Compte" action-label="OK" @action="close" />
 
       <!-- Profile card, like the Apple Account row in Settings -->
@@ -50,15 +43,6 @@ async function logout() {
             <p class="t-title3 truncate">{{ auth.user?.name }}</p>
             <p class="t-subhead text-muted truncate">{{ auth.user?.email }}</p>
           </div>
-        </div>
-      </div>
-
-      <h3 class="list-header mt-8">Apparence</h3>
-      <div class="list p-4">
-        <div class="segmented">
-          <button v-for="t in THEMES" :key="t.value" type="button" :aria-pressed="theme.pref === t.value" @click="theme.set(t.value)">
-            <component :is="t.icon" class="w-3.5 h-3.5" :stroke-width="2" />{{ t.label }}
-          </button>
         </div>
       </div>
 

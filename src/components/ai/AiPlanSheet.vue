@@ -77,7 +77,7 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: 'var(--vc-sheet-h)', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Planifier la liste d’envies" subtitle="L'IA répartit tes idées sur le séjour" :icon="Wand2" @close="close" />
 
@@ -89,7 +89,7 @@ function close() { emit('update:modelValue', false) }
         </div>
 
         <div v-else-if="error" class="text-center py-10">
-          <p role="alert" class="rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
+          <p role="alert" class="rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700">{{ error }}</p>
           <button type="button" class="btn btn-secondary mt-4" @click="run"><RefreshCw class="w-4 h-4" :stroke-width="2" />Réessayer</button>
         </div>
 
@@ -119,7 +119,7 @@ function close() { emit('update:modelValue', false) }
                   <span v-if="a.item.city" class="block text-xs text-muted mt-0.5">{{ a.item.city }}</span>
                   <span class="block text-xs text-muted mt-1 leading-relaxed">{{ a.why }}</span>
                 </span>
-                <span class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ring-1 transition" :class="selected.has(a.id) ? 'text-white ring-transparent' : 'ring-slate-300 dark:ring-slate-600 text-transparent'" :style="selected.has(a.id) ? { background: 'var(--vc-primary)' } : {}">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ring-1 transition" :class="selected.has(a.id) ? 'text-white ring-transparent' : 'ring-slate-300 text-transparent'" :style="selected.has(a.id) ? { background: 'var(--vc-primary)' } : {}">
                   <Check class="w-3.5 h-3.5" :stroke-width="3" />
                 </span>
               </button>

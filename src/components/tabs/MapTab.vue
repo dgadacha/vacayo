@@ -214,7 +214,7 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
     <button
       v-if="unlocatedItems.length > 0"
       @click="showUnlocated = !showUnlocated"
-      class="absolute bottom-3 left-3 z-[10] chip bg-white/95 dark:bg-slate-900/95 backdrop-blur ring-slate-200 dark:ring-slate-700 text-slate-700 dark:text-slate-200 shadow-lg !text-xs !px-2.5 !py-1.5"
+      class="absolute bottom-3 left-3 z-[10] chip bg-white/95 backdrop-blur ring-slate-200 text-slate-700 shadow-lg !text-xs !px-2.5 !py-1.5"
     >
       <MapPin class="w-3 h-3" :stroke-width="2" />
       {{ unlocatedItems.length }} sans lieu
@@ -225,7 +225,7 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
       <div v-if="showUnlocated && unlocatedItems.length > 0" class="absolute bottom-14 left-3 right-3 sm:right-auto sm:max-w-sm z-[10]">
         <div class="card p-3 shadow-lg max-h-64 overflow-y-auto">
           <div class="flex items-center justify-between mb-2">
-            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
               Sans ville géolocalisable
             </p>
             <button @click="showUnlocated = false" class="btn-icon !w-6 !h-6">
@@ -233,7 +233,7 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
             </button>
           </div>
           <div class="space-y-0.5">
-            <button v-for="i in unlocatedItems" :key="i.id" @click="clickUnlocated(i)" class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-xs flex items-center gap-2">
+            <button v-for="i in unlocatedItems" :key="i.id" @click="clickUnlocated(i)" class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-slate-50 text-xs flex items-center gap-2">
               <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" :style="{ background: typeColor(i.type) }" />
               <span class="truncate flex-1">{{ i.name }}</span>
               <span class="text-slate-400 truncate text-[10px]">{{ i.city || '—' }}</span>

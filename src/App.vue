@@ -2,20 +2,18 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useThemeStore } from '@/stores/theme'
 import AiSettingsSheet from '@/components/ai/AiSettingsSheet.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import TutorialSheet from '@/components/TutorialSheet.vue'
 
 const auth = useAuthStore()
-const theme = useThemeStore()
 const route = useRoute()
 const ready = computed(() => auth.ready)
-const vantTheme = computed(() => theme.mode === 'dark' ? 'dark' : 'light')
 </script>
 
 <template>
-  <van-config-provider :theme="vantTheme">
+  <!-- Light only, whatever the phone's setting -->
+  <van-config-provider theme="light">
     <div v-if="!ready" class="fixed inset-0 flex flex-col items-center justify-center gap-4">
       <AppLogo :size="56" class="rounded-2xl shadow-lift animate-pulse" />
       <van-loading size="20" />

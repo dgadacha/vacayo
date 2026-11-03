@@ -90,7 +90,7 @@ function close() { emit('update:modelValue', false) }
     position="bottom"
     round
     teleport="body"
-    :style="{ height: '94vh', background: 'var(--vc-surface-elevated)' }"
+    :style="{ height: 'var(--vc-sheet-h)', background: 'var(--vc-surface-elevated)' }"
     @update:show="emit('update:modelValue', $event)"
   >
     <div class="h-full flex flex-col">
