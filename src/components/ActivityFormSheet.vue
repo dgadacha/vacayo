@@ -7,6 +7,7 @@ import { useAiStore } from '@/stores/ai'
 import { enrichDraft, aiErrorMessage, mapsSearchUrl } from '@/services/ai'
 import { useToast } from '@/composables/useToast'
 import { Sparkles } from 'lucide-vue-next'
+import SheetHeader from '@/components/SheetHeader.vue'
 
 const trip = inject('trip', ref(null))
 const symbol = computed(() => trip.value?.currencySymbol || '€')
@@ -183,35 +184,33 @@ async function submit() {
     @update:show="$emit('update:modelValue', $event)"
     position="bottom"
     round
-    safe-area-inset-bottom
     teleport="body"
     :close-on-click-overlay="!saving"
-    :style="{ maxHeight: '92vh' }"
+    :style="{ height: '94vh', background: 'var(--vc-bg)' }"
   >
-    <div class="overflow-y-auto" :style="{ maxHeight: '92vh', background: 'var(--vc-bg)' }">
-      <div class="sticky top-0 z-10 flex items-center justify-between px-4 h-14 backdrop-blur-xl" style="background: color-mix(in srgb, var(--vc-bg) 90%, transparent)">
-        <button type="button" class="text-sm font-medium text-muted" @click="close">Annuler</button>
-        <h2 class="font-bold text-base">{{ isEdit ? 'Modifier' : 'Nouvel ajout' }}</h2>
-        <button type="button" class="text-sm font-semibold" style="color: var(--vc-primary)" :disabled="saving" @click="submit">{{ saving ? '…' : 'Enregistrer' }}</button>
-      </div>
+    <div class="h-full overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" style="background: var(--vc-bg)">
+      <SheetHeader
+        :title="isEdit ? 'Modifier' : 'Nouvel élément'"
+        cancel-label="Annuler"
+        :action-label="isEdit ? 'OK' : 'Ajouter'"
+        :action-disabled="!form.name?.trim()"
+        :action-loading="saving"
+        @cancel="close"
+        @action="submit"
+      />
 
-      <van-form @submit="submit" class="pb-6">
-        <van-cell-group inset title="Type">
-          <div class="grid grid-cols-3 gap-2 p-3">
+      <van-form @submit="submit">
+        <div class="px-4 pt-2">
+          <div class="segmented" role="group" aria-label="Type">
             <button
               v-for="(meta, key) in ACTIVITY_TYPES"
               :key="key"
               type="button"
-              @click="form.type = key"
-              class="flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 border-2 transition"
-              :class="form.type === key ? meta.soft + ' border-current' : 'border-transparent surface-2 text-muted'"
               :aria-pressed="form.type === key"
-            >
-              <component :is="meta.icon" class="w-5 h-5" :stroke-width="1.75" />
-              <span class="text-xs font-medium">{{ meta.label }}</span>
-            </button>
+              @click="form.type = key"
+            >{{ meta.label }}</button>
           </div>
-        </van-cell-group>
+        </div>
 
         <van-cell-group inset title="Détails">
           <van-field
@@ -219,27 +218,24 @@ async function submit() {
             name="name"
             label="Nom"
             placeholder="Hôtel Tokyo, Sushi Kyubey…"
-            required
             :rules="[{ required: true, message: 'Nom requis' }]"
             clearable
           />
           <van-field v-model="form.city" label="Ville" placeholder="Tokyo" clearable />
           <van-field v-model="form.category" label="Catégorie" placeholder="Ramen, Musée…" clearable />
         </van-cell-group>
-        <div class="mx-4 mt-2.5">
-          <button
-            type="button"
-            class="w-full h-10 rounded-xl flex items-center justify-center gap-2 text-[13px] font-semibold transition disabled:opacity-50"
-            style="background: var(--vc-primary-soft); color: var(--vc-primary)"
-            :disabled="!form.name?.trim() || enriching"
-            @click="enrich"
-          >
-            <van-loading v-if="enriching" size="16" color="currentColor" />
-            <Sparkles v-else class="w-4 h-4" :stroke-width="2" />
-            {{ enriching ? 'L’IA complète la fiche…' : 'Compléter avec l’IA' }}
+        <div class="mx-4 mt-4 rounded-xl" :class="{ 'ai-glow': enriching }">
+        <div class="list !mx-0">
+          <button type="button" class="row disabled:opacity-40" :disabled="!form.name?.trim() || enriching" @click="enrich">
+            <span class="row-icon" style="background: var(--vc-ai)">
+              <van-loading v-if="enriching" size="15" color="#fff" />
+              <Sparkles v-else class="w-[17px] h-[17px]" :stroke-width="2" />
+            </span>
+            <span class="t-body text-tint flex-1">{{ enriching ? 'L’IA complète la fiche…' : 'Compléter avec l’IA' }}</span>
           </button>
-          <p v-if="!form.name?.trim()" class="text-[11px] text-subtle text-center mt-1">Saisis un nom pour que l’IA propose ville, catégorie, prix et conseils.</p>
         </div>
+        </div>
+        <p class="list-footer">Ville, catégorie, prix estimé et conseils à partir du nom. Seuls les champs vides sont remplis.</p>
 
         <van-cell-group inset :title="form.type === 'hotel' ? 'Séjour' : 'Date'">
           <van-field
@@ -248,7 +244,7 @@ async function submit() {
             :model-value="dateLabel"
             :label="form.type === 'hotel' ? 'Arrivée' : 'Date'"
             placeholder="Choisir"
-            right-icon="calendar-o"
+            is-link
             @click="showDatePicker = true"
           />
           <van-field
@@ -257,7 +253,7 @@ async function submit() {
             clickable
             :model-value="formatTime(form.date) || '—'"
             label="Heure"
-            right-icon="clock-o"
+            is-link
             @click="showTimePicker = true"
           />
           <template v-if="form.type === 'hotel'">
@@ -267,7 +263,7 @@ async function submit() {
               :model-value="endDateLabel"
               label="Départ"
               placeholder="Choisir"
-              right-icon="calendar-o"
+              is-link
               @click="showEndDatePicker = true"
             />
             <van-field
@@ -276,7 +272,7 @@ async function submit() {
               clickable
               :model-value="formatTime(form.endDate) || '—'"
               label="Heure"
-              right-icon="clock-o"
+              is-link
               @click="showEndTimePicker = true"
             />
           </template>
@@ -290,7 +286,7 @@ async function submit() {
             placeholder="0"
           >
             <template #button>
-              <span class="text-muted text-sm">{{ symbol }}</span>
+              <span class="text-muted t-body">{{ symbol }}</span>
             </template>
           </van-field>
           <van-field
@@ -298,12 +294,12 @@ async function submit() {
             clickable
             :model-value="priorityLabel"
             label="Priorité"
-            right-icon="arrow"
+            is-link
             @click="showPriorityPicker = true"
           />
           <van-cell title="Déjà réservé">
             <template #right-icon>
-              <van-switch v-model="form.isBooked" size="22" />
+              <van-switch v-model="form.isBooked" />
             </template>
           </van-cell>
         </van-cell-group>
@@ -324,13 +320,8 @@ async function submit() {
           />
         </van-cell-group>
 
-        <p v-if="error" role="alert" class="mx-4 mt-3 rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
+        <p v-if="error" role="alert" class="list-footer !text-[color:var(--vc-red)]">{{ error }}</p>
 
-        <div class="px-4 mt-5">
-          <van-button block type="primary" size="large" round native-type="submit" :loading="saving">
-            {{ isEdit ? 'Mettre à jour' : 'Créer' }}
-          </van-button>
-        </div>
       </van-form>
     </div>
   </van-popup>

@@ -23,6 +23,13 @@ npm run dev:emulators   # terminal 2 : l'app branchée sur les émulateurs
 
 Compte démo : voir l'en-tête de `scripts/seed-emulators.js` (n'existe que dans l'émulateur).
 
+## Sur iPhone
+
+L'interface suit les codes d'iOS (typo système, grands titres, listes groupées,
+balayages, feuilles et alertes natives) et s'installe comme une app : dans Safari,
+**Partager → Sur l'écran d'accueil**. Elle s'ouvre alors en plein écran, avec son icône
+(`public/apple-touch-icon.png`, manifeste dans `public/manifest.webmanifest`).
+
 ## Assistant IA (Claude Haiku)
 
 Toutes les fonctions passent par `src/services/ai.js` (modèle `claude-haiku-5-5`,

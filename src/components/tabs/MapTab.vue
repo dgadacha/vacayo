@@ -268,34 +268,34 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
   font-weight: 700;
   font-size: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 3px rgba(255,255,255,0.95);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 .dark .vacayo-marker > div {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 0 3px rgba(15,23,42,0.95);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6), 0 0 0 3px rgba(0,0,0,0.9);
 }
 .vacayo-popup .leaflet-popup-content-wrapper {
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 0;
   background: white;
   box-shadow: 0 12px 40px rgba(0,0,0,0.18);
 }
 .dark .vacayo-popup .leaflet-popup-content-wrapper {
-  background: #0f172a;
+  background: #1c1c1e;
   color: #e2e8f0;
 }
 .vacayo-popup .leaflet-popup-tip {
   background: white;
 }
-.dark .vacayo-popup .leaflet-popup-tip { background: #0f172a; }
-.vacayo-popup .leaflet-popup-content { margin: 0; padding: 12px 14px; min-width: 220px; font-family: Inter, system-ui, sans-serif; }
-.vacayo-popup-city { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+.dark .vacayo-popup .leaflet-popup-tip { background: #1c1c1e; }
+.vacayo-popup .leaflet-popup-content { margin: 0; padding: 12px 14px; min-width: 220px; font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.vacayo-popup-city { font-size: 17px; font-weight: 600; margin: 0; }
 .vacayo-popup-count { font-size: 11px; color: #64748b; margin: 2px 0 8px; }
 .dark .vacayo-popup-count { color: #94a3b8; }
 .vacayo-popup-list { display: flex; flex-direction: column; gap: 2px; }
 .vacayo-popup-item {
   background: transparent; border: 0; padding: 6px 4px; border-radius: 6px;
   display: flex; align-items: center; gap: 8px; cursor: pointer;
-  font-size: 12px; text-align: left; color: inherit; width: 100%;
+  font-size: 15px; text-align: left; color: inherit; width: 100%;
 }
 .vacayo-popup-item:hover { background: #f1f5f9; }
 .dark .vacayo-popup-item:hover { background: #1e293b; }
@@ -313,13 +313,20 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
   color: #94a3b8 !important;
 }
 .dark .leaflet-control-attribution a { color: #cbd5e1 !important; }
+/* Zoom control as an Apple Maps–style rounded material stack */
+.leaflet-touch .leaflet-bar { border: 0 !important; border-radius: 10px !important; overflow: hidden; box-shadow: 0 2px 10px rgb(0 0 0 / 0.15) !important; }
 .leaflet-touch .leaflet-bar a {
-  background-color: white;
-  color: #0f172a;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  color: var(--vc-primary) !important;
+  background: var(--vc-bar) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--vc-border) !important;
 }
-.dark .leaflet-touch .leaflet-bar a {
-  background-color: #1e293b;
-  color: #e2e8f0;
-  border-bottom-color: #334155;
-}
+.leaflet-top.leaflet-left { top: auto !important; bottom: 56px; left: auto !important; right: 12px; }
+.leaflet-top.leaflet-left .leaflet-control { margin: 0 !important; }
 </style>

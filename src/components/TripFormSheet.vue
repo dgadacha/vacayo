@@ -2,6 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import { useTripsStore } from '@/stores/trips'
 import { CURRENCIES, formatDate } from '@/utils/helpers'
+import SheetHeader from '@/components/SheetHeader.vue'
 
 const props = defineProps({
   modelValue: Boolean,
@@ -113,26 +114,28 @@ async function submit() {
     @update:show="$emit('update:modelValue', $event)"
     position="bottom"
     round
-    safe-area-inset-bottom
     teleport="body"
     :close-on-click-overlay="!saving"
-    :style="{ maxHeight: '92vh' }"
+    :style="{ height: '94vh', background: 'var(--vc-bg)' }"
   >
-    <div class="overflow-y-auto" :style="{ maxHeight: '92vh', background: 'var(--vc-bg)' }">
-      <div class="sticky top-0 z-10 flex items-center justify-between px-4 h-14 backdrop-blur-xl" style="background: color-mix(in srgb, var(--vc-bg) 90%, transparent)">
-        <button type="button" class="text-sm font-medium text-muted" @click="close">Annuler</button>
-        <h2 class="font-bold text-base">{{ isEdit ? 'Modifier le voyage' : 'Nouveau voyage' }}</h2>
-        <button type="button" class="text-sm font-semibold" style="color: var(--vc-primary)" :disabled="saving" @click="submit">{{ saving ? '…' : 'Enregistrer' }}</button>
-      </div>
+    <div class="h-full overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+1.5rem)]" style="background: var(--vc-bg)">
+      <SheetHeader
+        :title="isEdit ? 'Modifier le voyage' : 'Nouveau voyage'"
+        cancel-label="Annuler"
+        :action-label="isEdit ? 'OK' : 'Créer'"
+        :action-disabled="!form.name?.trim()"
+        :action-loading="saving"
+        @cancel="close"
+        @action="submit"
+      />
 
-      <van-form @submit="submit" class="pb-4">
+      <van-form @submit="submit">
         <van-cell-group inset title="Infos">
           <van-field
             v-model="form.name"
             name="name"
             label="Nom"
             placeholder="Japon 2026"
-            required
             :rules="[{ required: true, message: 'Nom requis' }]"
             clearable
           />
@@ -157,7 +160,7 @@ async function submit() {
             :model-value="form.startDate ? formatDate(form.startDate, 'd MMM yyyy') : ''"
             label="Début"
             placeholder="Choisir"
-            right-icon="calendar-o"
+            is-link
             @click="showStartPicker = true"
           />
           <van-field
@@ -166,7 +169,7 @@ async function submit() {
             :model-value="form.endDate ? formatDate(form.endDate, 'd MMM yyyy') : ''"
             label="Fin"
             placeholder="Choisir"
-            right-icon="calendar-o"
+            is-link
             @click="showEndPicker = true"
           />
         </van-cell-group>
@@ -177,7 +180,7 @@ async function submit() {
             clickable
             :model-value="currencyLabel"
             label="Devise"
-            right-icon="arrow"
+            is-link
             @click="showCurrencyPicker = true"
           />
           <van-field
@@ -187,7 +190,7 @@ async function submit() {
             placeholder="0"
           >
             <template #button>
-              <span class="text-muted text-sm">{{ form.currencySymbol }}</span>
+              <span class="text-muted t-body">{{ form.currencySymbol }}</span>
             </template>
           </van-field>
         </van-cell-group>
@@ -200,24 +203,12 @@ async function submit() {
             clearable
           />
         </van-cell-group>
-        <div v-if="form.coverImage" class="mx-4 mt-2 rounded-2xl overflow-hidden aspect-video surface-2">
+        <div v-if="form.coverImage" class="mx-4 mt-3 rounded-xl overflow-hidden aspect-video surface-2">
           <img :src="form.coverImage" class="w-full h-full object-cover" @error="$event.target.style.display='none'" />
         </div>
 
-        <p v-if="error" role="alert" class="mx-4 mt-3 rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
+        <p v-if="error" role="alert" class="list-footer !text-[color:var(--vc-red)]">{{ error }}</p>
 
-        <div class="px-4 mt-5">
-          <van-button
-            block
-            type="primary"
-            size="large"
-            round
-            native-type="submit"
-            :loading="saving"
-          >
-            {{ isEdit ? 'Mettre à jour' : 'Créer' }}
-          </van-button>
-        </div>
       </van-form>
     </div>
   </van-popup>

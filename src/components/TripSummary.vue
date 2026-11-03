@@ -2,7 +2,7 @@
 import { computed, inject, ref } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
 import { formatPrice, formatCompact } from '@/utils/helpers'
-import { Sparkles, ChevronRight, Plus } from 'lucide-vue-next'
+import { Sparkles, ChevronRight } from 'lucide-vue-next'
 
 const emit = defineEmits(['plan'])
 
@@ -16,61 +16,70 @@ const stats = computed(() => activities.stats)
 const budget = computed(() => Number(trip.value?.budget) || 0)
 const spent = computed(() => stats.value.totalPrice)
 const donePct = computed(() => stats.value.total ? Math.round((stats.value.done / stats.value.total) * 100) : 0)
+const bookedPct = computed(() => stats.value.total ? Math.round((stats.value.booked / stats.value.total) * 100) : 0)
 const budgetPct = computed(() => budget.value ? Math.min(100, (spent.value / budget.value) * 100) : 0)
 const exceeded = computed(() => budget.value > 0 && spent.value > budget.value)
 const wishlist = computed(() => activities.all.filter(a => a.type !== 'hotel' && !a.date).length)
+const barColor = computed(() => exceeded.value ? 'var(--vc-red)' : budgetPct.value >= 85 ? 'var(--vc-orange)' : 'var(--vc-primary)')
 
-// SVG ring: r = 15.9 gives a circumference of ~100, so dasharray = percent
-const ringDash = computed(() => `${donePct.value} 100`)
-const barColor = computed(() => exceeded.value ? '#e11d48' : budgetPct.value >= 85 ? '#d97706' : 'var(--vc-primary)')
+// Activity-style rings: r = 15.9 gives a circumference of ~100, so dasharray = percent
+const dash = (pct) => `${Math.max(pct, 0.01)} 100`
 </script>
 
 <template>
-  <section class="card mx-4 p-4 relative z-10">
-    <div class="grid grid-cols-3 gap-2">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <svg viewBox="0 0 36 36" class="w-11 h-11 -rotate-90 flex-shrink-0" aria-hidden="true">
-          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--vc-surface-2)" stroke-width="3.5" />
-          <circle v-if="donePct > 0" cx="18" cy="18" r="15.9" fill="none" stroke="var(--vc-primary)" stroke-width="3.5" stroke-linecap="round" :stroke-dasharray="ringDash" class="transition-all duration-500" />
+  <div>
+    <div class="list">
+      <div class="flex items-center gap-4 px-4 py-3.5">
+        <!-- Two concentric rings, like Apple Fitness: done (outer), booked (inner) -->
+        <svg viewBox="0 0 36 36" class="w-[58px] h-[58px] -rotate-90 flex-shrink-0" aria-hidden="true">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#34c759" stroke-opacity="0.22" stroke-width="4" />
+          <circle v-if="donePct > 0" cx="18" cy="18" r="15.9" fill="none" stroke="#34c759" stroke-width="4" stroke-linecap="round" :stroke-dasharray="dash(donePct)" class="transition-all duration-700" />
+          <g transform="translate(18 18) scale(0.66) translate(-18 -18)">
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#0a84ff" stroke-opacity="0.22" stroke-width="6" />
+            <circle v-if="bookedPct > 0" cx="18" cy="18" r="15.9" fill="none" stroke="#0a84ff" stroke-width="6" stroke-linecap="round" :stroke-dasharray="dash(bookedPct)" class="transition-all duration-700" />
+          </g>
         </svg>
-        <div class="min-w-0">
-          <p class="text-base font-bold leading-tight">{{ donePct }}%</p>
-          <p class="text-[11px] text-muted leading-tight">{{ stats.done }}/{{ stats.total }} faits</p>
+        <div class="flex-1 grid grid-cols-[1fr_1fr_auto] gap-2">
+          <div>
+            <p class="t-caption font-semibold uppercase" style="color: var(--vc-green)">Faits</p>
+            <p class="text-[19px] font-semibold leading-tight">{{ stats.done }}<span class="t-subhead text-muted font-normal">/{{ stats.total }}</span></p>
+          </div>
+          <div>
+            <p class="t-caption font-semibold uppercase" style="color: var(--vc-primary)">Réservés</p>
+            <p class="text-[19px] font-semibold leading-tight">{{ stats.booked }}</p>
+          </div>
+          <div class="min-w-0">
+            <p class="t-caption font-semibold uppercase text-muted">Prévu</p>
+            <p class="text-[19px] font-semibold leading-tight whitespace-nowrap" :style="exceeded ? { color: 'var(--vc-red)' } : {}">{{ formatCompact(spent, symbol) }}</p>
+          </div>
         </div>
       </div>
-      <div class="text-center border-x" style="border-color: var(--vc-border-soft)">
-        <p class="text-base font-bold leading-tight">{{ stats.booked }}</p>
-        <p class="text-[11px] text-muted leading-tight">réservés</p>
-        <p class="text-[10px] text-subtle leading-tight mt-0.5">{{ stats.hotels }} hôtel{{ stats.hotels > 1 ? 's' : '' }}</p>
+
+      <div v-if="budget" class="px-4 pb-3.5 -mt-1">
+        <div class="h-1 rounded-full overflow-hidden" style="background: var(--vc-surface-2)">
+          <div class="h-full rounded-full transition-all duration-500" :style="{ width: budgetPct + '%', background: barColor }" />
+        </div>
+        <p class="t-footnote mt-1.5 flex justify-between gap-2">
+          <span :style="exceeded ? { color: 'var(--vc-red)', fontWeight: 600 } : { color: 'var(--vc-muted)' }">
+            {{ exceeded ? `Dépassement de ${formatPrice(spent - budget, symbol)}` : `Reste ${formatPrice(budget - spent, symbol)} sur ${formatCompact(budget, symbol)}` }}
+          </span>
+          <span v-if="stats.wishlistPrice > 0" class="text-muted truncate">+ {{ formatCompact(stats.wishlistPrice, symbol) }} en attente</span>
+        </p>
       </div>
-      <div class="text-right min-w-0">
-        <p class="text-base font-bold leading-tight truncate" :class="{ 'text-rose-600 dark:text-rose-400': exceeded }">{{ formatCompact(spent, symbol) }}</p>
-        <p class="text-[11px] text-muted leading-tight truncate">{{ budget ? `sur ${formatCompact(budget, symbol)}` : 'planifié' }}</p>
+
+      <div>
+        <button v-if="!budget && canEdit && openTripEditor" type="button" class="row hairline-t" @click="openTripEditor()">
+          <span class="flex-1 t-body text-tint">Définir un budget</span>
+        </button>
+        <button v-if="canEdit && wishlist > 0" type="button" class="row hairline-t" @click="emit('plan')">
+          <span class="row-icon" style="background: var(--vc-ai)"><Sparkles class="w-[17px] h-[17px]" :stroke-width="2" /></span>
+          <span class="flex-1 min-w-0">
+            <span class="block t-body">Planifier {{ wishlist }} élément{{ wishlist > 1 ? 's' : '' }} sans date</span>
+            <span class="block t-footnote text-muted">L’IA les répartit sur ton séjour</span>
+          </span>
+          <ChevronRight class="w-4 h-4 text-subtle -mr-1" :stroke-width="2.5" />
+        </button>
       </div>
     </div>
-
-    <div v-if="budget" class="mt-3.5">
-      <div class="h-1.5 rounded-full overflow-hidden surface-2">
-        <div class="h-full rounded-full transition-all duration-500" :style="{ width: budgetPct + '%', background: barColor }" />
-      </div>
-      <p class="mt-1.5 text-[11px] flex justify-between gap-2">
-        <span :class="exceeded ? 'text-rose-600 dark:text-rose-400 font-semibold' : 'text-muted'">
-          {{ exceeded ? `Dépassement de ${formatPrice(spent - budget, symbol)}` : `Reste ${formatPrice(budget - spent, symbol)}` }}
-        </span>
-        <span v-if="stats.wishlistPrice > 0" class="text-subtle truncate">+ {{ formatCompact(stats.wishlistPrice, symbol) }} en wishlist</span>
-      </p>
-    </div>
-    <button v-else-if="canEdit && openTripEditor" type="button" class="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold h-8 rounded-full surface-2" @click="openTripEditor()">
-      <Plus class="w-3.5 h-3.5" :stroke-width="2.5" /> Définir un budget
-    </button>
-
-    <button v-if="canEdit && wishlist > 0" type="button" class="mt-3 w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left" style="background: var(--vc-primary-soft)" @click="emit('plan')">
-      <Sparkles class="w-4 h-4 flex-shrink-0" style="color: var(--vc-primary)" :stroke-width="2" />
-      <span class="flex-1 text-[13px] leading-tight">
-        <strong>{{ wishlist }} élément{{ wishlist > 1 ? 's' : '' }}</strong> sans date
-        <span class="block text-xs text-muted">L'IA peut les répartir sur ton séjour</span>
-      </span>
-      <ChevronRight class="w-4 h-4 text-muted" :stroke-width="2" />
-    </button>
-  </section>
+  </div>
 </template>

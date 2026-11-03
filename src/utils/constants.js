@@ -1,42 +1,43 @@
-import { BedDouble, UtensilsCrossed, Compass, Hotel, MapPin, Flag, Star, Circle } from 'lucide-vue-next'
+import { BedDouble, UtensilsCrossed, Ticket, Hotel, Flag, Star, Circle } from 'lucide-vue-next'
 
+// Colors follow Apple Maps categories: lodging indigo, food orange, sights pink.
 export const ACTIVITY_TYPES = {
   hotel: {
     label: 'Hôtel',
     plural: 'Hôtels',
     icon: BedDouble,
     iconBig: Hotel,
-    color: '#0284c7',
-    badge: 'bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30',
-    soft: 'bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
-    gradient: 'from-sky-500 to-blue-600'
+    color: '#5856d6',
+    badge: 'bg-[#5856d6]/15 text-[#5856d6] dark:bg-[#5e5ce6]/25 dark:text-[#a5a3ff]',
+    soft: 'bg-[#5856d6]/15 text-[#5856d6] dark:bg-[#5e5ce6]/25 dark:text-[#a5a3ff]',
+    gradient: 'from-[#7d7aff] to-[#5856d6]'
   },
   restaurant: {
     label: 'Restaurant',
     plural: 'Restos',
     icon: UtensilsCrossed,
     iconBig: UtensilsCrossed,
-    color: '#d97706',
-    badge: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30',
-    soft: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
-    gradient: 'from-amber-500 to-orange-600'
+    color: '#ff9500',
+    badge: 'bg-[#ff9500]/15 text-[#c93400] dark:bg-[#ff9f0a]/25 dark:text-[#ffb340]',
+    soft: 'bg-[#ff9500]/15 text-[#c93400] dark:bg-[#ff9f0a]/25 dark:text-[#ffb340]',
+    gradient: 'from-[#ffb340] to-[#ff9500]'
   },
   activity: {
     label: 'Activité',
     plural: 'Activités',
-    icon: Compass,
-    iconBig: MapPin,
-    color: '#7c3aed',
-    badge: 'bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30',
-    soft: 'bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300',
-    gradient: 'from-violet-500 to-purple-600'
+    icon: Ticket,
+    iconBig: Ticket,
+    color: '#ff2d55',
+    badge: 'bg-[#ff2d55]/15 text-[#d30f45] dark:bg-[#ff375f]/25 dark:text-[#ff6482]',
+    soft: 'bg-[#ff2d55]/15 text-[#d30f45] dark:bg-[#ff375f]/25 dark:text-[#ff6482]',
+    gradient: 'from-[#ff6482] to-[#ff2d55]'
   }
 }
 
 export const PRIORITY_OPTIONS = [
-  { value: 'must-do', label: 'À ne pas rater', icon: Flag, color: 'bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30', dot: 'bg-rose-500' },
-  { value: 'high', label: 'Important', icon: Star, color: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30', dot: 'bg-amber-500' },
-  { value: 'normal', label: 'Normal', icon: Circle, color: 'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-500/15 dark:text-slate-300 dark:ring-slate-500/30', dot: 'bg-slate-400' }
+  { value: 'must-do', label: 'À ne pas rater', icon: Flag, color: 'bg-[#ff3b30]/15 text-[#d70015] dark:bg-[#ff453a]/25 dark:text-[#ff6961]', dot: 'bg-[#ff3b30]' },
+  { value: 'high', label: 'Important', icon: Star, color: 'bg-[#ff9500]/15 text-[#c93400] dark:bg-[#ff9f0a]/25 dark:text-[#ffb340]', dot: 'bg-[#ff9500]' },
+  { value: 'normal', label: 'Normal', icon: Circle, color: 'bg-[#8e8e93]/15 text-[#6c6c70] dark:bg-[#8e8e93]/25 dark:text-[#aeaeb2]', dot: 'bg-[#8e8e93]' }
 ]
 
 export const SORT_OPTIONS = [

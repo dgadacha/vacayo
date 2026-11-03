@@ -1,17 +1,21 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import ThemeToggle from '@/components/ThemeToggle.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import { useToast } from '@/composables/useToast'
-import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, Sparkles, CalendarDays, Users } from 'lucide-vue-next'
+import { ChevronLeft, Users, CalendarDays, Sparkles, Eye, EyeOff } from 'lucide-vue-next'
+
+const WELCOMED_KEY = 'vacayo:welcomed'
 
 const router = useRouter()
 const auth = useAuthStore()
 const toast = useToast()
 
-const mode = ref('login')
+function seenWelcome() { try { return localStorage.getItem(WELCOMED_KEY) === '1' } catch { return false } }
+
+// welcome → login | register → reset
+const mode = ref(seenWelcome() ? 'login' : 'welcome')
 const name = ref('')
 const email = ref('')
 const password = ref('')
@@ -20,13 +24,28 @@ const error = ref('')
 const info = ref('')
 const loading = ref(false)
 
-const cta = computed(() => ({
-  login: 'Se connecter',
-  register: 'Créer mon compte',
-  reset: 'Envoyer le lien'
-}[mode.value]))
+const TITLES = { login: 'Connexion', register: 'Créer un compte', reset: 'Mot de passe oublié' }
+const CTA = { login: 'Se connecter', register: 'Créer le compte', reset: 'Envoyer le lien' }
+const canSubmit = computed(() => email.value.trim() && (mode.value === 'reset' || password.value.length >= 6))
+
+const FEATURES = [
+  { icon: Users, color: '#007aff', title: 'À plusieurs', text: 'Hôtels, restos et activités partagés avec tes compagnons de route.' },
+  { icon: CalendarDays, color: '#ff3b30', title: 'Jour par jour', text: 'Un planning clair, nuit par nuit, avec la carte de tes étapes.' },
+  { icon: Sparkles, color: '#bf5af2', title: 'Assistant IA', text: 'Colle un mail de réservation, demande des idées, planifie ta liste d’envies.' }
+]
+
+function setMode(m) {
+  mode.value = m
+  error.value = ''
+  info.value = ''
+  if (m !== 'welcome') {
+    try { localStorage.setItem(WELCOMED_KEY, '1') } catch {}
+    nextTick(() => document.querySelector('form input')?.focus())
+  }
+}
 
 async function submit() {
+  if (!canSubmit.value || loading.value) return
   error.value = ''
   info.value = ''
   loading.value = true
@@ -40,7 +59,7 @@ async function submit() {
       router.replace({ name: 'trips' })
     } else {
       await auth.resetPassword(email.value)
-      info.value = 'Si un compte existe pour cet email, tu vas recevoir un lien de réinitialisation.'
+      info.value = 'Si un compte existe pour cette adresse, tu vas recevoir un lien de réinitialisation.'
     }
   } catch (e) {
     error.value = e.message
@@ -48,110 +67,107 @@ async function submit() {
     loading.value = false
   }
 }
-
-function setMode(m) {
-  mode.value = m
-  error.value = ''
-  info.value = ''
-}
-
-const PERKS = [
-  { icon: Users, text: 'À plusieurs' },
-  { icon: CalendarDays, text: 'Jour par jour' },
-  { icon: Sparkles, text: 'Assistant IA' }
-]
 </script>
 
 <template>
-  <main class="min-h-screen flex flex-col">
-    <header class="relative overflow-hidden text-white px-6 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-20" style="background: linear-gradient(150deg, #4338ca 0%, #7c3aed 55%, #c026d3 100%)">
-      <div class="absolute -top-16 -right-10 w-56 h-56 rounded-full bg-white/10 blur-2xl" />
-      <div class="absolute bottom-0 -left-16 w-48 h-48 rounded-full bg-fuchsia-300/20 blur-2xl" />
-      <div class="absolute right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] text-white">
-        <ThemeToggle class="!text-white hover:!bg-white/15" />
+  <!-- Single stable root: the route-level <Transition> must not see the root element change -->
+  <div>
+  <!-- Welcome, Apple onboarding style -->
+  <main v-if="mode === 'welcome'" class="min-h-[100dvh] flex flex-col px-8 pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)] max-w-md mx-auto">
+    <div class="flex-1">
+      <div class="flex justify-center">
+        <AppLogo :size="92" class="rounded-[21px] shadow-lift" />
       </div>
+      <h1 class="t-large text-center mt-7 [text-wrap:balance]">Bienvenue dans Vacayo</h1>
+      <ul class="mt-10 space-y-7">
+        <li v-for="f in FEATURES" :key="f.title" class="flex gap-4 items-start">
+          <component :is="f.icon" class="w-9 h-9 flex-shrink-0 mt-0.5" :style="{ color: f.color }" :stroke-width="1.8" />
+          <div>
+            <p class="t-headline">{{ f.title }}</p>
+            <p class="t-subhead text-muted mt-0.5">{{ f.text }}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="pt-8">
+      <button type="button" class="btn btn-primary w-full" @click="setMode('register')">Créer un compte</button>
+      <button type="button" class="btn btn-plain w-full mt-1" @click="setMode('login')">J’ai déjà un compte</button>
+    </div>
+  </main>
 
-      <div class="relative max-w-md mx-auto">
-        <div class="inline-flex p-1.5 rounded-2xl bg-white/15 backdrop-blur ring-1 ring-white/25">
-          <AppLogo :size="44" />
-        </div>
-        <h1 class="mt-5 text-4xl font-extrabold tracking-tight">Vacayo</h1>
-        <p class="mt-2 text-white/80 text-[15px] leading-relaxed max-w-xs">
-          Hôtels, restos, activités et planning : prépare tes voyages à plusieurs, sans prise de tête.
-        </p>
-        <div class="mt-5 flex flex-wrap gap-2">
-          <span v-for="p in PERKS" :key="p.text" class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium ring-1 ring-white/20">
-            <component :is="p.icon" class="w-3.5 h-3.5" :stroke-width="2" />{{ p.text }}
-          </span>
-        </div>
-      </div>
+  <!-- Sign in / sign up / reset -->
+  <main v-else class="min-h-[100dvh] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
+    <header class="h-11 mt-[env(safe-area-inset-top)] px-2 flex items-center max-w-md mx-auto">
+      <button v-if="mode === 'reset'" type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40" @click="setMode('login')">
+        <ChevronLeft class="w-7 h-7" :stroke-width="2.4" /><span class="t-body -ml-0.5">Connexion</span>
+      </button>
+      <button v-else type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40" @click="setMode('welcome')">
+        <ChevronLeft class="w-7 h-7" :stroke-width="2.4" /><span class="t-body -ml-0.5">Accueil</span>
+      </button>
     </header>
 
-    <section class="relative -mt-10 flex-1 px-4 pb-10">
-      <div class="card max-w-md mx-auto p-5 !rounded-3xl">
-        <div v-if="mode !== 'reset'" class="segmented" role="tablist">
-          <button type="button" :aria-pressed="mode === 'login'" @click="setMode('login')">Connexion</button>
-          <button type="button" :aria-pressed="mode === 'register'" @click="setMode('register')">Inscription</button>
-        </div>
-        <div v-else>
-          <button type="button" class="flex items-center gap-1.5 text-sm font-medium text-muted" @click="setMode('login')">
-            <ArrowLeft class="w-4 h-4" :stroke-width="2" /> Retour
-          </button>
-          <h2 class="mt-3 text-lg font-bold">Mot de passe oublié</h2>
-          <p class="text-sm text-muted mt-1">Entre ton email, on t'envoie un lien pour en choisir un nouveau.</p>
-        </div>
+    <div class="max-w-md mx-auto">
+      <div class="px-4 pt-1 pb-6 flex items-center gap-3">
+        <AppLogo :size="40" class="rounded-[9px]" />
+        <h1 class="t-large">{{ TITLES[mode] }}</h1>
+      </div>
 
-        <form class="mt-5 space-y-3" @submit.prevent="submit">
-          <label v-if="mode === 'register'" class="field">
-            <User class="field-icon" :stroke-width="2" />
-            <input v-model="name" type="text" autocomplete="given-name" placeholder="Ton prénom" aria-label="Prénom" />
+      <form @submit.prevent="submit">
+        <div class="list">
+          <label v-if="mode === 'register'" class="row">
+            <span class="t-body w-[7.5rem] flex-shrink-0">Prénom</span>
+            <input v-model="name" type="text" autocomplete="given-name" placeholder="Facultatif" class="field" />
           </label>
-          <label class="field">
-            <Mail class="field-icon" :stroke-width="2" />
-            <input v-model="email" type="email" required autocomplete="email" inputmode="email" placeholder="Email" aria-label="Email" />
+          <label class="row">
+            <span class="t-body w-[7.5rem] flex-shrink-0">E-mail</span>
+            <input v-model="email" type="email" required autocomplete="email" inputmode="email" autocapitalize="off" placeholder="nom@exemple.com" class="field" />
           </label>
-          <label v-if="mode !== 'reset'" class="field">
-            <Lock class="field-icon" :stroke-width="2" />
+          <label v-if="mode !== 'reset'" class="row">
+            <span class="t-body w-[7.5rem] flex-shrink-0">Mot de passe</span>
             <input
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               required
               minlength="6"
               :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
-              :placeholder="mode === 'register' ? 'Mot de passe (6 caractères min.)' : 'Mot de passe'"
-              aria-label="Mot de passe"
+              :placeholder="mode === 'register' ? '6 caractères min.' : 'Requis'"
+              class="field"
             />
-            <button type="button" class="btn-icon !w-8 !h-8 -mr-1" :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" @click="showPassword = !showPassword">
-              <EyeOff v-if="showPassword" class="w-4 h-4" :stroke-width="2" />
-              <Eye v-else class="w-4 h-4" :stroke-width="2" />
+            <button type="button" class="text-subtle -mr-1" :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" @click="showPassword = !showPassword">
+              <EyeOff v-if="showPassword" class="w-5 h-5" :stroke-width="2" />
+              <Eye v-else class="w-5 h-5" :stroke-width="2" />
             </button>
           </label>
+        </div>
+        <p v-if="error" role="alert" class="list-footer !text-[color:var(--vc-red)]">{{ error }}</p>
+        <p v-else-if="info" role="status" class="list-footer" style="color: var(--vc-green)">{{ info }}</p>
+        <p v-else-if="mode === 'reset'" class="list-footer">On t’envoie un lien pour choisir un nouveau mot de passe.</p>
 
-          <p v-if="error" role="alert" class="rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
-          <p v-if="info" role="status" class="rounded-xl px-3 py-2.5 text-sm bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">{{ info }}</p>
-
-          <button type="submit" class="btn btn-primary w-full !h-12 !text-[15px]" :disabled="loading">
-            <van-loading v-if="loading" size="18" color="currentColor" />
-            <span v-else>{{ cta }}</span>
+        <div class="px-4 mt-8">
+          <button type="submit" class="btn btn-primary w-full" :disabled="!canSubmit || loading">
+            <van-loading v-if="loading" size="20" color="#fff" />
+            <template v-else>{{ CTA[mode] }}</template>
           </button>
+          <button v-if="mode === 'login'" type="button" class="btn btn-plain w-full mt-1" @click="setMode('reset')">Mot de passe oublié ?</button>
+        </div>
+      </form>
 
-          <div v-if="mode === 'login'" class="text-center pt-1">
-            <button type="button" class="text-sm font-medium" style="color: var(--vc-primary)" @click="setMode('reset')">Mot de passe oublié ?</button>
-          </div>
-        </form>
-      </div>
-    </section>
+      <p v-if="mode === 'login'" class="t-subhead text-muted text-center mt-6">
+        Pas encore de compte ?
+        <button type="button" class="text-tint font-medium" @click="setMode('register')">Créer un compte</button>
+      </p>
+      <p v-else-if="mode === 'register'" class="t-subhead text-muted text-center mt-6">
+        Déjà inscrit ?
+        <button type="button" class="text-tint font-medium" @click="setMode('login')">Se connecter</button>
+      </p>
+    </div>
   </main>
+  </div>
 </template>
 
 <style scoped>
-.field {
-  @apply flex items-center gap-3 rounded-xl px-3.5 h-12 transition;
-  background: var(--vc-surface-2);
-  border: 1px solid transparent;
-}
-.field:focus-within { border-color: var(--vc-primary); background: var(--vc-surface); }
-.field input { @apply flex-1 min-w-0 bg-transparent outline-none text-[15px]; color: var(--vc-text); }
-.field input::placeholder { color: var(--vc-subtle); }
-.field-icon { @apply w-[18px] h-[18px] flex-shrink-0; color: var(--vc-subtle); }
+.field { @apply flex-1 min-w-0 bg-transparent outline-none; font-size: 17px; color: var(--vc-text); }
+.field::placeholder { color: var(--vc-subtle); }
+.row { --sep-inset: 16px; }
+.row:active { background: transparent; }
 </style>

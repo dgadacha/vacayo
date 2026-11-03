@@ -3,29 +3,44 @@
 @tailwind utilities;
 
 /*
- * Design tokens. `--vc-*` are the app's own tokens; the `--van-*` overrides make
- * Vant components use the same palette. `html:` raises specificity above Vant's
- * own `:root` / `.van-theme-dark` declarations whatever the CSS load order.
+ * iOS design tokens (Human Interface Guidelines system colors and materials).
+ * `--vc-*` are the app's tokens; the `--van-*` overrides make Vant use them.
+ * `html:` raises specificity above Vant's own declarations whatever the load order.
  */
 html:root {
-  --vc-bg: #f5f6fa;
-  --vc-surface: #ffffff;
-  --vc-surface-2: #f1f5f9;
-  --vc-border: #e2e8f0;
-  --vc-border-soft: rgb(15 23 42 / 0.06);
-  --vc-text: #0f172a;
-  --vc-muted: #64748b;
-  --vc-subtle: #94a3b8;
-  --vc-primary: #4f46e5;
-  --vc-primary-soft: #eef2ff;
-  --vc-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.05);
-  --vc-ai: linear-gradient(135deg, #6366f1 0%, #a855f7 55%, #ec4899 100%);
+  --vc-bg: #f2f2f7;                       /* systemGroupedBackground */
+  --vc-surface: #ffffff;                  /* secondarySystemGroupedBackground */
+  --vc-surface-elevated: #ffffff;         /* sheets */
+  --vc-surface-2: rgb(118 118 128 / 0.12);/* tertiarySystemFill: fields, chips */
+  --vc-fill: rgb(120 120 128 / 0.16);     /* secondarySystemFill */
+  --vc-border: rgb(60 60 67 / 0.29);      /* separator */
+  --vc-border-soft: rgb(60 60 67 / 0.12);
+  --vc-text: #000000;                     /* label */
+  --vc-muted: rgb(60 60 67 / 0.6);        /* secondaryLabel */
+  --vc-subtle: rgb(60 60 67 / 0.3);       /* tertiaryLabel */
+  --vc-primary: #007aff;                  /* systemBlue */
+  --vc-primary-soft: rgb(0 122 255 / 0.12);
+  --vc-red: #ff3b30;
+  --vc-orange: #ff9500;
+  --vc-yellow: #ffcc00;
+  --vc-green: #34c759;
+  --vc-teal: #30b0c7;
+  --vc-indigo: #5856d6;
+  --vc-purple: #af52de;
+  --vc-pink: #ff2d55;
+  --vc-gray: #8e8e93;
+  --vc-bar: rgb(249 249 249 / 0.78);      /* bar material */
+  --vc-bubble: #e9e9eb;                   /* incoming message bubble */
+  --vc-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  --vc-shadow-lift: 0 10px 30px rgb(0 0 0 / 0.12);
+  /* Apple Intelligence–style gradient */
+  --vc-ai: linear-gradient(120deg, #ff9f0a 0%, #ff375f 30%, #bf5af2 62%, #0a84ff 100%);
 
-  --van-base-font: Inter, system-ui, -apple-system, sans-serif;
+  --van-base-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Helvetica Neue', Arial, sans-serif;
   --van-primary-color: var(--vc-primary);
-  --van-danger-color: #e11d48;
-  --van-success-color: #059669;
-  --van-warning-color: #d97706;
+  --van-danger-color: var(--vc-red);
+  --van-success-color: var(--vc-green);
+  --van-warning-color: var(--vc-orange);
   --van-background: var(--vc-bg);
   --van-background-2: var(--vc-surface);
   --van-background-3: var(--vc-surface-2);
@@ -33,30 +48,88 @@ html:root {
   --van-text-color-2: var(--vc-muted);
   --van-text-color-3: var(--vc-subtle);
   --van-border-color: var(--vc-border);
-  --van-active-color: var(--vc-surface-2);
-  --van-cell-group-inset-radius: 16px;
-  --van-popup-round-radius: 24px;
-  --van-nav-bar-title-font-size: 16px;
-  --van-search-content-background: var(--vc-surface-2);
-  --van-search-background: transparent;
-  --van-tabbar-height: 58px;
-  --van-tabbar-item-font-size: 11px;
-  --van-tabbar-item-icon-size: 22px;
+  --van-active-color: var(--vc-fill);
+  --van-font-size-md: 17px;
+  --van-font-size-lg: 17px;
+  --van-cell-font-size: 17px;
+  --van-cell-line-height: 22px;
+  --van-cell-vertical-padding: 11px;
+  --van-cell-horizontal-padding: 16px;
+  --van-cell-label-font-size: 13px;
+  --van-cell-group-inset-radius: 12px;
+  --van-cell-group-inset-padding: 0 16px;
+  --van-cell-group-title-font-size: 13px;
+  --van-cell-group-title-padding: 22px 32px 7px;
+  --van-cell-group-title-color: var(--vc-muted);
+  --van-field-label-width: 7.2em;
+  --van-field-label-color: var(--vc-text);
+  --van-field-input-text-color: var(--vc-text);
+  --van-field-placeholder-text-color: var(--vc-subtle);
+  --van-switch-on-background: var(--vc-green);
+  --van-switch-background: var(--vc-fill);
+  --van-switch-size: 26px;
+  --van-switch-width: 51px;
+  --van-switch-height: 31px;
+  --van-popup-round-radius: 14px;
+  --van-popup-background: var(--vc-surface-elevated);
+  --van-picker-option-font-size: 21px;
+  --van-picker-confirm-action-color: var(--vc-primary);
+  --van-picker-cancel-action-color: var(--vc-primary);
+  --van-picker-action-font-size: 17px;
+  --van-picker-title-font-size: 17px;
+  --van-dialog-width: 270px;
+  --van-dialog-radius: 14px;
+  --van-dialog-background: var(--vc-bar);
+  --van-dialog-header-font-weight: 600;
+  --van-dialog-header-line-height: 22px;
+  --van-dialog-header-padding-top: 19px;
+  --van-dialog-message-font-size: 13px;
+  --van-dialog-message-line-height: 18px;
+  --van-dialog-message-padding: 2px 16px 19px;
+  --van-dialog-button-height: 44px;
+  --van-dialog-confirm-button-text-color: var(--vc-primary);
+  --van-dialog-font-size: 17px;
+  --van-action-sheet-item-font-size: 20px;
+  --van-action-sheet-item-line-height: 24px;
+  --van-action-sheet-item-text-color: var(--vc-primary);
+  --van-action-sheet-subname-font-size: 13px;
+  --van-action-sheet-subname-color: var(--vc-muted);
+  --van-action-sheet-cancel-text-color: var(--vc-primary);
+  --van-action-sheet-header-font-size: 13px;
+  --van-action-sheet-header-height: 44px;
+  --van-toast-background: var(--vc-bar);
+  --van-toast-text-color: var(--vc-text);
+  --van-toast-radius: 999px;
+  --van-toast-font-size: 15px;
+  --van-loading-spinner-color: var(--vc-gray);
 }
 
 html.van-theme-dark,
 html.dark {
-  --vc-bg: #0b1020;
-  --vc-surface: #151b2e;
-  --vc-surface-2: #1f2740;
-  --vc-border: #2a3350;
-  --vc-border-soft: rgb(255 255 255 / 0.06);
-  --vc-text: #e2e8f0;
-  --vc-muted: #94a3b8;
-  --vc-subtle: #64748b;
-  --vc-primary: #818cf8;
-  --vc-primary-soft: rgb(129 140 248 / 0.14);
-  --vc-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+  --vc-bg: #000000;
+  --vc-surface: #1c1c1e;
+  --vc-surface-elevated: #1c1c1e;
+  --vc-surface-2: rgb(118 118 128 / 0.24);
+  --vc-fill: rgb(120 120 128 / 0.32);
+  --vc-border: rgb(84 84 88 / 0.65);
+  --vc-border-soft: rgb(84 84 88 / 0.35);
+  --vc-text: #ffffff;
+  --vc-muted: rgb(235 235 245 / 0.6);
+  --vc-subtle: rgb(235 235 245 / 0.3);
+  --vc-primary: #0a84ff;
+  --vc-primary-soft: rgb(10 132 255 / 0.18);
+  --vc-red: #ff453a;
+  --vc-orange: #ff9f0a;
+  --vc-yellow: #ffd60a;
+  --vc-green: #30d158;
+  --vc-teal: #40c8e0;
+  --vc-indigo: #5e5ce6;
+  --vc-purple: #bf5af2;
+  --vc-pink: #ff375f;
+  --vc-bar: rgb(30 30 30 / 0.78);
+  --vc-bubble: #262629;
+  --vc-shadow: none;
+  --vc-shadow-lift: 0 10px 30px rgb(0 0 0 / 0.5);
 
   --van-primary-color: var(--vc-primary);
   --van-background: var(--vc-bg);
@@ -66,21 +139,27 @@ html.dark {
   --van-text-color-2: var(--vc-muted);
   --van-text-color-3: var(--vc-subtle);
   --van-border-color: var(--vc-border);
-  --van-active-color: var(--vc-surface-2);
+  --van-active-color: var(--vc-fill);
+  --van-popup-background: var(--vc-surface-elevated);
 }
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation; /* no double-tap zoom delay */
+  }
   html, body {
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
-    overscroll-behavior-y: none;
     background: var(--vc-bg);
     color: var(--vc-text);
-    font-family: Inter, system-ui, -apple-system, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.3;
   }
   * { -webkit-touch-callout: none; }
-  button, a { @apply select-none; }
-  input, textarea { -webkit-touch-callout: default; }
+  button, a, [role='button'] { @apply select-none; cursor: pointer; }
+  input, textarea { -webkit-touch-callout: default; font-size: 17px; }
   :focus-visible { outline: 2px solid var(--vc-primary); outline-offset: 2px; }
 }
 
@@ -89,44 +168,121 @@ html.dark {
   .safe-top { padding-top: env(safe-area-inset-top); }
   .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
 
+  /* ---- Typography (iOS text styles) */
+  .t-large { font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: 0.01em; }
+  .t-title1 { font-size: 28px; line-height: 34px; font-weight: 700; }
+  .t-title2 { font-size: 22px; line-height: 28px; font-weight: 700; }
+  .t-title3 { font-size: 20px; line-height: 25px; font-weight: 600; }
+  .t-headline { font-size: 17px; line-height: 22px; font-weight: 600; }
+  .t-body { font-size: 17px; line-height: 22px; }
+  .t-callout { font-size: 16px; line-height: 21px; }
+  .t-subhead { font-size: 15px; line-height: 20px; }
+  .t-footnote { font-size: 13px; line-height: 18px; }
+  .t-caption { font-size: 12px; line-height: 16px; }
+
+  /* ---- Colors & surfaces */
   .surface { background: var(--vc-surface); }
   .surface-2 { background: var(--vc-surface-2); }
   .text-muted { color: var(--vc-muted); }
   .text-subtle { color: var(--vc-subtle); }
+  .text-tint { color: var(--vc-primary); }
   .border-soft { border-color: var(--vc-border-soft); }
+  .hairline-b { box-shadow: inset 0 -0.5px 0 var(--vc-border); }
+  .hairline-t { box-shadow: inset 0 0.5px 0 var(--vc-border); }
+
+  /* Translucent bar material (navigation bars, tab bars, toolbars) */
+  .material {
+    background: var(--vc-bar);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
 
   .card {
-    @apply rounded-2xl;
+    @apply rounded-xl;
     background: var(--vc-surface);
-    border: 1px solid var(--vc-border-soft);
     box-shadow: var(--vc-shadow);
   }
 
+  /* ---- Inset grouped lists */
+  .list-header { @apply uppercase; font-size: 13px; line-height: 18px; color: var(--vc-muted); padding: 0 32px 7px; }
+  .list-footer { font-size: 13px; line-height: 18px; color: var(--vc-muted); padding: 7px 32px 0; }
+  .list { @apply mx-4 rounded-xl overflow-hidden; background: var(--vc-surface); }
+  .row {
+    @apply relative flex items-center gap-3 w-full text-left;
+    min-height: 44px;
+    padding: 11px 16px;
+    transition: background-color 0.15s;
+  }
+  .row:active, .row.is-pressed { background: var(--vc-fill); }
+  /* separators are inset to the text, like iOS (set --sep-inset per list) */
+  .row + .row::before,
+  .row-sep + .row-sep::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: var(--sep-inset, 16px);
+    height: 0.5px;
+    background: var(--vc-border);
+  }
+  .row-icon {
+    @apply flex items-center justify-center flex-shrink-0 text-white;
+    width: 29px;
+    height: 29px;
+    border-radius: 7px;
+  }
+
   .chip {
-    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset whitespace-nowrap leading-4;
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold whitespace-nowrap;
+    font-size: 12px;
+    line-height: 16px;
   }
 
+  /* ---- Buttons */
   .btn-icon {
-    @apply inline-flex items-center justify-center w-9 h-9 rounded-full transition flex-shrink-0;
-    color: var(--vc-text);
+    @apply inline-flex items-center justify-center rounded-full transition flex-shrink-0;
+    width: 44px;
+    height: 44px;
+    color: var(--vc-primary);
   }
-  .btn-icon:hover { background: var(--vc-surface-2); }
-  .btn-icon:active { transform: scale(0.94); }
-
+  .btn-icon:active { opacity: 0.4; }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 h-10 text-sm font-semibold transition whitespace-nowrap;
+    @apply inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap transition;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 14px;
+    font-size: 17px;
   }
-  .btn:active { transform: scale(0.98); }
-  .btn:disabled { @apply opacity-50 pointer-events-none; }
+  .btn:active { opacity: 0.7; }
+  .btn:disabled { @apply pointer-events-none; opacity: 0.35; }
   .btn-primary { background: var(--vc-primary); color: #fff; }
-  html.dark .btn-primary { color: #0b1020; }
-  .btn-secondary { background: var(--vc-surface-2); color: var(--vc-text); }
-  .btn-ai { background: var(--vc-ai); color: #fff; box-shadow: 0 6px 20px rgb(168 85 247 / 0.35); }
+  .btn-secondary { background: var(--vc-primary-soft); color: var(--vc-primary); }
+  .btn-gray { background: var(--vc-surface-2); color: var(--vc-text); }
+  .btn-plain { color: var(--vc-primary); background: transparent; }
+  .btn-ai { background: var(--vc-ai); color: #fff; }
+  .btn-sm { height: 34px; padding: 0 14px; border-radius: 999px; font-size: 15px; }
 
-  .section-label {
-    @apply text-[11px] font-semibold uppercase tracking-wider;
-    color: var(--vc-muted);
+  /* Round glass button used over images (Maps / App Store style) */
+  .glass-btn {
+    @apply inline-flex items-center justify-center rounded-full flex-shrink-0 transition;
+    width: 34px;
+    height: 34px;
+    color: #fff;
+    background: rgb(0 0 0 / 0.28);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
   }
+  .glass-btn:active { opacity: 0.6; }
+  .bar-btn {
+    @apply inline-flex items-center justify-center rounded-full flex-shrink-0 transition;
+    width: 34px;
+    height: 34px;
+    color: var(--vc-primary);
+    background: var(--vc-surface-2);
+  }
+  .bar-btn:active { opacity: 0.5; }
+
+  .section-label { @apply uppercase; font-size: 13px; line-height: 18px; color: var(--vc-muted); }
 
   .ai-text {
     background: var(--vc-ai);
@@ -135,22 +291,42 @@ html.dark {
     color: transparent;
   }
 
+  /* iOS segmented control */
   .segmented {
-    @apply flex p-1 rounded-full gap-1;
+    @apply flex rounded-[9px];
+    padding: 2px;
+    gap: 0;
     background: var(--vc-surface-2);
   }
   .segmented > button {
-    @apply flex-1 h-8 rounded-full text-xs font-semibold transition;
-    color: var(--vc-muted);
+    @apply flex-1 rounded-[7px] transition inline-flex items-center justify-center gap-1.5;
+    height: 28px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vc-text);
   }
   .segmented > button[aria-pressed='true'] {
-    background: var(--vc-surface);
-    color: var(--vc-text);
-    box-shadow: 0 1px 3px rgb(15 23 42 / 0.12);
+    background: #fff;
+    font-weight: 600;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.12), 0 3px 1px rgb(0 0 0 / 0.04);
   }
+  html.dark .segmented > button[aria-pressed='true'] { background: #636366; }
+
+  /* iOS search field */
+  .search-field {
+    @apply flex items-center gap-1.5 rounded-[10px] px-2;
+    height: 36px;
+    background: var(--vc-surface-2);
+    color: var(--vc-muted);
+  }
+  .search-field input { @apply flex-1 min-w-0 bg-transparent outline-none; font-size: 17px; color: var(--vc-text); }
+  .search-field input::placeholder { color: var(--vc-muted); }
+
+  /* Sheet grabber */
+  .grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--vc-subtle); margin: 5px auto 0; }
 
   .shimmer {
-    background: linear-gradient(90deg, var(--vc-surface-2) 25%, var(--vc-border) 50%, var(--vc-surface-2) 75%);
+    background: linear-gradient(90deg, var(--vc-surface-2) 25%, var(--vc-fill) 50%, var(--vc-surface-2) 75%);
     background-size: 200% 100%;
     @apply animate-shimmer rounded-md;
   }
@@ -161,18 +337,105 @@ html.dark {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Apple Intelligence–style animated glow (used while the AI works) */
+  .ai-glow { position: relative; isolation: isolate; }
+  .ai-glow::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(from var(--ai-angle, 0deg), #ff9f0a, #ff375f, #bf5af2, #0a84ff, #30d158, #ff9f0a);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: ai-spin 2.4s linear infinite;
+    filter: blur(0.5px);
+    z-index: -1;
+    pointer-events: none;
+  }
 }
+
+@property --ai-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes ai-spin { to { --ai-angle: 360deg; } }
 
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Vant tweaks that the variables above don't reach */
+/* ---- Vant → iOS */
 .van-popup--bottom.van-popup--round { overflow: hidden; }
-.van-tabbar { border-top: 1px solid var(--vc-border-soft); }
-.van-tabbar--fixed::after { display: none; }
-.van-action-sheet__item { font-weight: 500; }
-.van-search__content { border-radius: 999px; }
+.van-cell-group__title { text-transform: uppercase; }
+.van-cell-group--inset { margin: 0 16px; }
+.van-cell::after { left: 16px; right: 0; border-color: var(--vc-border); transform: scaleY(0.5); }
+.van-field__control { font-size: 17px; }
+.van-switch { border: 0; }
+.van-switch__node { box-shadow: 0 3px 8px rgb(0 0 0 / 0.15), 0 3px 1px rgb(0 0 0 / 0.06); }
+.van-picker__toolbar { height: 50px; }
+.van-picker__confirm { font-weight: 600; }
+
+/* Action sheet: two rounded groups (actions, then Cancel), like UIAlertController */
+.van-action-sheet.van-popup {
+  background: transparent !important;
+  padding: 0 8px calc(env(safe-area-inset-bottom) + 8px);
+  border-radius: 0 !important;
+}
+.van-action-sheet__header {
+  background: var(--vc-bar);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 14px 14px 0 0;
+  color: var(--vc-muted);
+  font-weight: 600;
+  box-shadow: inset 0 -0.5px 0 var(--vc-border);
+}
+.van-action-sheet__content {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--vc-bar);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.van-action-sheet__header + .van-action-sheet__content { border-radius: 0 0 14px 14px; }
+.van-action-sheet__item {
+  background: transparent;
+  min-height: 57px;
+  box-shadow: inset 0 0.5px 0 var(--vc-border);
+}
+.van-action-sheet__content > .van-action-sheet__item:first-child { box-shadow: none; }
+.van-action-sheet__item:active, .van-action-sheet__cancel:active { background: var(--vc-fill) !important; }
+.van-action-sheet__gap { height: 8px; background: transparent; }
+.van-action-sheet__cancel {
+  border-radius: 14px;
+  height: 57px;
+  font-size: 20px;
+  font-weight: 600;
+  background: var(--vc-surface-elevated);
+}
+
+/* Alerts */
+.van-dialog {
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+}
+.van-dialog__header { font-size: 17px; }
+.van-dialog__footer .van-button { background: transparent; font-size: 17px; }
+.van-dialog__cancel { color: var(--vc-primary) !important; }
+.van-dialog__confirm { font-weight: 600; }
+.van-hairline--top::after, .van-hairline--left::after { border-color: var(--vc-border); }
+
+/* Toasts as a compact HUD capsule */
+.van-toast {
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.15);
+  font-weight: 500;
+}
+.van-toast--top { top: calc(env(safe-area-inset-top) + 12px) !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+.van-toast.toast-error { color: var(--vc-red); font-weight: 600; }
+.van-toast--top { min-width: 0; padding: 10px 18px; }

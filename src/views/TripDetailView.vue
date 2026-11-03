@@ -5,7 +5,6 @@ import { useTripsStore } from '@/stores/trips'
 import { useActivitiesStore } from '@/stores/activities'
 import { useAiStore } from '@/stores/ai'
 import TripSummary from '@/components/TripSummary.vue'
-import TripStatusChip from '@/components/TripStatusChip.vue'
 import FilterBar from '@/components/FilterBar.vue'
 import ActivityFormSheet from '@/components/ActivityFormSheet.vue'
 import ActivityDetailSheet from '@/components/ActivityDetailSheet.vue'
@@ -14,13 +13,12 @@ import CalendarTab from '@/components/tabs/CalendarTab.vue'
 import MapTab from '@/components/tabs/MapTab.vue'
 import TripFormSheet from '@/components/TripFormSheet.vue'
 import LongPressHint from '@/components/LongPressHint.vue'
-import FabButton from '@/components/FabButton.vue'
 import AiAssistantSheet from '@/components/ai/AiAssistantSheet.vue'
 import AiImportSheet from '@/components/ai/AiImportSheet.vue'
 import AiSuggestSheet from '@/components/ai/AiSuggestSheet.vue'
 import AiPlanSheet from '@/components/ai/AiPlanSheet.vue'
-import { ArrowLeft, Sparkles, MoreHorizontal, BedDouble, UtensilsCrossed, Compass, CalendarDays, Map, MapPin, Users, Eye } from 'lucide-vue-next'
-import { colorFromString, formatDate } from '@/utils/helpers'
+import { ChevronLeft, Sparkles, Ellipsis, Plus, BedDouble, UtensilsCrossed, Ticket, CalendarDays, Map } from 'lucide-vue-next'
+import { colorFromString, formatDate, tripStatus } from '@/utils/helpers'
 import { exportTrip, downloadJson, safeFilename } from '@/services/transfer'
 import { useToast } from '@/composables/useToast'
 import { useConfirm } from '@/composables/useConfirm'
@@ -78,7 +76,7 @@ provide('aiActions', {
 const TABS = [
   { key: 'hotels', label: 'Hôtels', icon: BedDouble, type: 'hotel' },
   { key: 'restaurants', label: 'Restos', icon: UtensilsCrossed, type: 'restaurant' },
-  { key: 'activities', label: 'Activités', icon: Compass, type: 'activity' },
+  { key: 'activities', label: 'Activités', icon: Ticket, type: 'activity' },
   { key: 'calendar', label: 'Planning', icon: CalendarDays, component: markRaw(CalendarTab) },
   { key: 'map', label: 'Carte', icon: Map, component: markRaw(MapTab) }
 ]
@@ -89,29 +87,33 @@ const isMap = computed(() => activeTab.value === 'map')
 const defaultType = computed(() => currentTab.value.type || 'activity')
 const tripGradient = computed(() => colorFromString(trip.value?.name || ''))
 const showLongPressHint = computed(() => !!currentTab.value.type)
+const status = computed(() => trip.value ? tripStatus(trip.value) : null)
 const memberCount = computed(() => Object.keys(trip.value?.members || {}).length)
 
-// ---- Header: transparent over the cover, solid once scrolled past it
-const HERO_H = 248
+// ---- Navigation bar: transparent over the cover, translucent material once scrolled past it
+const HERO_H = 320
 const scrolled = ref(false)
-function onScroll() { scrolled.value = window.scrollY > HERO_H - 90 }
+function onScroll() { scrolled.value = window.scrollY > HERO_H - 110 }
 const solidHeader = computed(() => scrolled.value || isMap.value)
 
 const tabTransition = ref('tab-fwd')
 function setTab(key) {
-  if (key === activeTab.value) return
+  if (key === activeTab.value) {
+    window.scrollTo({ top: 0, behavior: 'smooth' }) // iOS: tapping the active tab scrolls to top
+    return
+  }
   const newIdx = TABS.findIndex(t => t.key === key)
   tabTransition.value = newIdx > currentTabIdx.value ? 'tab-fwd' : 'tab-bwd'
   activeTab.value = key
-  // Keep the hero collapsed if it already was, so the new tab starts at its top
-  const stick = HERO_H - 56
+  // Keep the cover collapsed if it already was, so the new tab starts at its top
+  const stick = HERO_H - 100
   if (window.scrollY > stick) window.scrollTo({ top: stick })
 }
 
-// Swipe left/right on the content to change tab (not on the map or horizontal strips)
+// Swipe left/right on the content to change tab (not on the map, rows or horizontal strips)
 const tabSwipe = { x: 0, y: 0, t: 0, active: false }
 function onTabSwipeStart(e) {
-  if (e.target.closest('.leaflet-container, [data-no-swipe]')) return
+  if (e.target.closest('.leaflet-container, [data-no-swipe], .van-swipe-cell')) return
   const t = e.touches[0]
   Object.assign(tabSwipe, { x: t.clientX, y: t.clientY, t: Date.now(), active: true })
 }
@@ -135,7 +137,13 @@ const place = computed(() => {
 const dates = computed(() => {
   const t = trip.value
   if (!t?.startDate) return ''
-  return `${formatDate(t.startDate, 'd MMM')}${t.endDate ? ' → ' + formatDate(t.endDate, 'd MMM yyyy') : ''}`
+  return `${formatDate(t.startDate, 'd MMM')}${t.endDate ? ' – ' + formatDate(t.endDate, 'd MMM yyyy') : ''}`
+})
+const kicker = computed(() => {
+  const parts = [status.value?.label]
+  if (memberCount.value > 1) parts.push(`${memberCount.value} voyageurs`)
+  if (role.value === 'viewer') parts.push('Lecture seule')
+  return parts.filter(Boolean).join(' · ')
 })
 
 async function ensureTrip(id) {
@@ -190,14 +198,14 @@ function openView(a) {
 }
 function back() { router.push({ name: 'trips' }) }
 
-// ---- "+" button: manual add or AI helpers
+// ---- "+" in the navigation bar: manual add or AI helpers
 const showAddMenu = ref(false)
-const ADD_LABEL = { hotel: 'Ajouter un hôtel', restaurant: 'Ajouter un restaurant', activity: 'Ajouter une activité' }
+const ADD_LABEL = { hotel: 'Nouvel hôtel', restaurant: 'Nouveau restaurant', activity: 'Nouvelle activité' }
 const IDEAS_LABEL = { hotel: 'Idées d’hôtels', restaurant: 'Idées de restos', activity: 'Idées d’activités' }
 const addActions = computed(() => [
   { name: ADD_LABEL[defaultType.value], key: 'manual' },
-  { name: '✨ Ajout magique', subname: 'Colle un mail de réservation ou une liste, l’IA remplit les fiches', key: 'ai-import', color: 'var(--vc-primary)' },
-  { name: `✨ ${IDEAS_LABEL[defaultType.value]}`, subname: 'Suggestions de l’IA adaptées à tes étapes', key: 'ai-suggest', color: 'var(--vc-primary)' }
+  { name: 'Ajout magique', subname: 'Colle un mail de réservation, l’IA remplit les fiches', key: 'ai-import' },
+  { name: IDEAS_LABEL[defaultType.value], subname: 'Suggestions de l’IA adaptées à tes étapes', key: 'ai-suggest' }
 ])
 function onAddSelect(action) {
   showAddMenu.value = false
@@ -206,7 +214,7 @@ function onAddSelect(action) {
   if (action.key === 'ai-import') showAiImport.value = true
   else if (action.key === 'ai-suggest') showSuggest.value = true
 }
-function onFab() {
+function onAdd() {
   if (!canEdit.value) { toast.error('Tu as un accès en lecture seule'); return }
   if (activeTab.value === 'calendar') return openAdd('activity')
   showAddMenu.value = true
@@ -218,8 +226,8 @@ const showEditTrip = ref(false)
 const menuActions = computed(() => {
   const a = []
   if (canEdit.value) a.push({ name: 'Modifier le voyage', key: 'edit' })
-  a.push({ name: `Exporter en JSON (${activities.all.length} éléments)`, key: 'export' })
-  if (trips.isOwner(trip.value)) a.push({ name: 'Supprimer le voyage', key: 'delete', color: '#e11d48' })
+  a.push({ name: `Exporter (${activities.all.length} éléments)`, key: 'export' })
+  if (trips.isOwner(trip.value)) a.push({ name: 'Supprimer le voyage', key: 'delete', color: 'var(--vc-red)' })
   return a
 })
 function onMenuSelect(action) {
@@ -260,113 +268,95 @@ async function handleDeleteTrip() {
 </script>
 
 <template>
-  <div v-if="!trip" class="min-h-screen">
-    <div class="shimmer !rounded-none h-[248px]" />
-    <div class="px-4 -mt-8 space-y-3">
-      <div class="shimmer h-24 !rounded-2xl" />
-      <div v-for="i in 3" :key="i" class="shimmer h-24 !rounded-2xl" />
+  <!-- Single stable root: the route-level <Transition> must not see the root element change -->
+  <div>
+  <div v-if="!trip" class="min-h-[100dvh]">
+    <div class="shimmer !rounded-none" :style="{ height: HERO_H + 'px' }" />
+    <div class="px-4 mt-4 space-y-3">
+      <div class="shimmer h-28 !rounded-xl" />
+      <div class="shimmer h-64 !rounded-xl" />
     </div>
   </div>
 
-  <main v-else class="min-h-screen pb-[calc(env(safe-area-inset-bottom)+5.5rem)]" style="overflow-x: clip; --vc-topbar-h: calc(env(safe-area-inset-top) + 56px)">
-    <!-- Top bar -->
-    <header
-      class="fixed top-0 inset-x-0 z-30 transition-colors duration-200"
-      :class="solidHeader ? 'backdrop-blur-xl border-b' : ''"
-      :style="solidHeader ? { background: 'color-mix(in srgb, var(--vc-bg) 88%, transparent)', borderColor: 'var(--vc-border-soft)' } : {}"
-    >
-      <div class="h-14 px-2 flex items-center gap-1 pt-[env(safe-area-inset-top)] box-content">
-        <button type="button" class="btn-icon" :class="{ 'glass': !solidHeader }" aria-label="Retour aux voyages" @click="back">
-          <ArrowLeft class="w-5 h-5" :stroke-width="2" />
+  <main v-else class="min-h-[100dvh] pb-[calc(env(safe-area-inset-bottom)+5rem)]" style="overflow-x: clip; --vc-topbar-h: calc(env(safe-area-inset-top) + 44px)">
+    <!-- Navigation bar -->
+    <header class="fixed top-0 inset-x-0 z-30 pt-[env(safe-area-inset-top)] transition-colors duration-200" :class="solidHeader ? 'material hairline-b' : ''">
+      <div class="h-11 px-2 flex items-center gap-1.5 relative max-w-2xl mx-auto">
+        <button v-if="solidHeader" type="button" class="flex items-center h-11 pr-2 text-tint active:opacity-40 -ml-1" aria-label="Retour aux voyages" @click="back">
+          <ChevronLeft class="w-7 h-7" :stroke-width="2.4" />
+          <span class="t-body -ml-0.5">Voyages</span>
         </button>
-        <div class="flex-1 min-w-0 text-center transition-opacity duration-200" :class="solidHeader ? 'opacity-100' : 'opacity-0'">
-          <p class="font-semibold text-[15px] truncate">{{ trip.name }}</p>
-          <p v-if="dates" class="text-[11px] text-muted truncate -mt-0.5">{{ dates }}</p>
+        <button v-else type="button" class="glass-btn" aria-label="Retour aux voyages" @click="back">
+          <ChevronLeft class="w-5 h-5 -ml-0.5" :stroke-width="2.6" />
+        </button>
+
+        <p class="absolute inset-x-28 text-center t-headline truncate transition-opacity duration-200 pointer-events-none" :class="solidHeader ? 'opacity-100' : 'opacity-0'">{{ trip.name }}</p>
+
+        <div class="ml-auto flex items-center gap-2">
+          <button type="button" :class="solidHeader ? 'bar-btn' : 'glass-btn'" aria-label="Copilote IA" @click="openChat()">
+            <Sparkles class="w-[18px] h-[18px]" :stroke-width="2.2" />
+          </button>
+          <button v-if="canEdit && !isMap" type="button" :class="solidHeader ? 'bar-btn' : 'glass-btn'" :aria-label="activeTab === 'calendar' ? 'Ajouter au planning' : 'Ajouter'" @click="onAdd">
+            <Plus class="w-5 h-5" :stroke-width="2.4" />
+          </button>
+          <button type="button" :class="solidHeader ? 'bar-btn' : 'glass-btn'" aria-label="Options du voyage" @click="showMenu = true">
+            <Ellipsis class="w-5 h-5" :stroke-width="2.4" />
+          </button>
         </div>
-        <button type="button" class="btn-icon" :class="{ 'glass': !solidHeader }" aria-label="Copilote IA" @click="openChat()">
-          <Sparkles class="w-5 h-5" :class="solidHeader ? 'text-violet-500' : ''" :stroke-width="2" />
-        </button>
-        <button type="button" class="btn-icon" :class="{ 'glass': !solidHeader }" aria-label="Options du voyage" @click="showMenu = true">
-          <MoreHorizontal class="w-5 h-5" :stroke-width="2" />
-        </button>
       </div>
     </header>
 
     <div @touchstart.passive="onTabSwipeStart" @touchend.passive="onTabSwipeEnd" @touchcancel.passive="onTabSwipeEnd">
-      <!-- Hero -->
+      <!-- Cover -->
       <template v-if="!isMap">
         <section class="relative text-white overflow-hidden" :style="{ height: HERO_H + 'px' }">
           <div class="absolute inset-0 bg-gradient-to-br" :class="tripGradient" />
           <img v-if="trip.coverImage" :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display = 'none'" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/30" />
-          <div class="absolute inset-x-0 bottom-0 px-5 pb-12">
-            <div class="flex flex-wrap gap-1.5 mb-2">
-              <TripStatusChip :trip="trip" overlay />
-              <span v-if="memberCount > 1" class="chip bg-white/20 text-white ring-white/30 backdrop-blur"><Users class="w-3 h-3" :stroke-width="2" />{{ memberCount }} voyageurs</span>
-              <span v-if="role === 'viewer'" class="chip bg-white/20 text-white ring-white/30 backdrop-blur"><Eye class="w-3 h-3" :stroke-width="2" />Lecture seule</span>
-            </div>
-            <h1 class="text-[28px] font-extrabold tracking-tight leading-tight">{{ trip.name }}</h1>
-            <p v-if="place || dates" class="mt-1 text-sm text-white/85 flex items-center gap-1.5">
-              <MapPin v-if="place" class="w-3.5 h-3.5 flex-shrink-0" :stroke-width="2" />
-              <span class="truncate">{{ place }}<span v-if="place && dates"> · </span>{{ dates }}</span>
-            </p>
+          <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/75" />
+          <div class="absolute inset-x-0 bottom-0 px-4 pb-5 max-w-2xl mx-auto">
+            <p v-if="kicker" class="t-footnote font-semibold uppercase text-white/75">{{ kicker }}</p>
+            <h1 class="t-large [text-wrap:balance]">{{ trip.name }}</h1>
+            <p v-if="place || dates" class="t-subhead text-white/85 truncate">{{ [place, dates].filter(Boolean).join(' · ') }}</p>
           </div>
         </section>
-        <div class="-mt-8">
+        <div class="max-w-2xl mx-auto pt-4">
           <TripSummary @plan="openPlan" />
         </div>
       </template>
       <div v-else :style="{ height: 'var(--vc-topbar-h)' }" />
 
-      <FilterBar v-if="currentTab.type" :type="currentTab.type" class="mt-3" />
+      <div class="max-w-2xl mx-auto">
+        <FilterBar v-if="currentTab.type" :type="currentTab.type" class="mt-6" />
 
-      <Transition :name="tabTransition" mode="out-in">
-        <ItemsTab v-if="currentTab.type" :key="currentTab.key" :type="currentTab.type" :on-edit="openEdit" :on-view="openView" :on-add="() => openAdd(currentTab.type)" />
-        <component :is="currentTab.component" v-else :key="currentTab.key" :on-edit="openEdit" :on-view="openView" />
-      </Transition>
+        <Transition :name="tabTransition" mode="out-in">
+          <ItemsTab v-if="currentTab.type" :key="currentTab.key" :type="currentTab.type" :on-edit="openEdit" :on-view="openView" :on-add="() => openAdd(currentTab.type)" />
+          <component :is="currentTab.component" v-else :key="currentTab.key" :on-edit="openEdit" :on-view="openView" />
+        </Transition>
+      </div>
     </div>
 
-    <!-- Bottom navigation -->
-    <nav class="fixed bottom-0 inset-x-0 z-30 border-t backdrop-blur-xl pb-[env(safe-area-inset-bottom)]" style="background: color-mix(in srgb, var(--vc-surface) 92%, transparent); border-color: var(--vc-border-soft)" aria-label="Sections du voyage">
+    <!-- Tab bar -->
+    <nav class="fixed bottom-0 inset-x-0 z-30 material hairline-t pb-[env(safe-area-inset-bottom)]" aria-label="Sections du voyage">
       <div class="flex max-w-2xl mx-auto">
         <button
           v-for="t in TABS"
           :key="t.key"
           type="button"
-          class="flex-1 h-[58px] flex flex-col items-center justify-center gap-0.5 transition"
-          :style="{ color: activeTab === t.key ? 'var(--vc-primary)' : 'var(--vc-subtle)' }"
+          class="flex-1 h-[49px] pt-1 flex flex-col items-center justify-start gap-[3px] active:opacity-50"
+          :style="{ color: activeTab === t.key ? 'var(--vc-primary)' : 'var(--vc-gray)' }"
           :aria-current="activeTab === t.key ? 'page' : undefined"
           @click="setTab(t.key)"
         >
-          <span class="w-12 h-7 rounded-full flex items-center justify-center transition" :style="activeTab === t.key ? { background: 'var(--vc-primary-soft)' } : {}">
-            <component :is="t.icon" class="w-[20px] h-[20px]" :stroke-width="activeTab === t.key ? 2.25 : 1.75" />
-          </span>
-          <span class="text-[10.5px] font-semibold">{{ t.label }}</span>
+          <component :is="t.icon" class="w-[25px] h-[25px]" :stroke-width="activeTab === t.key ? 2.2 : 1.8" />
+          <span class="text-[10px] leading-3 font-medium">{{ t.label }}</span>
         </button>
       </div>
     </nav>
 
-    <FabButton v-if="canEdit && !isMap" :label="activeTab === 'calendar' ? 'Ajouter au planning' : 'Ajouter'" offset="5.25rem" @click="onFab" />
-
     <LongPressHint :active="showLongPressHint" />
 
-    <van-action-sheet
-      v-model:show="showAddMenu"
-      :actions="addActions"
-      cancel-text="Annuler"
-      teleport="body"
-      close-on-click-action
-      @select="onAddSelect"
-    />
-    <van-action-sheet
-      v-model:show="showMenu"
-      :title="trip.name"
-      :actions="menuActions"
-      cancel-text="Annuler"
-      teleport="body"
-      close-on-click-action
-      @select="onMenuSelect"
-    />
+    <van-action-sheet v-model:show="showAddMenu" :actions="addActions" cancel-text="Annuler" teleport="body" close-on-click-action @select="onAddSelect" />
+    <van-action-sheet v-model:show="showMenu" :title="trip.name" :actions="menuActions" cancel-text="Annuler" teleport="body" close-on-click-action @select="onMenuSelect" />
 
     <ActivityFormSheet v-model="showSheet" :activity="editing" :default-type="defaultType" />
     <ActivityDetailSheet v-model="showDetail" :activity="viewing" @edit="openEdit" />
@@ -377,18 +367,16 @@ async function handleDeleteTrip() {
     <AiSuggestSheet v-model="showSuggest" :type="defaultType" />
     <AiPlanSheet v-model="showPlan" />
   </main>
+  </div>
 </template>
 
 <style scoped>
-.glass { background: rgb(0 0 0 / 0.32); color: #fff; backdrop-filter: blur(10px); }
-.glass:hover { background: rgb(0 0 0 / 0.45); }
-
 .tab-fwd-enter-active, .tab-fwd-leave-active,
 .tab-bwd-enter-active, .tab-bwd-leave-active {
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.18s ease;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease;
 }
-.tab-fwd-enter-from { transform: translateX(16%); opacity: 0; }
-.tab-fwd-leave-to { transform: translateX(-8%); opacity: 0; }
-.tab-bwd-enter-from { transform: translateX(-16%); opacity: 0; }
-.tab-bwd-leave-to { transform: translateX(8%); opacity: 0; }
+.tab-fwd-enter-from { transform: translateX(12%); opacity: 0; }
+.tab-fwd-leave-to { transform: translateX(-6%); opacity: 0; }
+.tab-bwd-enter-from { transform: translateX(-12%); opacity: 0; }
+.tab-bwd-leave-to { transform: translateX(6%); opacity: 0; }
 </style>

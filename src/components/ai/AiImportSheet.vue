@@ -93,16 +93,16 @@ function close() { emit('update:modelValue', false) }
 </script>
 
 <template>
-  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '88vh' }" @update:show="emit('update:modelValue', $event)">
+  <van-popup :show="modelValue" position="bottom" round teleport="body" :style="{ height: '94vh', background: 'var(--vc-bg)' }" @update:show="emit('update:modelValue', $event)">
     <div class="h-full flex flex-col">
       <AiSheetHeader title="Ajout magique" subtitle="Colle un texte, l'IA crée les fiches" :icon="Wand2" @close="close" />
 
       <!-- 1. Paste -->
       <div v-if="step === 'input'" class="flex-1 flex flex-col px-4 py-4 min-h-0">
-        <p class="text-sm text-muted">Mail de confirmation d'hôtel, liste de restos d'un ami, article de blog, notes… L'IA repère les lieux, dates, prix et numéros de réservation.</p>
+        <p class="t-subhead text-muted">Mail de confirmation d'hôtel, liste de restos d'un ami, article de blog, notes… L'IA repère les lieux, dates, prix et numéros de réservation.</p>
         <textarea
           v-model="text"
-          class="mt-3 flex-1 min-h-[10rem] w-full rounded-2xl surface-2 p-4 text-sm outline-none resize-none focus:ring-2"
+          class="mt-3 flex-1 min-h-[10rem] w-full rounded-xl surface px-4 py-3 text-[17px] leading-[22px] outline-none resize-none focus:ring-2"
           style="--tw-ring-color: var(--vc-primary)"
           placeholder="Ex. « Votre réservation au Ryokan Yachiyo du 14 au 17 nov. est confirmée (n° 8842)… »"
           aria-label="Texte à analyser"
