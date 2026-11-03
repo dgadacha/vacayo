@@ -1,31 +1,37 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const KEY = 'vacayo:theme'
+const media = window.matchMedia?.('(prefers-color-scheme: dark)')
 
-function initial() {
-  const saved = localStorage.getItem(KEY)
-  if (saved === 'light' || saved === 'dark') return saved
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+function readPref() {
+  try {
+    const saved = localStorage.getItem(KEY)
+    if (saved === 'light' || saved === 'dark' || saved === 'system') return saved
+  } catch {}
+  return 'system'
 }
 
 function apply(mode) {
   document.documentElement.classList.toggle('dark', mode === 'dark')
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--vc-bg').trim()
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg || (mode === 'dark' ? '#0b1020' : '#f5f6fa'))
 }
 
 export const useThemeStore = defineStore('theme', () => {
-  const mode = ref(initial())
+  // pref = what the user picked; mode = what is actually displayed
+  const pref = ref(readPref())
+  const systemDark = ref(!!media?.matches)
+  media?.addEventListener?.('change', (e) => { systemDark.value = e.matches })
+
+  const mode = computed(() => pref.value === 'system' ? (systemDark.value ? 'dark' : 'light') : pref.value)
+
   apply(mode.value)
+  watch(mode, apply)
+  watch(pref, (p) => { try { localStorage.setItem(KEY, p) } catch {} })
 
-  watch(mode, (m) => {
-    localStorage.setItem(KEY, m)
-    apply(m)
-  })
+  function toggle() { pref.value = mode.value === 'dark' ? 'light' : 'dark' }
+  function set(p) { if (['light', 'dark', 'system'].includes(p)) pref.value = p }
 
-  function toggle() {
-    mode.value = mode.value === 'dark' ? 'light' : 'dark'
-  }
-  function set(m) { if (m === 'light' || m === 'dark') mode.value = m }
-
-  return { mode, toggle, set }
+  return { pref, mode, toggle, set }
 })

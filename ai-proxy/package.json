@@ -1,0 +1,12 @@
+{
+  "name": "vacayo-ai-proxy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx vercel dev",
+    "deploy": "npx vercel deploy --prod"
+  },
+  "dependencies": {
+    "jose": "^6.2.14"
+  }
+}

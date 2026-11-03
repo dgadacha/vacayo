@@ -102,8 +102,8 @@ async function confirmImport() {
 
       <div v-if="!preview" class="p-5">
         <label class="block cursor-pointer">
-          <div class="rounded-lg border-2 border-dashed p-8 text-center" style="border-color: var(--van-border-color);">
-            <van-icon name="upgrade" size="40" />
+          <div class="rounded-2xl border-2 border-dashed p-8 text-center surface-2" style="border-color: var(--vc-border);">
+            <van-icon name="upgrade" size="40" color="var(--vc-primary)" />
             <p class="font-semibold mt-2">Choisir un fichier JSON</p>
             <p class="text-xs opacity-60 mt-1">Export Vacayo / Flutter</p>
             <input type="file" accept="application/json,.json" class="hidden" @change="onPick" />

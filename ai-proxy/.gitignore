@@ -1,0 +1,3 @@
+# Projet Vercel lié et variables locales (vercel env pull)
+.vercel/
+.env*
