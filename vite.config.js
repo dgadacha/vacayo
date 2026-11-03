@@ -4,11 +4,11 @@ import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 import { fileURLToPath, URL } from 'node:url'
 
-// On GitHub Pages the app is served at /vacayo/; locally we use /.
+// Served from the domain root, on Vercel as in dev.
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    base: mode === 'production' ? '/vacayo/' : '/',
+    base: '/',
     plugins: [
       vue(),
       Components({

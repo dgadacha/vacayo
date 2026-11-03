@@ -2,7 +2,7 @@
 
 Planificateur de voyages à plusieurs : hôtels, restos, activités, planning jour par
 jour, carte, et un assistant IA (Claude Haiku). Vue 3 + Vite + Vant + Tailwind,
-données dans Firebase (Auth + Firestore), déployé sur GitHub Pages.
+données dans Firebase (Auth + Firestore), déployé sur Vercel.
 
 ## Démarrer
 
@@ -49,7 +49,7 @@ Rien n'est écrit sans validation de l'utilisateur, sauf la complétion du formu
 Trois façons de fournir la clé Anthropic :
 
 1. **Proxy (recommandé en prod)** : déployer `ai-proxy/` sur Vercel (voir son
-   README) et définir la variable de dépôt GitHub `VITE_AI_PROXY_URL`. La clé reste
+   README) et définir la variable d’environnement Vercel `VITE_AI_PROXY_URL` du projet de l’app. La clé reste
    sur le proxy, qui n'accepte que les utilisateurs Firebase connectés.
 2. **Clé perso** : sans proxy, chaque utilisateur colle sa clé dans
    Compte → Assistant IA. Elle reste dans le `localStorage` de son appareil.
@@ -59,6 +59,13 @@ Trois façons de fournir la clé Anthropic :
    VITE_AI_PROXY_URL=/anthropic
    ```
    Le serveur Vite ajoute la clé côté serveur (`vite.config.js`), elle n'atteint jamais le navigateur.
+
+## Déploiement
+
+Projet Vercel `vacayo` relié à ce dépôt : chaque push sur `main` part en production,
+chaque branche / PR obtient une URL d’aperçu. Config dans `vercel.json` (build Vite,
+toutes les routes renvoient `index.html` pour le routeur, cache long sur `assets/`) ;
+`.vercelignore` écarte le proxy et les scripts. Variable de build : `VITE_AI_PROXY_URL`.
 
 ## Structure
 
