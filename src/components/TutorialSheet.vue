@@ -13,7 +13,7 @@ const PAGES = [
   { key: 'welcome', icon: Luggage, bg: 'from-[#5ac8fa] to-[#007aff]', title: 'Bienvenue dans Vacayo', text: 'Ton carnet de voyage à partager : hôtels, restos, activités et planning, tout au même endroit.' },
   { key: 'create', icon: Plus, bg: 'from-[#5ee07c] to-[#34c759]', title: 'Crée un voyage', text: 'Touche + en haut à droite, puis indique la destination et tes dates d’arrivée et de départ.' },
   { key: 'ai', icon: Sparkles, bg: 'ai', title: 'L’IA prépare tout', text: 'Laisse « Préparer avec l’IA » activé : étapes, hôtels et programme jour par jour te sont proposés. Tu décoches ce qui ne te plaît pas.' },
-  { key: 'swipe', icon: Hand, bg: 'from-[#ffb340] to-[#ff9500]', title: 'Un geste pour tout', text: 'Balaie une ligne vers la gauche pour « Fait » ou « Supprimer », vers la droite pour « Réservé ». Un appui long ouvre toutes les options.' },
+  { key: 'swipe', icon: Hand, bg: 'from-[#ffb340] to-[#ff9500]', title: 'Un geste pour tout', text: 'Balaie une ligne vers la gauche pour « Fait » ou « Supprimer », vers la droite pour « Réservé » ou « Plus tard ». Un appui long ouvre toutes les options.' },
   { key: 'plan', icon: CalendarDays, bg: 'from-[#ff6961] to-[#ff3b30]', title: 'Jour par jour', text: 'L’onglet Planning montre chaque journée heure par heure, de l’hôtel du matin au resto du soir.' },
   { key: 'copilot', icon: MessageCircle, bg: 'ai', title: 'Pose tes questions', text: 'Le bouton ✨ ouvre le copilote, qui connaît tout ton voyage.' },
   { key: 'tools', icon: Wand2, bg: 'ai', title: 'L’IA t’aide aussi', text: 'L’IA propose, tu valides : rien n’est ajouté sans ton accord.' },

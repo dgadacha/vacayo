@@ -2,7 +2,7 @@
 import { ref, watch, computed, inject } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
 import { ACTIVITY_TYPES, PRIORITY_OPTIONS } from '@/utils/constants'
-import { formatDate, formatTime, PICKER_DATE_COLUMNS, toPickerDate, fromPickerDate } from '@/utils/helpers'
+import { formatDate, formatTime, parseDate, PICKER_DATE_COLUMNS, toPickerDate, fromPickerDate } from '@/utils/helpers'
 import { useAiStore } from '@/stores/ai'
 import { enrichDraft, aiErrorMessage, mapsSearchUrl } from '@/services/ai'
 import { useToast } from '@/composables/useToast'
@@ -47,7 +47,28 @@ watch(() => props.modelValue, (open) => {
   if (open) {
     error.value = ''
     form.value = props.activity ? { ...emptyForm(), ...props.activity } : { ...emptyForm(), type: props.defaultType }
+    scheduled.value = !!form.value.date
   }
+})
+
+// "Planifier" switch (activities and restaurants): off = no date, the item stays in
+// the wishlist. Turning it on opens the date picker; cancelling it turns it back off.
+const isHotel = computed(() => form.value.type === 'hotel')
+const scheduled = ref(false)
+watch(() => form.value.date, (d) => { if (d) scheduled.value = true })
+function setScheduled(on) {
+  scheduled.value = on
+  if (on) showDatePicker.value = true
+  else form.value.date = ''
+}
+function onDateCancel() {
+  showDatePicker.value = false
+  if (!form.value.date) scheduled.value = false
+}
+// A new date starts on the trip's first day while the trip is still ahead
+const pickerFallback = computed(() => {
+  const start = parseDate(trip.value?.startDate)
+  return start && start > new Date() ? start : new Date()
 })
 
 const typeOptions = computed(() =>
@@ -228,8 +249,15 @@ async function submit() {
         </div>
         <p class="list-footer">Ville, catégorie, prix estimé et conseils à partir du nom. Seuls les champs vides sont remplis.</p>
 
-        <van-cell-group inset :title="form.type === 'hotel' ? 'Séjour' : 'Date'">
+        <van-cell-group inset :title="form.type === 'hotel' ? 'Séjour' : 'Planning'">
+          <!-- Activities and restaurants may have no date (Reminders-style switch) -->
+          <van-cell v-if="!isHotel" title="Planifier" center>
+            <template #right-icon>
+              <van-switch :model-value="scheduled" @update:model-value="setScheduled" />
+            </template>
+          </van-cell>
           <van-field
+            v-if="isHotel || scheduled"
             readonly
             clickable
             :model-value="dateLabel"
@@ -268,6 +296,7 @@ async function submit() {
             />
           </template>
         </van-cell-group>
+        <p v-if="!isHotel && !scheduled" class="list-footer">Sans date, l’élément reste dans ta liste d’envies : tu le planifies plus tard, toi ou l’IA.</p>
 
         <van-cell-group inset title="Budget & priorité">
           <van-field
@@ -319,13 +348,13 @@ async function submit() {
 
   <van-popup v-model:show="showDatePicker" position="bottom" round teleport="body">
     <van-date-picker
-      :model-value="toPickerDate(form.date)"
+      :model-value="toPickerDate(form.date, pickerFallback)"
       :columns-type="PICKER_DATE_COLUMNS"
       :min-date="new Date(2020, 0, 1)"
       :max-date="new Date(2035, 11, 31)"
       title="Date"
       @confirm="onDateConfirm"
-      @cancel="showDatePicker = false"
+      @cancel="onDateCancel"
     />
   </van-popup>
   <van-popup v-model:show="showTimePicker" position="bottom" round teleport="body">

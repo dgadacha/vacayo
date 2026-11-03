@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import AiSettingsSheet from '@/components/ai/AiSettingsSheet.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import TutorialSheet from '@/components/TutorialSheet.vue'
+import UndoBar from '@/components/UndoBar.vue'
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -25,6 +26,7 @@ const ready = computed(() => auth.ready)
     </RouterView>
     <AiSettingsSheet />
     <TutorialSheet v-if="ready && route.name !== 'login'" />
+    <UndoBar />
   </van-config-provider>
 </template>
 
