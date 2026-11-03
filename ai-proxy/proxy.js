@@ -5,7 +5,9 @@ import { createRemoteJWKSet, jwtVerify } from 'jose'
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
 const ALLOWED_MODEL = 'claude-haiku-5-5'
-const MAX_TOKENS = 16000
+// Long trip generations stream up to 64k tokens (thinking included); Haiku's
+// output price keeps that under a few cents.
+const MAX_TOKENS = 64000
 const DEFAULT_PROJECT_ID = 'vacayo-77ad3'
 const DEFAULT_ORIGINS = 'https://dgadacha.github.io,http://localhost:5173,http://localhost:5174,http://localhost:5175'
 

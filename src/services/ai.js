@@ -412,9 +412,11 @@ export async function generateTrip({ trip, items, prefs = {}, onProgress, signal
     '- "why" : une phrase de moins de 90 caractères. "summary" : 2 phrases sur l’itinéraire.'
   ].filter(Boolean).join('\n')
 
+  // Room for long trips: 30 intense days is ~200 items, and Haiku's adaptive
+  // thinking (on at effort medium) is counted in max_tokens too.
   const stream = client.messages.stream({
     model: AI_MODEL,
-    max_tokens: 16000,
+    max_tokens: 64000,
     system: `${SYSTEM_BASE}\n\n${buildTripContext(trip, items)}`,
     output_config: {
       effort: 'medium',
@@ -469,7 +471,7 @@ export async function generateTrip({ trip, items, prefs = {}, onProgress, signal
   }
   const res = await stream.finalMessage()
   if (res.stop_reason === 'refusal') throw new AiRefusalError()
-  if (res.stop_reason === 'max_tokens') throw new Error('Le voyage est trop long à générer d’un coup : essaie un rythme plus tranquille.')
+  if (res.stop_reason === 'max_tokens') throw new Error('Le voyage est trop long à générer d’un coup : essaie un rythme plus tranquille ou des dates plus courtes.')
   const out = res.parsed_output
   if (!out) throw new Error("Réponse de l'IA illisible, réessaie.")
 
