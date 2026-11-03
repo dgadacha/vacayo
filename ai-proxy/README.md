@@ -15,7 +15,7 @@ du projet Firebase `vacayo-77ad3`.
   `OPTIONS` répond 204.
 - Vérifie le jeton d'identité Firebase envoyé en `Authorization: Bearer <token>`
   (signature Google, émetteur et audience du projet). Jeton absent ou invalide → 401.
-- N'autorise que le modèle `claude-haiku-5-5` et plafonne `max_tokens` à 16 000.
+- N'autorise que le modèle `claude-haiku-5-5` et plafonne `max_tokens` à 64 000 (assez pour générer un voyage de 30 jours).
 - Transmet la requête à `https://api.anthropic.com/v1/messages` avec la clé du
   proxy. Seuls `content-type`, `x-api-key` et `anthropic-version` partent vers
   Anthropic ; le jeton Firebase n'est jamais transmis.
