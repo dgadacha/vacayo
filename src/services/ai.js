@@ -354,6 +354,24 @@ const LODGING = { budget: 'économique (auberges, business hotels)', comfort: 'c
  * destination and dates. Streams so the UI can show progress; nothing is saved.
  * prefs: { pace: 'calm'|'balanced'|'intense', interests: string[], lodging: 'budget'|'comfort'|'luxury', notes }
  */
+// What the waiting screen can show, read from the partial JSON as it streams in
+// (summary, then stages, then items).
+function readTripProgress(text) {
+  const at = text.indexOf('"items"')
+  const head = at < 0 ? text : text.slice(0, at)
+  const body = at < 0 ? '' : text.slice(at)
+  // Day being written: dates of activities and restaurants only (a hotel's date is
+  // its check-in, often days ahead). "type" comes before "date" in each item.
+  const days = [...body.matchAll(/"type"\s*:\s*"(?:restaurant|activity)"[^{}]*?"date"\s*:\s*"(\d{4}-\d{2}-\d{2})"/g)]
+  return {
+    cities: [...new Set([...head.matchAll(/"city"\s*:\s*"([^"]+)"/g)].map(m => m[1]))],
+    inItems: at >= 0,
+    hotels: (body.match(/"type"\s*:\s*"hotel"/g) || []).length,
+    places: (body.match(/"type"\s*:\s*"(?:restaurant|activity)"/g) || []).length,
+    lastDate: days.length ? days[days.length - 1][1] : ''
+  }
+}
+
 export async function generateTrip({ trip, items, prefs = {}, onProgress, signal }) {
   const start = trip?.startDate
   const end = trip?.endDate
@@ -442,12 +460,11 @@ export async function generateTrip({ trip, items, prefs = {}, onProgress, signal
     messages: [{ role: 'user', content: prompt }]
   }, { signal })
 
-  // Rough progress: count the places already written in the streamed JSON
   let text = ''
   for await (const event of stream) {
     if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
       text += event.delta.text
-      onProgress?.((text.match(/"name"\s*:/g) || []).length)
+      onProgress?.(readTripProgress(text))
     }
   }
   const res = await stream.finalMessage()
