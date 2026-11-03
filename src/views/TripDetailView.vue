@@ -333,7 +333,8 @@ async function handleDeleteTrip() {
         <section class="relative text-white overflow-hidden" :style="{ height: HERO_H + 'px' }">
           <div class="absolute inset-0 bg-gradient-to-br" :class="tripGradient" />
           <img v-if="trip.coverImage" :src="trip.coverImage" :alt="trip.name" class="absolute inset-0 w-full h-full object-cover" @error="$event.target.style.display = 'none'" />
-          <div class="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/75" />
+          <!-- Photos need a strong scrim for the status bar and title; a plain gradient much less -->
+          <div class="absolute inset-0 bg-gradient-to-b" :class="trip.coverImage ? 'from-black/35 via-transparent to-black/75' : 'from-transparent from-40% to-black/45'" />
           <div class="absolute inset-x-0 bottom-0 px-4 pb-5 max-w-2xl mx-auto">
             <p v-if="kicker" class="t-footnote font-semibold uppercase text-white/75">{{ kicker }}</p>
             <h1 class="t-large [text-wrap:balance]">{{ trip.name }}</h1>
