@@ -30,7 +30,7 @@ const canSubmit = computed(() => email.value.trim() && (mode.value === 'reset' |
 
 const FEATURES = [
   { icon: Users, color: '#007aff', title: 'À plusieurs', text: 'Hôtels, restos et activités partagés avec tes compagnons de route.' },
-  { icon: CalendarDays, color: '#ff3b30', title: 'Jour par jour', text: 'Un planning clair, nuit par nuit, avec la carte de tes étapes.' },
+  { icon: CalendarDays, color: '#ff3b30', title: 'Jour par jour', text: 'Un planning clair, nuit par nuit, étape par étape.' },
   { icon: Sparkles, color: '#bf5af2', title: 'Assistant IA', text: 'Colle un mail de réservation, demande des idées, planifie ta liste d’envies.' }
 ]
 

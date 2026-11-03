@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTripsStore } from '@/stores/trips'
 import { useAuthStore } from '@/stores/auth'
@@ -61,6 +61,7 @@ function featuredKicker(t) {
 
 function open(t) { router.push({ name: 'trip', params: { id: t.id } }) }
 function hideImg(e) { e.target.style.display = 'none' }
+const failedCovers = reactive(new Set()) // banner links that did not load
 
 function onCreated(t) {
   toast.success(`« ${t.name} » créé`)
@@ -114,11 +115,10 @@ function onImported(res) {
       </div>
 
       <template v-else>
-        <!-- Featured: App Store "Today" card -->
+        <!-- Featured: App Store "Today" card with the banner, a plain card without one -->
         <div v-if="featured" class="px-4 mb-8">
-          <button type="button" class="block w-full text-left rounded-[20px] overflow-hidden relative h-[400px] shadow-lift active:scale-[0.97] transition-transform duration-300" @click="open(featured)">
-            <div class="absolute inset-0 bg-gradient-to-br" :class="tripGradient(featured)" />
-            <img v-if="featured.coverImage" :src="featured.coverImage" :alt="featured.name" class="absolute inset-0 w-full h-full object-cover" @error="hideImg" />
+          <button v-if="featured.coverImage && !failedCovers.has(featured.id)" type="button" class="block w-full text-left rounded-[20px] overflow-hidden relative h-[400px] shadow-lift active:scale-[0.97] transition-transform duration-300" style="background: var(--vc-fill)" @click="open(featured)">
+            <img :src="featured.coverImage" :alt="featured.name" class="absolute inset-0 w-full h-full object-cover" @error="failedCovers.add(featured.id)" />
             <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/70" />
             <div class="absolute top-0 inset-x-0 p-5 text-white">
               <p class="t-footnote font-semibold uppercase text-white/75">{{ featuredKicker(featured) }}</p>
@@ -131,6 +131,18 @@ function onImported(res) {
               </div>
               <span v-if="memberCount(featured) > 1" class="chip material !bg-white/25 text-white"><Users class="w-3 h-3" :stroke-width="2.4" />{{ memberCount(featured) }}</span>
               <span class="btn btn-sm !h-8 !text-[15px] bg-white/90 text-[#007aff] !font-bold">Ouvrir</span>
+            </div>
+          </button>
+          <button v-else type="button" class="card block w-full text-left p-5 active:scale-[0.98] transition-transform duration-300" @click="open(featured)">
+            <p class="t-footnote font-semibold uppercase text-tint">{{ featuredKicker(featured) }}</p>
+            <h2 class="t-title1 mt-1 [text-wrap:balance]">{{ featured.name }}</h2>
+            <div class="mt-3 flex items-center gap-3">
+              <div class="flex-1 min-w-0">
+                <p v-if="place(featured)" class="t-headline truncate">{{ place(featured) }}</p>
+                <p v-if="dates(featured)" class="t-subhead text-muted truncate">{{ dates(featured) }}</p>
+              </div>
+              <span v-if="memberCount(featured) > 1" class="t-subhead text-muted flex items-center gap-1"><Users class="w-3.5 h-3.5" :stroke-width="2.2" />{{ memberCount(featured) }}</span>
+              <span class="btn btn-sm btn-primary !h-8 !text-[15px]">Ouvrir</span>
             </div>
           </button>
         </div>

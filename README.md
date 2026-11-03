@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Ton carnet de voyage, à plusieurs, avec un assistant IA.</b><br>
-  Hôtels, restos, activités, planning jour par jour et carte, tout au même endroit.
+  Hôtels, restos, activités et planning jour par jour, tout au même endroit.
 </p>
 
 <p align="center">
@@ -33,7 +33,6 @@ endroit :
 - 🏨 **les hôtels**, avec les dates d’arrivée et de départ ;
 - 🍜 **les restos** et 🎟️ **les activités**, avec prix, horaires et notes ;
 - 📅 **un planning** qui montre chaque journée heure par heure ;
-- 🗺️ **une carte** de tous les lieux du voyage ;
 - 💶 **le budget** : ce qui est prévu, réservé, déjà fait ;
 - ✨ **un assistant IA** qui peut préparer tout le voyage à partir de la destination
   et des dates, lire un mail de réservation, proposer des idées et répondre à tes
@@ -76,7 +75,7 @@ haut à droite : destination, date d’arrivée, date de départ, et c’est tou
 
 En haut d’un voyage, un résumé : combien d’éléments sont **faits**, combien sont
 **réservés**, et le **budget prévu** comparé au budget total. En dessous, cinq
-onglets : Hôtels, Restos, Activités, Planning et Carte. On peut chercher, trier et
+onglets : Hôtels, Restos, Activités et Planning. On peut chercher, trier et
 filtrer par ville.
 
 <p align="center">
@@ -115,15 +114,8 @@ L’onglet **Planning** affiche la semaine en haut, puis la journée choisie heu
 heure : l’hôtel où l’on dort, puis le matin, l’après-midi et le soir.
 **Optimiser la journée** demande à l’IA un ordre de visite plus logique.
 
-### La carte
-
-L’onglet **Carte** place les lieux du voyage ville par ville : chaque pastille indique
-combien d’éléments s’y trouvent ; touche-la pour voir la liste et ouvrir une fiche.
-
 <p align="center">
   <img src="docs/screenshots/09-planning.jpg" width="260" alt="Planning d’une journée">
-  &nbsp;
-  <img src="docs/screenshots/10-carte.jpg" width="260" alt="Carte du voyage">
 </p>
 
 ## L’assistant IA
@@ -252,7 +244,7 @@ de Vacayo, qui garde la clé d’accès à l’IA et vérifie que tu es connect�
 
 ## Pour les développeurs
 
-Vue 3 + Vite + Vant 4 + Tailwind, Pinia, vue-router, Leaflet (OpenStreetMap).
+Vue 3 + Vite + Vant 4 + Tailwind, Pinia, vue-router.
 Données dans Firebase (Auth + Firestore). IA via le SDK `@anthropic-ai/sdk`.
 Déployé sur Vercel.
 
