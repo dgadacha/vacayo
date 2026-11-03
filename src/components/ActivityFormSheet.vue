@@ -2,7 +2,7 @@
 import { ref, watch, computed, inject } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
 import { ACTIVITY_TYPES, PRIORITY_OPTIONS } from '@/utils/constants'
-import { formatDate, formatTime } from '@/utils/helpers'
+import { formatDate, formatTime, PICKER_DATE_COLUMNS, toPickerDate, fromPickerDate } from '@/utils/helpers'
 import { useAiStore } from '@/stores/ai'
 import { enrichDraft, aiErrorMessage, mapsSearchUrl } from '@/services/ai'
 import { useToast } from '@/composables/useToast'
@@ -61,15 +61,6 @@ const priorityLabel = computed(() =>
 )
 
 // Date/time helpers
-function parseDateColumns(value) {
-  if (!value) {
-    const now = new Date()
-    return [String(now.getFullYear()), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')]
-  }
-  const d = value.split('T')[0]
-  const [y, m, day] = d.split('-')
-  return [y, m, day]
-}
 function parseTimeColumns(value) {
   if (!value || !value.includes('T')) return ['10', '00']
   const time = value.split('T')[1] || '10:00'
@@ -78,13 +69,13 @@ function parseTimeColumns(value) {
 }
 const dateLabel = computed(() => {
   if (!form.value.date) return ''
-  const datePart = formatDate(form.value.date, 'd MMM yyyy')
+  const datePart = formatDate(form.value.date, 'dd/MM/yyyy')
   const timePart = formatTime(form.value.date)
   return timePart ? `${datePart} · ${timePart}` : datePart
 })
 const endDateLabel = computed(() => {
   if (!form.value.endDate) return ''
-  const datePart = formatDate(form.value.endDate, 'd MMM yyyy')
+  const datePart = formatDate(form.value.endDate, 'dd/MM/yyyy')
   const timePart = formatTime(form.value.endDate)
   return timePart ? `${datePart} · ${timePart}` : datePart
 })
@@ -99,7 +90,7 @@ function splitDateTime(value) {
 }
 
 function onDateConfirm({ selectedValues }) {
-  const d = selectedValues.join('-')
+  const d = fromPickerDate(selectedValues)
   const { time } = splitDateTime(form.value.date)
   form.value.date = combineDateTime(d, time)
   showDatePicker.value = false
@@ -111,7 +102,7 @@ function onTimeConfirm({ selectedValues }) {
   showTimePicker.value = false
 }
 function onEndDateConfirm({ selectedValues }) {
-  const d = selectedValues.join('-')
+  const d = fromPickerDate(selectedValues)
   const { time } = splitDateTime(form.value.endDate)
   form.value.endDate = combineDateTime(d, time || '11:00')
   showEndDatePicker.value = false
@@ -328,7 +319,8 @@ async function submit() {
 
   <van-popup v-model:show="showDatePicker" position="bottom" round teleport="body">
     <van-date-picker
-      :model-value="parseDateColumns(form.date)"
+      :model-value="toPickerDate(form.date)"
+      :columns-type="PICKER_DATE_COLUMNS"
       :min-date="new Date(2020, 0, 1)"
       :max-date="new Date(2035, 11, 31)"
       title="Date"
@@ -346,7 +338,8 @@ async function submit() {
   </van-popup>
   <van-popup v-model:show="showEndDatePicker" position="bottom" round teleport="body">
     <van-date-picker
-      :model-value="parseDateColumns(form.endDate)"
+      :model-value="toPickerDate(form.endDate || form.date)"
+      :columns-type="PICKER_DATE_COLUMNS"
       :min-date="new Date(2020, 0, 1)"
       :max-date="new Date(2035, 11, 31)"
       title="Date de départ"

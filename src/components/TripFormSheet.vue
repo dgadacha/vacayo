@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useTripsStore } from '@/stores/trips'
-import { CURRENCIES, formatDate } from '@/utils/helpers'
+import { CURRENCIES, formatDate, PICKER_DATE_COLUMNS, toPickerDate, fromPickerDate } from '@/utils/helpers'
 import SheetHeader from '@/components/SheetHeader.vue'
 
 const props = defineProps({
@@ -73,19 +73,12 @@ function onCurrencyConfirm({ selectedOptions }) {
   showCurrencyPicker.value = false
 }
 
-function parseToColumns(value) {
-  if (!value) return [String(new Date().getFullYear()), '01', '01']
-  const d = value.includes('T') ? value.split('T')[0] : value
-  const [y, m, day] = d.split('-')
-  return [y, m, day]
-}
-
 function onStartConfirm({ selectedValues }) {
-  form.value.startDate = selectedValues.join('-')
+  form.value.startDate = fromPickerDate(selectedValues)
   showStartPicker.value = false
 }
 function onEndConfirm({ selectedValues }) {
-  form.value.endDate = selectedValues.join('-')
+  form.value.endDate = fromPickerDate(selectedValues)
   showEndPicker.value = false
 }
 
@@ -161,7 +154,7 @@ async function submit() {
           <van-field
             readonly
             clickable
-            :model-value="form.startDate ? formatDate(form.startDate, 'd MMM yyyy') : ''"
+            :model-value="form.startDate ? formatDate(form.startDate, 'dd/MM/yyyy') : ''"
             label="Début"
             placeholder="Choisir"
             is-link
@@ -170,7 +163,7 @@ async function submit() {
           <van-field
             readonly
             clickable
-            :model-value="form.endDate ? formatDate(form.endDate, 'd MMM yyyy') : ''"
+            :model-value="form.endDate ? formatDate(form.endDate, 'dd/MM/yyyy') : ''"
             label="Fin"
             placeholder="Choisir"
             is-link
@@ -231,7 +224,8 @@ async function submit() {
   <!-- Pickers (teleported above the popup) -->
   <van-popup v-model:show="showStartPicker" position="bottom" round teleport="body">
     <van-date-picker
-      :model-value="parseToColumns(form.startDate)"
+      :model-value="toPickerDate(form.startDate)"
+      :columns-type="PICKER_DATE_COLUMNS"
       :min-date="new Date(2020, 0, 1)"
       :max-date="new Date(2035, 11, 31)"
       title="Date de début"
@@ -241,7 +235,8 @@ async function submit() {
   </van-popup>
   <van-popup v-model:show="showEndPicker" position="bottom" round teleport="body">
     <van-date-picker
-      :model-value="parseToColumns(form.endDate || form.startDate)"
+      :model-value="toPickerDate(form.endDate || form.startDate)"
+      :columns-type="PICKER_DATE_COLUMNS"
       :min-date="new Date(2020, 0, 1)"
       :max-date="new Date(2035, 11, 31)"
       title="Date de fin"

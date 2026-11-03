@@ -29,6 +29,18 @@ export function formatTime(value) {
   return d ? format(d, 'HH:mm') : ''
 }
 
+// Date pickers show day / month / year (jj/mm/aaaa); the data stays yyyy-mm-dd.
+export const PICKER_DATE_COLUMNS = ['day', 'month', 'year']
+
+export function toPickerDate(value, fallback = new Date()) {
+  const d = parseDate(value) || fallback
+  return [format(d, 'dd'), format(d, 'MM'), format(d, 'yyyy')]
+}
+
+export function fromPickerDate([day, month, year]) {
+  return `${year}-${month}-${day}`
+}
+
 export function formatDayKey(value) {
   const d = parseDate(value)
   return d ? format(startOfDay(d), 'yyyy-MM-dd') : ''
