@@ -3,6 +3,10 @@ import { ref, watch, computed, inject } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
 import { ACTIVITY_TYPES, PRIORITY_OPTIONS } from '@/utils/constants'
 import { formatDate, formatTime } from '@/utils/helpers'
+import { useAiStore } from '@/stores/ai'
+import { enrichDraft, aiErrorMessage, mapsSearchUrl } from '@/services/ai'
+import { useToast } from '@/composables/useToast'
+import { Sparkles } from 'lucide-vue-next'
 
 const trip = inject('trip', ref(null))
 const symbol = computed(() => trip.value?.currencySymbol || '€')
@@ -15,6 +19,8 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'saved'])
 
 const activities = useActivitiesStore()
+const ai = useAiStore()
+const toast = useToast()
 const isEdit = computed(() => !!props.activity?.id)
 const saving = ref(false)
 const error = ref('')
@@ -120,7 +126,39 @@ function onPriorityConfirm({ selectedOptions }) {
   showPriorityPicker.value = false
 }
 
-function close() { if (!saving.value) emit('update:modelValue', false) }
+// AI: fill the blanks from the name (never overwrites what the user typed)
+const enriching = ref(false)
+let enrichAbort = null
+async function enrich() {
+  if (!form.value.name?.trim() || enriching.value) return
+  if (!ai.requireReady()) return
+  enriching.value = true
+  enrichAbort = new AbortController()
+  try {
+    const r = await enrichDraft({ trip: trip.value, draft: form.value, signal: enrichAbort.signal })
+    const f = form.value
+    const filled = []
+    if (!f.city && r.city) { f.city = r.city; filled.push('ville') }
+    if (!f.category && r.category) { f.category = r.category; filled.push('catégorie') }
+    if (!Number(f.price) && r.price > 0) { f.price = Math.round(r.price); filled.push('prix estimé') }
+    if ((!f.priority || f.priority === 'normal') && r.priority && r.priority !== 'normal') { f.priority = r.priority; filled.push('priorité') }
+    if (r.notes) { f.notes = f.notes ? `${f.notes}\n\n${r.notes}` : r.notes; filled.push('conseils') }
+    if (!f.googleMapsUrl) f.googleMapsUrl = mapsSearchUrl(f.name, f.city)
+    toast.info(filled.length ? `✨ Complété : ${filled.join(', ')}` : 'Rien à compléter')
+  } catch (e) {
+    const msg = aiErrorMessage(e)
+    if (msg) toast.error(msg)
+  } finally {
+    enriching.value = false
+    enrichAbort = null
+  }
+}
+
+function close() {
+  if (saving.value) return
+  enrichAbort?.abort()
+  emit('update:modelValue', false)
+}
 
 async function submit() {
   if (!form.value.name?.trim() || saving.value) return
@@ -150,15 +188,12 @@ async function submit() {
     :close-on-click-overlay="!saving"
     :style="{ maxHeight: '92vh' }"
   >
-    <div class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
-      <van-nav-bar
-        :title="isEdit ? 'Modifier' : 'Nouvel ajout'"
-        left-text="Annuler"
-        :right-text="saving ? '…' : 'Sauver'"
-        @click-left="close"
-        @click-right="submit"
-        :border="false"
-      />
+    <div class="overflow-y-auto" :style="{ maxHeight: '92vh', background: 'var(--vc-bg)' }">
+      <div class="sticky top-0 z-10 flex items-center justify-between px-4 h-14 backdrop-blur-xl" style="background: color-mix(in srgb, var(--vc-bg) 90%, transparent)">
+        <button type="button" class="text-sm font-medium text-muted" @click="close">Annuler</button>
+        <h2 class="font-bold text-base">{{ isEdit ? 'Modifier' : 'Nouvel ajout' }}</h2>
+        <button type="button" class="text-sm font-semibold" style="color: var(--vc-primary)" :disabled="saving" @click="submit">{{ saving ? '…' : 'Enregistrer' }}</button>
+      </div>
 
       <van-form @submit="submit" class="pb-6">
         <van-cell-group inset title="Type">
@@ -169,7 +204,8 @@ async function submit() {
               type="button"
               @click="form.type = key"
               class="flex flex-col items-center justify-center gap-1.5 rounded-xl py-3 border-2 transition"
-              :class="form.type === key ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900' : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200'"
+              :class="form.type === key ? meta.soft + ' border-current' : 'border-transparent surface-2 text-muted'"
+              :aria-pressed="form.type === key"
             >
               <component :is="meta.icon" class="w-5 h-5" :stroke-width="1.75" />
               <span class="text-xs font-medium">{{ meta.label }}</span>
@@ -177,7 +213,7 @@ async function submit() {
           </div>
         </van-cell-group>
 
-        <van-cell-group inset title="Détails" class="!mt-4">
+        <van-cell-group inset title="Détails">
           <van-field
             v-model="form.name"
             name="name"
@@ -190,8 +226,22 @@ async function submit() {
           <van-field v-model="form.city" label="Ville" placeholder="Tokyo" clearable />
           <van-field v-model="form.category" label="Catégorie" placeholder="Ramen, Musée…" clearable />
         </van-cell-group>
+        <div class="mx-4 mt-2.5">
+          <button
+            type="button"
+            class="w-full h-10 rounded-xl flex items-center justify-center gap-2 text-[13px] font-semibold transition disabled:opacity-50"
+            style="background: var(--vc-primary-soft); color: var(--vc-primary)"
+            :disabled="!form.name?.trim() || enriching"
+            @click="enrich"
+          >
+            <van-loading v-if="enriching" size="16" color="currentColor" />
+            <Sparkles v-else class="w-4 h-4" :stroke-width="2" />
+            {{ enriching ? 'L’IA complète la fiche…' : 'Compléter avec l’IA' }}
+          </button>
+          <p v-if="!form.name?.trim()" class="text-[11px] text-subtle text-center mt-1">Saisis un nom pour que l’IA propose ville, catégorie, prix et conseils.</p>
+        </div>
 
-        <van-cell-group inset :title="form.type === 'hotel' ? 'Séjour' : 'Date'" class="!mt-4">
+        <van-cell-group inset :title="form.type === 'hotel' ? 'Séjour' : 'Date'">
           <van-field
             readonly
             clickable
@@ -232,7 +282,7 @@ async function submit() {
           </template>
         </van-cell-group>
 
-        <van-cell-group inset title="Budget & priorité" class="!mt-4">
+        <van-cell-group inset title="Budget & priorité">
           <van-field
             v-model.number="form.price"
             label="Prix"
@@ -240,7 +290,7 @@ async function submit() {
             placeholder="0"
           >
             <template #button>
-              <span class="text-slate-500 text-sm">{{ symbol }}</span>
+              <span class="text-muted text-sm">{{ symbol }}</span>
             </template>
           </van-field>
           <van-field
@@ -258,13 +308,13 @@ async function submit() {
           </van-cell>
         </van-cell-group>
 
-        <van-cell-group inset title="Liens" class="!mt-4">
+        <van-cell-group inset title="Liens">
           <van-field v-model="form.bookingUrl" label="Booking" placeholder="https://…" clearable />
           <van-field v-model="form.googleMapsUrl" label="Maps" placeholder="https://maps.app.goo.gl/…" clearable />
           <van-field v-model="form.photoUrl" label="Photo" placeholder="https://…" clearable />
         </van-cell-group>
 
-        <van-cell-group inset title="Notes" class="!mt-4">
+        <van-cell-group inset title="Notes">
           <van-field
             v-model="form.notes"
             type="textarea"
@@ -274,9 +324,7 @@ async function submit() {
           />
         </van-cell-group>
 
-        <div v-if="error" class="mx-4 mt-3">
-          <van-notice-bar :text="error" color="#dc2626" background="#fef2f2" />
-        </div>
+        <p v-if="error" role="alert" class="mx-4 mt-3 rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
 
         <div class="px-4 mt-5">
           <van-button block type="primary" size="large" round native-type="submit" :loading="saving">

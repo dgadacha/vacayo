@@ -1,15 +1,13 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch, inject, nextTick } from 'vue'
 import { useActivitiesStore } from '@/stores/activities'
-import { useThemeStore } from '@/stores/theme'
 import { ACTIVITY_TYPES } from '@/utils/constants'
-import { geocodeMany, geocodeCity } from '@/services/geocode'
-import { Map as MapIcon, Loader2, MapPin, X } from 'lucide-vue-next'
+import { geocodeMany } from '@/services/geocode'
+import { Loader2, MapPin, X } from 'lucide-vue-next'
 
 const props = defineProps({ onEdit: Function, onView: Function })
 
 const activities = useActivitiesStore()
-const theme = useThemeStore()
 const trip = inject('trip', ref(null))
 
 const mapEl = ref(null)
@@ -24,23 +22,22 @@ const coords = ref({}) // city -> {lat, lng}
 const unlocatedItems = ref([])
 const showUnlocated = ref(false)
 
-const tilesLight = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-const tilesDark = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+// OpenStreetMap tiles need no key (CARTO's basemaps now require one).
+// Dark mode is a CSS filter on the tile pane, see the style block.
+const TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 
-// Group items by city
+// Group items by city (items without a city are listed apart)
 const grouped = computed(() => {
   const byCity = new Map()
   activities.all.forEach(a => {
     const c = (a.city || '').trim()
-    if (!c) {
-      unlocatedItems.value.push(a)
-      return
-    }
+    if (!c) return
     if (!byCity.has(c)) byCity.set(c, [])
     byCity.get(c).push(a)
   })
   return [...byCity.entries()].map(([city, items]) => ({ city, items }))
 })
+const noCityItems = computed(() => activities.all.filter(a => !(a.city || '').trim()))
 
 async function loadLeaflet() {
   if (LeafletLib) return LeafletLib
@@ -51,11 +48,7 @@ async function loadLeaflet() {
 }
 
 function typeColor(type) {
-  return {
-    hotel: '#0284c7',
-    restaurant: '#d97706',
-    activity: '#7c3aed'
-  }[type] || '#475569'
+  return ACTIVITY_TYPES[type]?.color || '#475569'
 }
 
 function clusterIcon(L, items) {
@@ -95,12 +88,11 @@ async function renderMap() {
 
   if (!mapInstance) {
     mapInstance = L.map(mapEl.value, { zoomControl: true, attributionControl: true, preferCanvas: true })
-    tileLayer = L.tileLayer(theme.mode === 'dark' ? tilesDark : tilesLight, {
-      attribution: '© OpenStreetMap contributors, © CARTO',
-      subdomains: 'abcd',
+    tileLayer = L.tileLayer(TILES, {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
       maxZoom: 19
     }).addTo(mapInstance)
-    mapInstance.setView([35.6762, 139.6503], 4) // default Tokyo
+    mapInstance.setView([20, 0], 2)
     mapInstance.on('dragstart zoomstart', () => { userInteracted = true })
   }
 
@@ -112,7 +104,7 @@ async function renderMap() {
   // Reset state
   markers.forEach(m => mapInstance.removeLayer(m))
   markers = []
-  unlocatedItems.value = []
+  unlocatedItems.value = [...noCityItems.value]
   userInteracted = false
 
   const cityList = grouped.value
@@ -183,18 +175,8 @@ onMounted(async () => {
   await renderMap()
 })
 
-watch(() => activities.all.length, () => { renderMap() })
-
-watch(() => theme.mode, async () => {
-  if (!mapInstance || !LeafletLib) return
-  const L = LeafletLib
-  if (tileLayer) mapInstance.removeLayer(tileLayer)
-  tileLayer = L.tileLayer(theme.mode === 'dark' ? tilesDark : tilesLight, {
-    attribution: '© OpenStreetMap contributors, © CARTO',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(mapInstance)
-})
+// Re-render when items are added/removed or a city changes
+watch(() => activities.all.map(a => `${a.id}:${a.city}`).join('|'), () => { renderMap() })
 
 onBeforeUnmount(() => {
   activeAbort?.abort()
@@ -208,7 +190,7 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
 </script>
 
 <template>
-  <div class="relative w-full" :style="{ height: 'calc(100dvh - 8.5rem)' }">
+  <div class="relative w-full" data-no-swipe :style="{ height: 'calc(100dvh - var(--vc-topbar-h, 56px) - 58px - env(safe-area-inset-bottom))' }">
     <div ref="mapEl" class="absolute inset-0" />
 
     <div v-if="geocoding" class="absolute top-3 left-3 right-3 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:max-w-xs z-[5]">
@@ -219,12 +201,12 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
     </div>
 
     <div v-if="!geocoding && grouped.length === 0" class="absolute inset-0 flex items-center justify-center pointer-events-none z-[5]">
-      <div class="text-center px-6 pointer-events-auto">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mb-3">
+      <div class="text-center px-6 py-6 pointer-events-auto card mx-6">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl surface-2 text-subtle mb-3">
           <MapPin class="w-7 h-7" :stroke-width="1.5" />
         </div>
         <h3 class="font-semibold">Pas encore de lieux</h3>
-        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ajoute des activités avec une ville pour les voir sur la carte.</p>
+        <p class="text-muted text-sm mt-1">Ajoute des activités avec une ville pour les voir sur la carte.</p>
       </div>
     </div>
 
@@ -320,11 +302,13 @@ function clickUnlocated(item) { showUnlocated.value = false; props.onView?.(item
 .vacayo-popup-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .vacayo-popup-name { font-weight: 500; }
 .vacayo-popup-more { font-size: 11px; color: #94a3b8; margin: 6px 4px 0; }
+.dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.6); }
 .leaflet-control-attribution {
   font-size: 9px !important;
   background: rgba(255,255,255,0.75) !important;
 }
-.dark .leaflet-control-attribution {
+.dark .dark .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.6); }
+.leaflet-control-attribution {
   background: rgba(15,23,42,0.75) !important;
   color: #94a3b8 !important;
 }

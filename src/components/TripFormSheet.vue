@@ -118,15 +118,12 @@ async function submit() {
     :close-on-click-overlay="!saving"
     :style="{ maxHeight: '92vh' }"
   >
-    <div class="overflow-y-auto bg-white dark:bg-slate-900" :style="{ maxHeight: '92vh' }">
-      <van-nav-bar
-        :title="isEdit ? 'Modifier le voyage' : 'Nouveau voyage'"
-        left-text="Annuler"
-        :right-text="saving ? 'Enregistrement…' : 'Sauver'"
-        @click-left="close"
-        @click-right="submit"
-        :border="false"
-      />
+    <div class="overflow-y-auto" :style="{ maxHeight: '92vh', background: 'var(--vc-bg)' }">
+      <div class="sticky top-0 z-10 flex items-center justify-between px-4 h-14 backdrop-blur-xl" style="background: color-mix(in srgb, var(--vc-bg) 90%, transparent)">
+        <button type="button" class="text-sm font-medium text-muted" @click="close">Annuler</button>
+        <h2 class="font-bold text-base">{{ isEdit ? 'Modifier le voyage' : 'Nouveau voyage' }}</h2>
+        <button type="button" class="text-sm font-semibold" style="color: var(--vc-primary)" :disabled="saving" @click="submit">{{ saving ? '…' : 'Enregistrer' }}</button>
+      </div>
 
       <van-form @submit="submit" class="pb-4">
         <van-cell-group inset title="Infos">
@@ -153,7 +150,7 @@ async function submit() {
           />
         </van-cell-group>
 
-        <van-cell-group inset title="Dates" class="!mt-4">
+        <van-cell-group inset title="Dates">
           <van-field
             readonly
             clickable
@@ -174,7 +171,7 @@ async function submit() {
           />
         </van-cell-group>
 
-        <van-cell-group inset title="Budget" class="!mt-4">
+        <van-cell-group inset title="Budget">
           <van-field
             readonly
             clickable
@@ -190,12 +187,12 @@ async function submit() {
             placeholder="0"
           >
             <template #button>
-              <span class="text-slate-500 text-sm">{{ form.currencySymbol }}</span>
+              <span class="text-muted text-sm">{{ form.currencySymbol }}</span>
             </template>
           </van-field>
         </van-cell-group>
 
-        <van-cell-group inset title="Image de couverture" class="!mt-4">
+        <van-cell-group inset title="Image de couverture">
           <van-field
             v-model="form.coverImage"
             label="URL"
@@ -203,13 +200,11 @@ async function submit() {
             clearable
           />
         </van-cell-group>
-        <div v-if="form.coverImage" class="mx-4 mt-2 rounded-xl overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700 aspect-video bg-slate-50 dark:bg-slate-800">
+        <div v-if="form.coverImage" class="mx-4 mt-2 rounded-2xl overflow-hidden aspect-video surface-2">
           <img :src="form.coverImage" class="w-full h-full object-cover" @error="$event.target.style.display='none'" />
         </div>
 
-        <div v-if="error" class="mx-4 mt-3">
-          <van-notice-bar :text="error" color="#dc2626" background="#fef2f2" />
-        </div>
+        <p v-if="error" role="alert" class="mx-4 mt-3 rounded-xl px-3 py-2.5 text-sm bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{{ error }}</p>
 
         <div class="px-4 mt-5">
           <van-button

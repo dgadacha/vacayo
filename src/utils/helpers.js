@@ -34,11 +34,43 @@ export function formatDayKey(value) {
   return d ? format(startOfDay(d), 'yyyy-MM-dd') : ''
 }
 
-export function formatPrice(value, symbol = '¥') {
+export function formatPrice(value, symbol = '€') {
   if (value === undefined || value === null || value === '') return 'Gratuit'
   const n = Number(value)
   if (!n) return 'Gratuit'
   return `${new Intl.NumberFormat('fr-FR').format(n)} ${symbol}`
+}
+
+// Short amount for tight spots: 142 000 → "142k"
+export function formatCompact(value, symbol = '€') {
+  const n = Number(value) || 0
+  const s = new Intl.NumberFormat('fr-FR', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
+  return `${s} ${symbol}`
+}
+
+// Where a trip stands relative to today, for countdowns and grouping.
+export function tripStatus(trip, now = new Date()) {
+  const start = parseDate(trip?.startDate)
+  const end = parseDate(trip?.endDate) || start
+  if (!start) return { state: 'undated', label: 'Dates à définir' }
+  const today = startOfDay(now)
+  const total = differenceInCalendarDays(end, start) + 1
+  const until = differenceInCalendarDays(start, today)
+  if (until > 0) {
+    const label = until === 1 ? 'Demain' : until < 45 ? `Dans ${until} jours` : `Dans ${Math.round(until / 30)} mois`
+    return { state: 'upcoming', label, daysUntil: until, totalDays: total }
+  }
+  const sinceEnd = differenceInCalendarDays(today, end)
+  if (sinceEnd > 0) return { state: 'past', label: 'Terminé', totalDays: total }
+  const day = differenceInCalendarDays(today, start) + 1
+  return { state: 'ongoing', label: `Jour ${day} / ${total}`, day, totalDays: total }
+}
+
+export function nightsBetween(a, b) {
+  const s = parseDate(a)
+  const e = parseDate(b)
+  if (!s || !e) return 0
+  return Math.max(0, differenceInCalendarDays(startOfDay(e), startOfDay(s)))
 }
 
 export function expandHotelDates(hotel) {

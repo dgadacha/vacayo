@@ -48,10 +48,10 @@ onBeforeUnmount(() => {
     <div
       v-if="visible && shouldShow"
       class="fixed left-1/2 -translate-x-1/2 z-30 px-3 pointer-events-none"
-      style="bottom: calc(env(safe-area-inset-bottom) + 4.5rem);"
+      style="bottom: calc(env(safe-area-inset-bottom) + 5.5rem);"
     >
-      <div class="pointer-events-auto card !rounded-full px-3 py-2 flex items-center gap-2 shadow-lg ring-slate-200 dark:ring-slate-700 max-w-[20rem]">
-        <Hand class="w-4 h-4 text-slate-500 dark:text-slate-400 flex-shrink-0" :stroke-width="2" />
+      <div class="pointer-events-auto card !rounded-full pl-3.5 pr-1.5 py-1.5 flex items-center gap-2 shadow-lift max-w-[20rem]">
+        <Hand class="w-4 h-4 text-muted flex-shrink-0" :stroke-width="2" />
         <span class="text-[12px] leading-tight">Appuie <strong>long</strong> sur une carte pour plus d'actions</span>
         <button @click="dismiss" class="btn-icon !w-6 !h-6 -mr-1 flex-shrink-0" aria-label="Compris">
           <X class="w-3.5 h-3.5" :stroke-width="2" />

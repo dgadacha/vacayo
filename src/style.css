@@ -2,23 +2,177 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens. `--vc-*` are the app's own tokens; the `--van-*` overrides make
+ * Vant components use the same palette. `html:` raises specificity above Vant's
+ * own `:root` / `.van-theme-dark` declarations whatever the CSS load order.
+ */
+html:root {
+  --vc-bg: #f5f6fa;
+  --vc-surface: #ffffff;
+  --vc-surface-2: #f1f5f9;
+  --vc-border: #e2e8f0;
+  --vc-border-soft: rgb(15 23 42 / 0.06);
+  --vc-text: #0f172a;
+  --vc-muted: #64748b;
+  --vc-subtle: #94a3b8;
+  --vc-primary: #4f46e5;
+  --vc-primary-soft: #eef2ff;
+  --vc-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px rgb(15 23 42 / 0.05);
+  --vc-ai: linear-gradient(135deg, #6366f1 0%, #a855f7 55%, #ec4899 100%);
+
+  --van-base-font: Inter, system-ui, -apple-system, sans-serif;
+  --van-primary-color: var(--vc-primary);
+  --van-danger-color: #e11d48;
+  --van-success-color: #059669;
+  --van-warning-color: #d97706;
+  --van-background: var(--vc-bg);
+  --van-background-2: var(--vc-surface);
+  --van-background-3: var(--vc-surface-2);
+  --van-text-color: var(--vc-text);
+  --van-text-color-2: var(--vc-muted);
+  --van-text-color-3: var(--vc-subtle);
+  --van-border-color: var(--vc-border);
+  --van-active-color: var(--vc-surface-2);
+  --van-cell-group-inset-radius: 16px;
+  --van-popup-round-radius: 24px;
+  --van-nav-bar-title-font-size: 16px;
+  --van-search-content-background: var(--vc-surface-2);
+  --van-search-background: transparent;
+  --van-tabbar-height: 58px;
+  --van-tabbar-item-font-size: 11px;
+  --van-tabbar-item-icon-size: 22px;
+}
+
+html.van-theme-dark,
+html.dark {
+  --vc-bg: #0b1020;
+  --vc-surface: #151b2e;
+  --vc-surface-2: #1f2740;
+  --vc-border: #2a3350;
+  --vc-border-soft: rgb(255 255 255 / 0.06);
+  --vc-text: #e2e8f0;
+  --vc-muted: #94a3b8;
+  --vc-subtle: #64748b;
+  --vc-primary: #818cf8;
+  --vc-primary-soft: rgb(129 140 248 / 0.14);
+  --vc-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+
+  --van-primary-color: var(--vc-primary);
+  --van-background: var(--vc-bg);
+  --van-background-2: var(--vc-surface);
+  --van-background-3: var(--vc-surface-2);
+  --van-text-color: var(--vc-text);
+  --van-text-color-2: var(--vc-muted);
+  --van-text-color-3: var(--vc-subtle);
+  --van-border-color: var(--vc-border);
+  --van-active-color: var(--vc-surface-2);
+}
+
 @layer base {
   html, body {
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior-y: none;
-    background: var(--van-background);
-    color: var(--van-text-color);
+    background: var(--vc-bg);
+    color: var(--vc-text);
+    font-family: Inter, system-ui, -apple-system, sans-serif;
   }
   * { -webkit-touch-callout: none; }
   button, a { @apply select-none; }
+  input, textarea { -webkit-touch-callout: default; }
+  :focus-visible { outline: 2px solid var(--vc-primary); outline-offset: 2px; }
 }
 
 @layer components {
   .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem); }
   .safe-top { padding-top: env(safe-area-inset-top); }
   .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+
+  .surface { background: var(--vc-surface); }
+  .surface-2 { background: var(--vc-surface-2); }
+  .text-muted { color: var(--vc-muted); }
+  .text-subtle { color: var(--vc-subtle); }
+  .border-soft { border-color: var(--vc-border-soft); }
+
+  .card {
+    @apply rounded-2xl;
+    background: var(--vc-surface);
+    border: 1px solid var(--vc-border-soft);
+    box-shadow: var(--vc-shadow);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset whitespace-nowrap leading-4;
+  }
+
+  .btn-icon {
+    @apply inline-flex items-center justify-center w-9 h-9 rounded-full transition flex-shrink-0;
+    color: var(--vc-text);
+  }
+  .btn-icon:hover { background: var(--vc-surface-2); }
+  .btn-icon:active { transform: scale(0.94); }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 h-10 text-sm font-semibold transition whitespace-nowrap;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { @apply opacity-50 pointer-events-none; }
+  .btn-primary { background: var(--vc-primary); color: #fff; }
+  html.dark .btn-primary { color: #0b1020; }
+  .btn-secondary { background: var(--vc-surface-2); color: var(--vc-text); }
+  .btn-ai { background: var(--vc-ai); color: #fff; box-shadow: 0 6px 20px rgb(168 85 247 / 0.35); }
+
+  .section-label {
+    @apply text-[11px] font-semibold uppercase tracking-wider;
+    color: var(--vc-muted);
+  }
+
+  .ai-text {
+    background: var(--vc-ai);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .segmented {
+    @apply flex p-1 rounded-full gap-1;
+    background: var(--vc-surface-2);
+  }
+  .segmented > button {
+    @apply flex-1 h-8 rounded-full text-xs font-semibold transition;
+    color: var(--vc-muted);
+  }
+  .segmented > button[aria-pressed='true'] {
+    background: var(--vc-surface);
+    color: var(--vc-text);
+    box-shadow: 0 1px 3px rgb(15 23 42 / 0.12);
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, var(--vc-surface-2) 25%, var(--vc-border) 50%, var(--vc-surface-2) 75%);
+    background-size: 200% 100%;
+    @apply animate-shimmer rounded-md;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Vant tweaks that the variables above don't reach */
+.van-popup--bottom.van-popup--round { overflow: hidden; }
+.van-tabbar { border-top: 1px solid var(--vc-border-soft); }
+.van-tabbar--fixed::after { display: none; }
+.van-action-sheet__item { font-weight: 500; }
+.van-search__content { border-radius: 999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

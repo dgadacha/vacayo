@@ -1,0 +1,3 @@
+# Secrets locaux de wrangler dev et état local
+.dev.vars*
+.wrangler/
