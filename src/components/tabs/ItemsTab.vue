@@ -33,7 +33,7 @@ const groups = computed(() => {
   const wish = list.value.filter(a => !a.date)
   return [
     { key: 'planned', title: planned.length && wish.length ? 'Planifiés' : '', items: planned },
-    { key: 'wish', title: wish.length ? 'Sans date' : '', items: wish }
+    { key: 'wish', title: wish.length ? 'Liste d’envies' : '', items: wish }
   ].filter(g => g.items.length)
 })
 

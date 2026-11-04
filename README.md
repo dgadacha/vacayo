@@ -89,7 +89,9 @@ filtrer par ville.
 Comme dans Mail sur iPhone :
 
 - balaie une ligne **vers la gauche** pour la marquer **Faite** ou la **Supprimer** ;
-- balaie **vers la droite** pour la marquer **Réservée** ;
+- balaie **vers la droite** pour la marquer **Réservée**, ou **Plus tard** pour la retirer
+  du planning sans la perdre : elle retourne dans ta liste d’envies (**Annuler** en bas
+  de l’écran si tu t’es trompé) ;
 - touche le **rond** à droite pour cocher ;
 - un **appui long** ouvre toutes les options.
 
@@ -175,9 +177,10 @@ Touche **+** pour l’ajouter à ta liste d’envies.
 
 ### Planifier la liste d’envies
 
-Les éléments sans date forment ta **liste d’envies**. Touche **Planifier** dans le
-résumé du voyage : l’IA place chaque idée un jour où tu dors dans la même ville, sans
-surcharger les journées.
+Les éléments sans date forment ta **liste d’envies**. La date n’est jamais obligatoire :
+dans la fiche d’un resto ou d’une activité, l’interrupteur **Planifier** la retire ou
+l’ajoute. Touche **Planifier** dans le résumé du voyage : l’IA place chaque idée un
+jour où tu dors dans la même ville, sans surcharger les journées.
 
 <p align="center">
   <img src="docs/screenshots/16-idees.jpg" width="260" alt="Idées proposées par l’IA">

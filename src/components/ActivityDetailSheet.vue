@@ -5,7 +5,8 @@ import { ACTIVITY_TYPES, PRIORITY_OPTIONS } from '@/utils/constants'
 import { formatPrice, formatDate, formatTime, nightsBetween } from '@/utils/helpers'
 import { useToast } from '@/composables/useToast'
 import { useConfirm } from '@/composables/useConfirm'
-import { Check, Bookmark, Pencil, Copy, X, Sparkles, ChevronRight, Navigation, Globe } from 'lucide-vue-next'
+import { useLater } from '@/composables/useLater'
+import { Check, Bookmark, Pencil, Copy, X, Sparkles, ChevronRight, Navigation, Globe, Clock } from 'lucide-vue-next'
 
 // Apple Maps–style place card.
 const props = defineProps({
@@ -21,6 +22,7 @@ const aiActions = inject('aiActions', null)
 const symbol = computed(() => trip.value?.currencySymbol || '€')
 const toast = useToast()
 const { confirm } = useConfirm()
+const { canLater, later } = useLater()
 const imgFailed = ref(false)
 
 // Follow live updates (toggles) instead of the snapshot we were opened with
@@ -48,6 +50,7 @@ function close() { emit('update:modelValue', false) }
 function open(url) { url && window.open(url, '_blank', 'noopener') }
 function toggleDone() { if (item.value) activities.toggleDone(item.value.id) }
 function toggleBooked() { if (item.value) activities.toggleBooked(item.value.id) }
+function moveLater() { const a = item.value; close(); later(a) }
 
 async function duplicate() {
   try {
@@ -158,6 +161,16 @@ function askAi() {
           <ChevronRight class="w-4 h-4 text-subtle -mr-1" :stroke-width="2.5" />
         </button>
       </div>
+
+      <template v-if="canEdit && canLater(item)">
+        <div class="list mt-7" style="--sep-inset: 57px">
+          <button type="button" class="row" @click="moveLater">
+            <span class="row-icon bg-[#af52de]"><Clock class="w-[17px] h-[17px]" :stroke-width="2" /></span>
+            <span class="flex-1 t-body">Plus tard</span>
+          </button>
+        </div>
+        <p class="list-footer">Retire la date : l’élément reste dans ta liste d’envies, à replanifier quand tu veux.</p>
+      </template>
 
       <div v-if="canEdit" class="list mt-7">
         <button type="button" class="row justify-center t-body" style="color: var(--vc-red)" @click="remove">Supprimer</button>

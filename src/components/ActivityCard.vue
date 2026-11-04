@@ -5,7 +5,8 @@ import { ACTIVITY_TYPES, PRIORITY_OPTIONS } from '@/utils/constants'
 import { formatDate, formatTime, nightsBetween } from '@/utils/helpers'
 import { useToast } from '@/composables/useToast'
 import { useConfirm } from '@/composables/useConfirm'
-import { Check, BadgeCheck, Moon, Trash2, CircleCheck, Bookmark, Flag, Star } from 'lucide-vue-next'
+import { useLater } from '@/composables/useLater'
+import { Check, BadgeCheck, Moon, Trash2, CircleCheck, Bookmark, Flag, Star, Clock } from 'lucide-vue-next'
 
 // One row of an iOS inset grouped list, with swipe actions (Mail-style).
 const props = defineProps({
@@ -20,6 +21,7 @@ const symbol = computed(() => trip.value?.currencySymbol || '€')
 const meta = computed(() => ACTIVITY_TYPES[props.activity.type] || ACTIVITY_TYPES.activity)
 const toast = useToast()
 const { confirm } = useConfirm()
+const { canLater, later } = useLater()
 const imgFailed = ref(false)
 const swipe = ref(null)
 
@@ -45,6 +47,10 @@ function toggleDone() {
 function toggleBooked() {
   activities.toggleBooked(props.activity.id)
   swipe.value?.close()
+}
+function moveLater() {
+  swipe.value?.close()
+  later(props.activity)
 }
 
 async function remove() {
@@ -104,6 +110,7 @@ const actionSheetItems = computed(() => {
     { name: 'Modifier', key: 'edit' },
     { name: a.isDone ? 'Marquer à faire' : 'Marquer comme fait', key: 'done' },
     { name: a.isBooked ? 'Marquer non réservé' : 'Marquer réservé', key: 'booked' },
+    canLater(a) && { name: 'Plus tard', subname: 'Retire la date, garde l’élément dans ta liste d’envies', key: 'later' },
     a.googleMapsUrl && { name: 'Ouvrir dans Plans', key: 'maps' },
     a.bookingUrl && { name: 'Ouvrir le lien de réservation', key: 'booking' },
     { name: 'Dupliquer', key: 'duplicate' },
@@ -118,6 +125,7 @@ async function onActionSelect(item) {
     case 'edit': emit('edit', a); break
     case 'done': toggleDone(); break
     case 'booked': toggleBooked(); break
+    case 'later': await later(a); break
     case 'maps': window.open(a.googleMapsUrl, '_blank', 'noopener'); break
     case 'booking': window.open(a.bookingUrl, '_blank', 'noopener'); break
     case 'duplicate': await duplicate(); break
@@ -129,10 +137,17 @@ async function onActionSelect(item) {
 <template>
   <van-swipe-cell ref="swipe" :disabled="!canEdit" class="row-sep">
     <template #left>
-      <button type="button" class="swipe-action bg-[#007aff]" @click="toggleBooked">
-        <Bookmark class="w-5 h-5" :fill="activity.isBooked ? 'currentColor' : 'none'" :stroke-width="2" />
-        <span>{{ activity.isBooked ? 'Annuler' : 'Réservé' }}</span>
-      </button>
+      <div class="flex h-full">
+        <button type="button" class="swipe-action bg-[#007aff]" @click="toggleBooked">
+          <Bookmark class="w-5 h-5" :fill="activity.isBooked ? 'currentColor' : 'none'" :stroke-width="2" />
+          <span>{{ activity.isBooked ? 'Annuler' : 'Réservé' }}</span>
+        </button>
+        <!-- Purple clock, like Mail's "Me le rappeler" -->
+        <button v-if="canLater(activity)" type="button" class="swipe-action bg-[#af52de]" @click="moveLater">
+          <Clock class="w-5 h-5" :stroke-width="2" />
+          <span>Plus tard</span>
+        </button>
+      </div>
     </template>
 
     <div
